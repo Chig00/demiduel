@@ -1,0 +1,1 @@
+Run demiduelversion or demiduelversionmini in the root folder to run a specific version.
