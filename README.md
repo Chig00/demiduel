@@ -1,2 +1,2 @@
 # demiduel
-A free, open-source card game.
+A free, open-source card game loosely based on the Pokemon TCG.
