@@ -8,7 +8,7 @@
 // System Constants
 //{
 // The current version of the program.
-constexpr int VERSION[] = {1, 3, 2, 1};
+constexpr int VERSION[] = {1, 3, 3, 0};
 
 // The title of the game in string form.
 constexpr const char* TITLE_STRING = "Demi Duel";
@@ -3067,7 +3067,7 @@ constexpr const char* DRIVER_ATTACK_DESCRIPTION =
 ;
 constexpr const char* DRIVER_ATTACK_EFFECTS = NO_EFFECTS;
 constexpr int DRIVER_ATTACK_DAMAGE = 250;
-constexpr int DRIVER_ATTACK_COST = 1000;
+constexpr int DRIVER_ATTACK_COST = 0;
 //}
 
 // Racer
@@ -3370,7 +3370,7 @@ constexpr int ASTRONAUT_ATTACK_COST = 500;
 constexpr const char* MAGE_NAME = "Mage";
 constexpr const char* MAGE_ELEMENT = AIR_ELEMENT;
 constexpr int MAGE_HEALTH = 900;
-constexpr int MAGE_RETREAT_COST = 2000;
+constexpr int MAGE_RETREAT_COST = 1000;
 constexpr const char* MAGE_OLD_RANK = NO_OLD_RANK;
 constexpr const char* MAGE_ABILITY_NAME = "Adaptability";
 constexpr const char* MAGE_ABILITY_DESCRIPTION =
@@ -3997,7 +3997,7 @@ const std::string CULTIST_ATTACK_EFFECTS(
 	+ VOID_EFFECT             // void
 );
 constexpr int CULTIST_ATTACK_DAMAGE = 0;
-constexpr int CULTIST_ATTACK_COST = 4000;
+constexpr int CULTIST_ATTACK_COST = 3000;
 //}
 //}
 
@@ -4209,7 +4209,7 @@ const std::string ELEMENTAL_ABILITY_EFFECTS(
 constexpr bool ELEMENTAL_ABILITY_PASSIVE = false;
 constexpr int ELEMENTAL_ABILITY_USES = 1;
 constexpr const char* ELEMENTAL_ATTACK_DESCRIPTION =
-	"Deal 200 damage to your opponent's active fighter.\n"
+	"Deal 250 damage to your opponent's active fighter.\n"
 	"Both players draw a card."
 ;
 const std::string ELEMENTAL_ATTACK_EFFECTS(
@@ -4223,13 +4223,8 @@ const std::string ELEMENTAL_ATTACK_EFFECTS(
 	+ EFFECT_SEPARATOR       //
 	+ "1"                    // 1
 );
-constexpr int ELEMENTAL_ATTACK_DAMAGE = 200;
+constexpr int ELEMENTAL_ATTACK_DAMAGE = 250;
 constexpr int ELEMENTAL_ATTACK_COST = 1000;
-//}
-
-// Basic Elemental Attack
-//{
-	
 //}
 
 // Fire Elemental
@@ -4332,14 +4327,14 @@ constexpr bool OMEGA_ELEMENTAL_ABILITY_PASSIVE = false;
 constexpr int OMEGA_ELEMENTAL_ABILITY_USES = 1;
 constexpr const char* OMEGA_ELEMENTAL_ATTACK_NAME = "Assimilate";
 constexpr const char* OMEGA_ELEMENTAL_ATTACK_DESCRIPTION =
-	"Deal 1000 damage in total to your opponent's fighters.\n"
+	"Deal 800 damage in total to your opponent's fighters.\n"
 	"The damage is randomly distributed.\n"
-	"Heal 0.2 damage from this fighter multiplied by the damage dealt."
+	"Heal 0.375 damage from this fighter multiplied by the damage dealt."
 ;
 const std::string OMEGA_ELEMENTAL_ATTACK_EFFECTS(
 	std::string(DISTRIBUTE_EFFECT) // distribute
 	+ EFFECT_SEPARATOR             //
-	+ "1000"                       // 1000
+	+ "800"                        // 800
 	+ EFFECT_TERMINATOR
 	+ HEAL_EFFECT                  // heal
 	+ EFFECT_SEPARATOR             //
@@ -4347,7 +4342,7 @@ const std::string OMEGA_ELEMENTAL_ATTACK_EFFECTS(
 	+ EFFECT_SEPARATOR             //
 	+ DAMAGE_EFFECT                // damage
 	+ EFFECT_SEPARATOR             //
-	+ "0.2"                        // 0.2
+	+ "0.375"                      // 0.375
 );
 constexpr int OMEGA_ELEMENTAL_ATTACK_DAMAGE = 0;
 constexpr int OMEGA_ELEMENTAL_ATTACK_COST = 2000;
@@ -5144,7 +5139,7 @@ constexpr int UNIVERSAL_ENERGY_VALUE = 1000;
 //{
 constexpr const char* ALPHA_ENERGY_NAME = "Alpha Energy";
 constexpr const char* ALPHA_ENERGY_DESCRIPTION =
-	"Provides 500 energy for fighters of all elements.\n"
+	"Provides 250 energy for fighters of all elements.\n"
 	"When this energy card is played, draw a card.\n"
 	"You can play 1 more card this turn."
 ;
@@ -5160,7 +5155,7 @@ const std::string ALPHA_ENERGY_EFFECTS(
 	+ EFFECT_SEPARATOR            //
 	+ "1"                         // 1
 );
-constexpr int ALPHA_ENERGY_VALUE = 500;
+constexpr int ALPHA_ENERGY_VALUE = 250;
 //}
 
 // Omega Energy
@@ -5168,13 +5163,18 @@ constexpr int ALPHA_ENERGY_VALUE = 500;
 constexpr const char* OMEGA_ENERGY_NAME = "Omega Energy";
 constexpr const char* OMEGA_ENERGY_DESCRIPTION =
 	"Provides 2000 energy for fighters of all elements.\n"
-	"When this energy card is played, discard a card from your hand."
+	"When this energy card is played, discard a card from your hand.\n"
+	"You can play 1 less card this turn."
 ;
 constexpr const char* OMEGA_ENERGY_ELEMENT = NO_ELEMENT;
 const std::string OMEGA_ENERGY_EFFECTS(
 	std::string(UNIVERSAL_EFFECT) // all
 	+ EFFECT_TERMINATOR
 	+ DISCARD_EFFECT              // discard
+	+ EFFECT_SEPARATOR            //
+	+ "1"                         // 1
+	+ EFFECT_TERMINATOR
+	+ OVERLOAD_EFFECT             // overload
 	+ EFFECT_SEPARATOR            //
 	+ "1"                         // 1
 );
@@ -5185,7 +5185,7 @@ constexpr int OMEGA_ENERGY_VALUE = 2000;
 //{
 constexpr const char* BOND_ENERGY_NAME = "Bond Energy";
 constexpr const char* BOND_ENERGY_DESCRIPTION =
-	"Provides 500 energy for fighters of all elements.\n"
+	"Provides 750 energy for fighters of all elements.\n"
 	"When the fighter, that this energy card is attached to, ranks up, "
 	"draw the old rank instead of discarding it."
 ;
@@ -5195,7 +5195,7 @@ const std::string BOND_ENERGY_EFFECTS(
 	+ EFFECT_TERMINATOR
 	+ BOND_EFFECT                 // bond
 );
-constexpr int BOND_ENERGY_VALUE = 500;
+constexpr int BOND_ENERGY_VALUE = 750;
 //}
 //}
 //}
@@ -11812,6 +11812,18 @@ class Player: public Affectable {
 					int extra_plays = std::stoi(effects[i][1]);
 					plays += extra_plays;
 					announce(EXTRA_PLAY_ANNOUNCEMENT);
+				}
+			
+				// Modifies the number of card plays for next turn.
+				else if (effects[i][0] == OVERLOAD_EFFECT) {
+					affect(
+						effects[i][0]
+						+ EFFECT_SEPARATOR
+						+ effects[i][1]
+					);
+					
+					const std::string& overload = effects[i][1];
+					announce(OVERLOAD_ANNOUNCEMENT);
 				}
 			}
 			
@@ -22346,4 +22358,14 @@ int main(int argc, char** argv) noexcept {
 	   Some changes to the decklists.
 	 v1.3.2.1:
 	   Rooting is no longer a perpetual effect.
+	 v1.3.3:
+	   Drift's cost was decreased from 1000 to 0.
+	   Mage's retreat cost was decreased from 2000 to 1000.
+	   Shadow Bond's cost was decreased from 4000 to 3000.
+	   The Basic Elementals' attack damage was increased from 200 to 250.
+	   Assimilate's damage was decreased from 1000 to 800.
+	   Assimilate's healing ratio was increased from 0.2 to 0.375.
+	   Alpha Energy's energy value was decreased from 500 to 250.
+	   Omega Energy now overloads one play.
+	   Bond Energy's energy value was increased from 500 to 750.
  */
