@@ -8,7 +8,7 @@
 // System Constants
 //{
 // The current version of the program.
-constexpr int VERSION[] = {1, 3, 3, 0};
+constexpr int VERSION[] = {1, 3, 4, 0};
 
 // The title of the game in string form.
 constexpr const char* TITLE_STRING = "Demi Duel";
@@ -4609,8 +4609,8 @@ const std::string ALCHEMIST_EFFECTS(
 constexpr const char* TIME_TRAVELLER_NAME = "Time Traveller";
 constexpr const char* TIME_TRAVELLER_DESCRIPTION =
 	"Search your trash for a card and draw it.\n"
-	"You can play 2 more cards this turn.\n"
-	"You can play 3 fewer cards next turn."
+	"You can play 1 more card this turn.\n"
+	"You can play 2 fewer cards next turn."
 ;
 const std::string TIME_TRAVELLER_EFFECTS(
 	std::string(SEARCH_EFFECT) // search
@@ -4621,11 +4621,11 @@ const std::string TIME_TRAVELLER_EFFECTS(
 	+ EFFECT_TERMINATOR
 	+ EXTRA_PLAY_EFFECT        // extra_play
 	+ EFFECT_SEPARATOR         //
-	+ "2"                      // 2
+	+ "1"                      // 1
 	+ EFFECT_TERMINATOR
 	+ OVERLOAD_EFFECT          // overload
 	+ EFFECT_SEPARATOR         //
-	+ "3"                      // 3
+	+ "2"                      // 2
 );
 //}
 
@@ -17526,14 +17526,14 @@ const DeckCode MIDRANGE_DECK(
 		1, // ARSONIST
 		
 		// Energy Cards
-		0, // FIRE ENERGY
+		2, // FIRE ENERGY
 		0, // AIR ENERGY
-		0, // WATER ENERGY
-		0, // EARTH ENERGY
+		2, // WATER ENERGY
+		3, // EARTH ENERGY
 		
-		3, // UNIVERSAL ENERGY
-		4, // ALPHA ENERGY
-		4, // OMEGA ENERGY
+		2, // UNIVERSAL ENERGY
+		0, // ALPHA ENERGY
+		2, // OMEGA ENERGY
 		0  // BOND ENERGY
 	}
 );
@@ -17615,10 +17615,10 @@ const DeckCode AGGRO_COMBO_DECK(
 		0, // GLUTTON
 		
 		0, // SUBSTITUTE
-		1, // BOUNTY HUNTER
+		0, // BOUNTY HUNTER
 		
 		1, // NURSE
-		1, // INNKEEPER
+		0, // INNKEEPER
 		1, // MIRACLE WORKER
 		0, // DOCTOR
 		0, // ESCAPE ARTIST
@@ -17641,9 +17641,9 @@ const DeckCode AGGRO_COMBO_DECK(
 		
 		// Energy Cards
 		0, // FIRE ENERGY
-		0, // AIR ENERGY
+		1, // AIR ENERGY
 		0, // WATER ENERGY
-		0, // EARTH ENERGY
+		1, // EARTH ENERGY
 		
 		0, // UNIVERSAL ENERGY
 		4, // ALPHA ENERGY
@@ -22368,4 +22368,9 @@ int main(int argc, char** argv) noexcept {
 	   Alpha Energy's energy value was decreased from 500 to 250.
 	   Omega Energy now overloads one play.
 	   Bond Energy's energy value was increased from 500 to 750.
+	 v1.3.4:
+	   Time Traveller's extra play count was decreased from 2 to 1.
+	   Time Traveller's overload was decreased from 3 to 2.
+	   Changes to some of the decklists.
+	   Reduction in the size of some of the assets.
  */
