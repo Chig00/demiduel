@@ -8,7 +8,7 @@
 // System Constants
 //{
 // The current version of the program.
-constexpr int VERSION[] = {1, 3, 4, 0};
+constexpr int VERSION[] = {1, 3, 4, 1};
 
 // The title of the game in string form.
 constexpr const char* TITLE_STRING = "Demi Duel";
@@ -10993,7 +10993,6 @@ class Player: public Affectable {
 						
 						// The fighter is switched in and the switch is announced.
 						opponent->switch_in(index);
-						announce(HOOK_ANNOUNCEMENT);
 					}
 				}
 				
@@ -13786,7 +13785,6 @@ class Player: public Affectable {
 							
 							// The fighter is switched in and the switch is announced.
 							opponent->switch_in(index);
-							announce(HOOK_ANNOUNCEMENT);
 						}
 					}
 				}
@@ -14047,7 +14045,6 @@ class Player: public Affectable {
 								
 								// The fighter is switched in and the switch is announced.
 								opponent->switch_in(index);
-								announce(HOOK_ANNOUNCEMENT);
 							}
 					
 							// Cripples the opponent's active fighter (no retreat).
@@ -14587,7 +14584,6 @@ class Player: public Affectable {
 					
 					// The fighter is switched in and the switch is announced.
 					opponent->switch_in(index);
-					announce(HOOK_ANNOUNCEMENT);
 				}
 			
 				// Deals damage to all of a player's benched fighters.
@@ -22373,4 +22369,6 @@ int main(int argc, char** argv) noexcept {
 	   Time Traveller's overload was decreased from 3 to 2.
 	   Changes to some of the decklists.
 	   Reduction in the size of some of the assets.
+	 v1.3.4.1:
+	   Hooks are no longer announced twice.
  */
