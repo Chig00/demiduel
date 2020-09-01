@@ -8,7 +8,7 @@
 // System Constants
 //{
 // The current version of the program.
-constexpr int VERSION[] = {1, 3, 4, 1};
+constexpr int VERSION[] = {1, 3, 5, 0};
 
 // The title of the game in string form.
 constexpr const char* TITLE_STRING = "Demi Duel";
@@ -3406,19 +3406,19 @@ constexpr int PYROMANCER_RETREAT_COST = 2000;
 constexpr const char* PYROMANCER_OLD_RANK = MAGE_NAME;
 constexpr const char* PYROMANCER_ABILITY_NAME = "Incinerate";
 constexpr const char* PYROMANCER_ABILITY_DESCRIPTION =
-	"Once a turn, you may discard the top 4 cards of your opponent's deck, "
-	"discard the top 3 cards of your deck, and search your deck for a card."
+	"Once a turn, you may discard the top 3 cards of your opponent's deck, "
+	"discard the top 2 cards of your deck, and search your deck for a card."
 ;
 const std::string PYROMANCER_ABILITY_EFFECTS(
 	std::string(MILL_EFFECT) // mill
 	+ EFFECT_SEPARATOR       //
-	+ "4"                    // 4
+	+ "3"                    // 3
 	+ EFFECT_TERMINATOR
 	+ MILL_EFFECT            // mill
 	+ EFFECT_SEPARATOR       //
 	+ SELF_EFFECT            // self
 	+ EFFECT_SEPARATOR       //
-	+ "3"                    // 3
+	+ "2"                    // 2
 	+ EFFECT_TERMINATOR
 	+ SEARCH_EFFECT          // search
 	+ EFFECT_SEPARATOR       //
@@ -4127,7 +4127,7 @@ constexpr bool SAMURAI_ABILITY_PASSIVE = APPRENTICE_FINAL_RANK_ABILITY_PASSIVE;
 constexpr int SAMURAI_ABILITY_USES = APPRENTICE_FINAL_RANK_ABILITY_USES;
 constexpr const char* SAMURAI_ATTACK_NAME = "Katana Slash";
 constexpr const char* SAMURAI_ATTACK_DESCRIPTION =
-	"Deal 300 damage to your opponent's active fighter.\n"
+	"Deal 275 damage to your opponent's active fighter.\n"
 	"Flip 2 coins.\n"
 	"Your opponent's active fighter can't attack if the first flip gives heads.\n"
 	"Your opponent's active fighter can't retreat if the second flip gives heads."
@@ -4149,7 +4149,7 @@ const std::string SAMURAI_ATTACK_EFFECTS(
 	+ EFFECT_SEPARATOR       //
 	+ CRIPPLE_EFFECT         // cripple
 );
-constexpr int SAMURAI_ATTACK_DAMAGE = 300;
+constexpr int SAMURAI_ATTACK_DAMAGE = 275;
 constexpr int SAMURAI_ATTACK_COST = 1500;
 //}
 //}
@@ -4327,14 +4327,14 @@ constexpr bool OMEGA_ELEMENTAL_ABILITY_PASSIVE = false;
 constexpr int OMEGA_ELEMENTAL_ABILITY_USES = 1;
 constexpr const char* OMEGA_ELEMENTAL_ATTACK_NAME = "Assimilate";
 constexpr const char* OMEGA_ELEMENTAL_ATTACK_DESCRIPTION =
-	"Deal 800 damage in total to your opponent's fighters.\n"
+	"Deal 700 damage in total to your opponent's fighters.\n"
 	"The damage is randomly distributed.\n"
-	"Heal 0.375 damage from this fighter multiplied by the damage dealt."
+	"Heal 0.5 damage from this fighter multiplied by the damage dealt."
 ;
 const std::string OMEGA_ELEMENTAL_ATTACK_EFFECTS(
 	std::string(DISTRIBUTE_EFFECT) // distribute
 	+ EFFECT_SEPARATOR             //
-	+ "800"                        // 800
+	+ "700"                        // 700
 	+ EFFECT_TERMINATOR
 	+ HEAL_EFFECT                  // heal
 	+ EFFECT_SEPARATOR             //
@@ -4342,7 +4342,7 @@ const std::string OMEGA_ELEMENTAL_ATTACK_EFFECTS(
 	+ EFFECT_SEPARATOR             //
 	+ DAMAGE_EFFECT                // damage
 	+ EFFECT_SEPARATOR             //
-	+ "0.375"                      // 0.375
+	+ "0.5"                        // 0.5
 );
 constexpr int OMEGA_ELEMENTAL_ATTACK_DAMAGE = 0;
 constexpr int OMEGA_ELEMENTAL_ATTACK_COST = 2000;
@@ -5008,20 +5008,20 @@ const std::string GATEKEEPER_EFFECTS(
 //{
 constexpr const char* MILLER_NAME = "Miller";
 constexpr const char* MILLER_DESCRIPTION =
-	"Discard the top 2 cards of each player's deck.\n"
+	"Discard the top 3 cards of each player's deck.\n"
 	"Return this card to your hand.\n"
 	"At the end of your turn, discard this card."
 ;
 const std::string MILLER_EFFECTS(
 	std::string(MILL_EFFECT) // mill
 	+ EFFECT_SEPARATOR       //
-	+ "2"                    // 2
+	+ "3"                    // 3
 	+ EFFECT_TERMINATOR
 	+ MILL_EFFECT            // mill
 	+ EFFECT_SEPARATOR       //
 	+ SELF_EFFECT            // self
 	+ EFFECT_SEPARATOR       //
-	+ "2"                    // 2
+	+ "3"                    // 3
 	+ EFFECT_TERMINATOR
 	+ RECYCLE_EFFECT         // recycle
 	+ EFFECT_SEPARATOR       //
@@ -16957,12 +16957,12 @@ const DeckCode AGGRO_DECK(
 		0, // ARSONIST
 		
 		// Energy Cards
-		3, // FIRE ENERGY
-		2, // AIR ENERGY
+		4, // FIRE ENERGY
+		4, // AIR ENERGY
 		0, // WATER ENERGY
 		0, // EARTH ENERGY
 		
-		3, // UNIVERSAL ENERGY
+		0, // UNIVERSAL ENERGY
 		0, // ALPHA ENERGY
 		2, // OMEGA ENERGY
 		0  // BOND ENERGY
@@ -17070,10 +17070,10 @@ const DeckCode TEMPO_DECK(
 		// Energy Cards
 		3, // FIRE ENERGY
 		0, // AIR ENERGY
-		3, // WATER ENERGY
+		2, // WATER ENERGY
 		3, // EARTH ENERGY
 		
-		0, // UNIVERSAL ENERGY
+		1, // UNIVERSAL ENERGY
 		0, // ALPHA ENERGY
 		2, // OMEGA ENERGY
 		0  // BOND ENERGY
@@ -17178,7 +17178,7 @@ const DeckCode CONTROL_DECK(
 		1, // LOCKSMITH
 		1, // LOCK PICKER
 		1, // GATEKEEPER
-		0, // MILLER
+		1, // MILLER
 		0, // ARSONIST
 		
 		// Energy Cards
@@ -17190,7 +17190,7 @@ const DeckCode CONTROL_DECK(
 		2, // UNIVERSAL ENERGY
 		2, // ALPHA ENERGY
 		0, // OMEGA ENERGY
-		3  // BOND ENERGY
+		2  // BOND ENERGY
 	}
 );
 
@@ -17252,7 +17252,7 @@ const DeckCode OTK_COMBO_DECK(
 		
 		// Supporter Cards
 		1, // PROFESSOR
-		1, // LECTURER
+		0, // LECTURER
 		1, // INVESTOR
 		1, // RESEARCHER
 		1, // GAMBLER
@@ -17289,11 +17289,11 @@ const DeckCode OTK_COMBO_DECK(
 		1, // PEACEMAKER
 		0, // MATCHMAKER
 		0, // PLUMBER
-		1, // LOCKSMITH
+		0, // LOCKSMITH
 		1, // LOCK PICKER
 		1, // GATEKEEPER
-		0, // MILLER
-		0, // ARSONIST
+		1, // MILLER
+		1, // ARSONIST
 		
 		// Energy Cards
 		0, // FIRE ENERGY
@@ -17508,8 +17508,8 @@ const DeckCode MIDRANGE_DECK(
 		1, // ASSASSIN
 		1, // SNIPER
 		
-		0, // CHEERLEADER
-		0, // ARMS SMUGGLER
+		1, // CHEERLEADER
+		1, // ARMS SMUGGLER
 		0, // MANIAC
 		
 		1, // PEACEMAKER
@@ -17527,7 +17527,7 @@ const DeckCode MIDRANGE_DECK(
 		2, // WATER ENERGY
 		3, // EARTH ENERGY
 		
-		2, // UNIVERSAL ENERGY
+		0, // UNIVERSAL ENERGY
 		0, // ALPHA ENERGY
 		2, // OMEGA ENERGY
 		0  // BOND ENERGY
@@ -17637,11 +17637,11 @@ const DeckCode AGGRO_COMBO_DECK(
 		
 		// Energy Cards
 		0, // FIRE ENERGY
-		1, // AIR ENERGY
+		0, // AIR ENERGY
 		0, // WATER ENERGY
-		1, // EARTH ENERGY
+		0, // EARTH ENERGY
 		
-		0, // UNIVERSAL ENERGY
+		2, // UNIVERSAL ENERGY
 		4, // ALPHA ENERGY
 		0, // OMEGA ENERGY
 		4  // BOND ENERGY
@@ -17711,7 +17711,7 @@ const DeckCode CONTROL_COMBO_DECK(
 		1, // GAMBLER
 		
 		0, // CHEF
-		1, // TRADER
+		0, // TRADER
 		1, // LIBRARIAN
 		1, // EXPERIMENTER
 		0, // PERSONAL TRAINER
@@ -17745,7 +17745,7 @@ const DeckCode CONTROL_COMBO_DECK(
 		1, // LOCKSMITH
 		1, // LOCK PICKER
 		1, // GATEKEEPER
-		0, // MILLER
+		1, // MILLER
 		0, // ARSONIST
 		
 		// Energy Cards
@@ -22371,4 +22371,12 @@ int main(int argc, char** argv) noexcept {
 	   Reduction in the size of some of the assets.
 	 v1.3.4.1:
 	   Hooks are no longer announced twice.
+	 v1.3.5:
+	   Incinerate's opposing mill count was decreased from 4 to 3.
+	   Incinerate's friendly mill count was decreased from 3 to 2.
+	   Katana Slash's damage was decreased from 300 to 275.
+	   Assimilate's damage was decreased from 800 to 700.
+	   Assimilate's healing ratio was increased from 0.375 to 0.5.
+	   Miller's mill count was increased from 2 to 3.
+	   Changes to some of the decklists.
  */

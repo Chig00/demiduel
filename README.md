@@ -1,2 +1,3 @@
 # demiduel
-A free, open-source card game loosely based on the Pokemon TCG.
+A free, open-source card game by Chigozie Agomo.
+reddit.com/r/demiduel
