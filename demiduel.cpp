@@ -1,5 +1,4 @@
 #include <iostream>
-#include <random>
 #include <type_traits>
 #include "sdlandnet.hpp"
 
@@ -8,7 +7,7 @@
 // System Constants
 //{
 // The current version of the program.
-constexpr int VERSION[] = {1, 3, 5, 0};
+constexpr int VERSION[] = {1, 4, 0, 0};
 
 // The title of the game in string form.
 constexpr const char* TITLE_STRING = "Demi Duel";
@@ -8267,29 +8266,21 @@ class CardStore {
 		std::unique_ptr<Card> draw(std::mt19937& generator) {
 			// Draws a random card.
 			if (std::is_same<Type, Card>::value) {
-				return remove(std::uniform_int_distribution<>(0, size() - 1)(generator));
+				return remove(Random::get_int(generator, 0, size() - 1));
 			}
 			
 			// Draws a random fighter card.
 			else if (std::is_same<Type, Fighter>::value) {
-				return remove(
-					std::uniform_int_distribution<>(
-						0,
-						fighters.size() - 1
-					)(
-						generator
-					)
-				);
+				return remove(Random::get_int(generator, 0, fighters.size() - 1));
 			}
 			
 			// Draws a random supporter card.
 			else if (std::is_same<Type, Supporter>::value) {
 				return remove(
-					std::uniform_int_distribution<>(
+					Random::get_int(
+						generator,
 						fighters.size(),
 						fighters.size() + supporters.size() - 1
-					)(
-						generator
 					)
 				);
 			}
@@ -8297,11 +8288,10 @@ class CardStore {
 			// Draws a random energy card.
 			else {
 				return remove(
-					std::uniform_int_distribution<>(
+					Random::get_int(
+						generator,
 						size() - energy.size(),
 						size() - 1
-					)(
-						generator
 					)
 				);
 			}
@@ -11093,13 +11083,7 @@ class Player: public Affectable {
 						
 						for (int i = 0; i < total_healing && indices.size(); ++i) {
 							// A random fighter's healing is incremented.
-							int index = std::uniform_int_distribution<int>(
-								0,
-								indices.size() - 1
-							)(
-								generator
-							);
-							
+							int index = Random::get_int(generator, 0, indices.size() - 1);
 							++healing[indices[index]];
 							
 							// If the fighter is fully healed, it can't be chosen again.
@@ -11472,12 +11456,7 @@ class Player: public Affectable {
 						// A random previous rank is chosen to be returned to hand.
 						if (indices.size()) {
 							int rank_index = indices[
-								std::uniform_int_distribution<int>(
-									0,
-									indices.size() - 1
-								)(
-									generator
-								)
+								Random::get_int(generator, 0, indices.size() - 1)
 							];
 							
 							last_fighter = static_cast<Fighter&>(*trash.remove(rank_index));
@@ -11606,12 +11585,7 @@ class Player: public Affectable {
 						// A fighter can rank up from this fighter.
 						if (indices.size()) {
 							std::unique_ptr<Card> card(deck.remove(indices[
-								std::uniform_int_distribution<int>(
-									0,
-									indices.size() - 1
-								)(
-									generator
-								)
+								Random::get_int(generator, 0, indices.size() - 1)
 							]));
 							rank_up(static_cast<Fighter&>(*card), index);
 						}
@@ -13807,12 +13781,7 @@ class Player: public Affectable {
 					// A fighter can rank down from this fighter.
 					if (indices.size()) {
 						std::unique_ptr<Card> card(deck.remove(indices[
-							std::uniform_int_distribution<int>(
-								0,
-								indices.size() - 1
-							)(
-								generator
-							)
+							Random::get_int(generator, 0, indices.size() - 1)
 						]));
 						Fighter& old_rank = static_cast<Fighter&>(*card);
 						fighters[index].rank_up(old_rank);
@@ -13898,12 +13867,7 @@ class Player: public Affectable {
 						// The index of the energy card to be attached is generated.
 						int energy_index =
 							indices[
-								std::uniform_int_distribution<int>(
-									0,
-									indices.size() - 1
-								)(
-									generator
-								)
+								Random::get_int(generator, 0, indices.size() - 1)
 							]
 							+ deck.get_fighters().size()
 							+ deck.get_supporters().size()
@@ -13949,12 +13913,7 @@ class Player: public Affectable {
 						// The index of the energy card to be attached is generated.
 						int fighter_index =
 							indices[
-								std::uniform_int_distribution<int>(
-									0,
-									indices.size() - 1
-								)(
-									generator
-								)
+								Random::get_int(generator, 0, indices.size() - 1)
 							]
 						;
 						
@@ -14090,12 +14049,7 @@ class Player: public Affectable {
 								static_cast<Fighter&>(
 									*hand.remove(
 										indices[
-											std::uniform_int_distribution<int>(
-												0,
-												indices.size() - 1
-											)(
-												generator
-											)
+											Random::get_int(generator, 0, indices.size() - 1)
 										]
 									)
 								),
@@ -14577,10 +14531,7 @@ class Player: public Affectable {
 				// The opponent's active fighter is switched out and randomly replaced.
 				else if (effects[i][0] == GUST_EFFECT && opponent->fighters.size() > 1) {
 					// The replacement is randomly chosen.
-					int index = std::uniform_int_distribution<int>(
-						1,
-						opponent->fighters.size() - 1
-					)(generator);
+					int index = Random::get_int(generator, 1, opponent->fighters.size() - 1);
 					
 					// The fighter is switched in and the switch is announced.
 					opponent->switch_in(index);
@@ -14733,12 +14684,7 @@ class Player: public Affectable {
 						
 						for (int i = 0; i < draws; ++i) {
 							last_drawn = deck.remove(
-								std::uniform_int_distribution<int>(
-									0,
-									deck.get_fighters().size() - 1
-								)(
-									generator
-								)
+								Random::get_int(generator, 0, deck.get_fighters().size() - 1)
 							);
 							
 							hand.store(last_drawn);
@@ -15231,13 +15177,7 @@ class Player: public Affectable {
 					
 					for (int i = 0; i < total_damage && indices.size(); ++i) {
 						// A random fighter's damage is incremented.
-						int index = std::uniform_int_distribution<int>(
-							0,
-							indices.size() - 1
-						)(
-							generator
-						);
-						
+						int index = Random::get_int(generator, 0, indices.size() - 1);
 						++damage[indices[index]];
 						
 						// If the fighter is defeated, it can't be chosen again.
@@ -15728,7 +15668,7 @@ class Player: public Affectable {
 		 * Randomly returns 0 or 1.
 		 */
 		static bool coin_flip(std::mt19937& generator) noexcept {
-			return std::uniform_int_distribution<>(0, 1)(generator);
+			return Random::get_int(generator, 0, 1);
 		}
 
 		/**
@@ -20660,14 +20600,7 @@ void generate(
 							);
 							
 							// A random index of a valid deck is assigned.
-							index =
-								std::uniform_int_distribution<>(
-									1,
-									DECK_CODE_COUNT - 2
-								)(
-									generator
-								)
-							;
+							index = Random::get_int(generator, 1, DECK_CODE_COUNT - 2);
 						}
 						
 						card_counts = ALL_DECK_CODES[index]->get_code();
@@ -22379,4 +22312,8 @@ int main(int argc, char** argv) noexcept {
 	   Assimilate's healing ratio was increased from 0.375 to 0.5.
 	   Miller's mill count was increased from 2 to 3.
 	   Changes to some of the decklists.
+	 v1.4:
+	   sdlandnet v2.1 is now used.
+	   std::uniform_int_distribution instances have been replaced with calls
+	     to the function, Random::get_int() (for cross-platform synchronisation).
  */
