@@ -7,7 +7,7 @@
 // System Constants
 //{
 // The current version of the program.
-constexpr int VERSION[] = {1, 4, 0, 0};
+constexpr int VERSION[] = {1, 5, 0, 0};
 
 // The title of the game in string form.
 constexpr const char* TITLE_STRING = "Demi Duel";
@@ -100,8 +100,8 @@ constexpr bool TAILS = false;
 constexpr int DECK_SIZE = 40;
 constexpr int CARD_TYPES = 3;
 constexpr int BENCH_INDEX = 1;
-constexpr int HAND_SIZE = 8;
-constexpr int LIFE_SIZE = 4;
+constexpr int HAND_SIZE = 10;
+constexpr int LIFE_SIZE = 3;
 constexpr int TURN_DRAW = 1;
 constexpr int MAX_FIGHTER_COPIES = 1;
 constexpr int MAX_SUPPORTER_COPIES = MAX_FIGHTER_COPIES;
@@ -3208,13 +3208,13 @@ constexpr int PIRATE_ATTACK_COST = 1000;
 //{
 constexpr const char* DIRT_BIKER_NAME = "Dirt Biker";
 constexpr const char* DIRT_BIKER_ELEMENT = EARTH_ELEMENT;
-constexpr int DIRT_BIKER_HEALTH = 1300;
-constexpr int DIRT_BIKER_RETREAT_COST = 2000;
+constexpr int DIRT_BIKER_HEALTH = 1250;
+constexpr int DIRT_BIKER_RETREAT_COST = 1500;
 constexpr const char* DIRT_BIKER_OLD_RANK = DRIVER_NAME;
 constexpr const char* DIRT_BIKER_ABILITY_NAME = "Quick Fix";
 constexpr const char* DIRT_BIKER_ABILITY_DESCRIPTION =
 	"Once a turn, you may discard the top card of "
-	"your deck and heal 400 damage from this fighter."
+	"your deck and heal 250 damage from this fighter."
 ;
 const std::string DIRT_BIKER_ABILITY_EFFECTS(
 	std::string(MILL_EFFECT) // mill
@@ -3227,7 +3227,7 @@ const std::string DIRT_BIKER_ABILITY_EFFECTS(
 	+ EFFECT_SEPARATOR       //
 	+ SELF_EFFECT            // self
 	+ EFFECT_SEPARATOR       //
-	+ "400"                  // 400
+	+ "250"                  // 250
 );
 constexpr bool DIRT_BIKER_ABILITY_PASSIVE = false;
 constexpr int DIRT_BIKER_ABILITY_USES = 1;
@@ -3244,20 +3244,20 @@ const std::string DIRT_BIKER_ATTACK_EFFECTS(
 	+ "5"                     // 5
 );
 constexpr int DIRT_BIKER_ATTACK_DAMAGE = 400;
-constexpr int DIRT_BIKER_ATTACK_COST = 2000;
+constexpr int DIRT_BIKER_ATTACK_COST = 1500;
 //}
 
 // Monster Trucker
 //{
 constexpr const char* MONSTER_TRUCKER_NAME = "Monster Trucker";
 constexpr const char* MONSTER_TRUCKER_ELEMENT = EARTH_ELEMENT;
-constexpr int MONSTER_TRUCKER_HEALTH = 1600;
-constexpr int MONSTER_TRUCKER_RETREAT_COST = 3000;
+constexpr int MONSTER_TRUCKER_HEALTH = 1500;
+constexpr int MONSTER_TRUCKER_RETREAT_COST = 2000;
 constexpr const char* MONSTER_TRUCKER_OLD_RANK = DIRT_BIKER_NAME;
 constexpr const char* MONSTER_TRUCKER_ABILITY_NAME = "Scrap Metal";
 constexpr const char* MONSTER_TRUCKER_ABILITY_DESCRIPTION =
 	"Once a turn, you may discard the top card of "
-	"your deck and heal 600 damage from this fighter."
+	"your deck and heal 450 damage from this fighter."
 ;
 const std::string MONSTER_TRUCKER_ABILITY_EFFECTS(
 	std::string(MILL_EFFECT) // mill
@@ -3270,7 +3270,7 @@ const std::string MONSTER_TRUCKER_ABILITY_EFFECTS(
 	+ EFFECT_SEPARATOR       //
 	+ SELF_EFFECT            // self
 	+ EFFECT_SEPARATOR       //
-	+ "600"                  // 600
+	+ "450"                  // 450
 );
 constexpr bool MONSTER_TRUCKER_ABILITY_PASSIVE = false;
 constexpr int MONSTER_TRUCKER_ABILITY_USES = 1;
@@ -3297,12 +3297,12 @@ constexpr int MONSTER_TRUCKER_ATTACK_COST = 2000;
 //{
 constexpr const char* PILOT_NAME = "Pilot";
 constexpr const char* PILOT_ELEMENT = AIR_ELEMENT;
-constexpr int PILOT_HEALTH = 1250;
-constexpr int PILOT_RETREAT_COST = 2500;
+constexpr int PILOT_HEALTH = 1300;
+constexpr int PILOT_RETREAT_COST = 1000;
 constexpr const char* PILOT_OLD_RANK = DRIVER_NAME;
 constexpr const char* PILOT_ABILITY_NAME = "Airborne";
 constexpr const char* PILOT_ABILITY_DESCRIPTION =
-	"Your fighters can retreat for 2500 less energy."
+	"Your fighters can retreat for 2000 less energy."
 ;
 const std::string PILOT_ABILITY_EFFECTS(
 	std::string(AGILITY_AURA_EFFECT) // agility_aura
@@ -3313,34 +3313,34 @@ constexpr bool PILOT_ABILITY_PASSIVE = true;
 constexpr int PILOT_ABILITY_USES = PASSIVE_USES;
 constexpr const char* PILOT_ATTACK_NAME = "Divebomb";
 constexpr const char* PILOT_ATTACK_DESCRIPTION =
-	"Deal 350 damage to the defending fighter.\n"
-	"It needs 2500 more energy to retreat next turn."
+	"Deal 400 damage to the defending fighter.\n"
+	"It needs 1000 more energy to retreat next turn."
 ;
 const std::string PILOT_ATTACK_EFFECTS(
 	std::string(AGILITY_EFFECT) // agility
 	+ EFFECT_SEPARATOR          //
-	+ "-2500"                   // -2500
+	+ "-1000"                   // -1000
 );
-constexpr int PILOT_ATTACK_DAMAGE = 300;
-constexpr int PILOT_ATTACK_COST = 500;
+constexpr int PILOT_ATTACK_DAMAGE = 400;
+constexpr int PILOT_ATTACK_COST = 1000;
 //}
 
 // Astronaut
 //{
 constexpr const char* ASTRONAUT_NAME = "Astronaut";
 constexpr const char* ASTRONAUT_ELEMENT = AIR_ELEMENT;
-constexpr int ASTRONAUT_HEALTH = 1500;
-constexpr int ASTRONAUT_RETREAT_COST = 4000;
+constexpr int ASTRONAUT_HEALTH = 1600;
+constexpr int ASTRONAUT_RETREAT_COST = 2000;
 constexpr const char* ASTRONAUT_OLD_RANK = PILOT_NAME;
 constexpr const char* ASTRONAUT_ABILITY_NAME = "Zero Gravity";
 constexpr const char* ASTRONAUT_ABILITY_DESCRIPTION =
-	"Your fighters can retreat for 4000 less energy.\n"
+	"Your fighters can retreat for 2000 less energy.\n"
 	"You can retreat your fighters as often as you like."
 ;
 const std::string ASTRONAUT_ABILITY_EFFECTS(
 	std::string(AGILITY_AURA_EFFECT) // agility_aura
 	+ EFFECT_SEPARATOR               //
-	+ "4000"                         // 4000
+	+ "2000"                         // 2000
 	+ EFFECT_TERMINATOR
 	+ FREEDOM_EFFECT                 // freedom
 );
@@ -3348,16 +3348,16 @@ constexpr bool ASTRONAUT_ABILITY_PASSIVE = true;
 constexpr int ASTRONAUT_ABILITY_USES = PASSIVE_USES;
 constexpr const char* ASTRONAUT_ATTACK_NAME = "Gravity Flip";
 constexpr const char* ASTRONAUT_ATTACK_DESCRIPTION =
-	"Deal 450 damage to the defending fighter.\n"
-	"It needs 4000 more energy to retreat next turn."
+	"Deal 500 damage to the defending fighter.\n"
+	"It needs 2000 more energy to retreat next turn."
 ;
 const std::string ASTRONAUT_ATTACK_EFFECTS(
 	std::string(AGILITY_EFFECT) // agility
 	+ EFFECT_SEPARATOR          //
-	+ "-4000"                   // -4000
+	+ "-2000"                   // -2000
 );
-constexpr int ASTRONAUT_ATTACK_DAMAGE = 400;
-constexpr int ASTRONAUT_ATTACK_COST = 500;
+constexpr int ASTRONAUT_ATTACK_DAMAGE = 500;
+constexpr int ASTRONAUT_ATTACK_COST = 1000;
 //}
 //}
 //}
@@ -3492,12 +3492,12 @@ constexpr int CLERIC_RETREAT_COST = 2000;
 constexpr const char* CLERIC_OLD_RANK = MAGE_NAME;
 constexpr const char* CLERIC_ABILITY_NAME = "Healing Aura";
 constexpr const char* CLERIC_ABILITY_DESCRIPTION =
-	"At the end of your turn, heal 100 damage from each of your fighters."
+	"At the end of your turn, heal 125 damage from each of your fighters."
 ;
 const std::string CLERIC_ABILITY_EFFECTS(
 	std::string(HEAL_AURA_EFFECT) // heal_aura
 	+ EFFECT_SEPARATOR            //
-	+ "100"                       // 100
+	+ "125"                       // 125
 );
 constexpr bool CLERIC_ABILITY_PASSIVE = true;
 constexpr int CLERIC_ABILITY_USES = PASSIVE_USES;
@@ -3524,7 +3524,7 @@ constexpr const char* VACUUMANCER_ELEMENT = AIR_ELEMENT;
 constexpr int VACUUMANCER_HEALTH = 1000;
 constexpr int VACUUMANCER_RETREAT_COST = 2000;
 constexpr const char* VACUUMANCER_OLD_RANK = MAGE_NAME;
-constexpr const char* VACUUMANCER_ABILITY_NAME = "Vacuum Wave";
+constexpr const char* VACUUMANCER_ABILITY_NAME = "Air Lock";
 constexpr const char* VACUUMANCER_ABILITY_DESCRIPTION =
 	"You may banish a random fighter in your trash that ranks up into this one.\n"
 	"If you do, switch in one of your opponent's benched fighters.\n"
@@ -3923,7 +3923,7 @@ constexpr int BANISHER_ATTACK_COST = 2000;
 constexpr const char* BANSHEE_NAME = "Banshee";
 constexpr const char* BANSHEE_ELEMENT = WATER_ELEMENT;
 constexpr int BANSHEE_HEALTH = 1200;
-constexpr int BANSHEE_RETREAT_COST = 4000;
+constexpr int BANSHEE_RETREAT_COST = 2000;
 constexpr const char* BANSHEE_OLD_RANK = NO_OLD_RANK;
 constexpr const char* BANSHEE_ABILITY_NAME = "Forbidden Fuel";
 constexpr const char* BANSHEE_ABILITY_DESCRIPTION =
@@ -3967,9 +3967,9 @@ constexpr const char* CULTIST_OLD_RANK = NO_OLD_RANK;
 constexpr const char* CULTIST_ABILITY_NAME = "Void Pact";
 constexpr const char* CULTIST_ABILITY_DESCRIPTION =
 	"Once a turn, you may banish a card in your hand "
-	"and heal 25 damage from one "
+	"and heal 20 damage from one "
 	"of your fighters, for each card in the void, "
-	"for a maximum of 500 healing."
+	"for a maximum of 400 healing."
 ;
 const std::string CULTIST_ABILITY_EFFECTS(
 	std::string(BANISH_EFFECT) // banish
@@ -3980,9 +3980,9 @@ const std::string CULTIST_ABILITY_EFFECTS(
 	+ EFFECT_SEPARATOR         //
 	+ VOID_EFFECT              // void
 	+ EFFECT_SEPARATOR         //
-	+ "25"                     // 25
+	+ "20"                     // 20
 	+ EFFECT_SEPARATOR         //
-	+ "500"                    // 500
+	+ "400"                    // 400
 );
 constexpr bool CULTIST_ABILITY_PASSIVE = false;
 constexpr int CULTIST_ABILITY_USES = 1;
@@ -4197,13 +4197,13 @@ constexpr const char* ELEMENTAL_ABILITY_NAME = "Omega Fusion";
 constexpr const char* ELEMENTAL_ABILITY_DESCRIPTION =
 	"If this fighter is your active fighter, you may defeat "
 	"the fighters on your bench with this ability.\n"
-	"If you defeat at least 3, rank this fighter up into a random "
+	"If you defeat at least 2, rank this fighter up into a random "
 	"fighter card in your hand that ranks up from this ability."
 ;
 const std::string ELEMENTAL_ABILITY_EFFECTS(
 	std::string(FUSION_EFFECT) // fusion
 	+ EFFECT_SEPARATOR         //
-	+ "3"                      // 3
+	+ "2"                      // 2
 );
 constexpr bool ELEMENTAL_ABILITY_PASSIVE = false;
 constexpr int ELEMENTAL_ABILITY_USES = 1;
@@ -4306,8 +4306,8 @@ constexpr int EARTH_ELEMENTAL_ATTACK_COST = ELEMENTAL_ATTACK_COST;
 //{
 constexpr const char* OMEGA_ELEMENTAL_NAME = "Omega Elemental";
 constexpr const char* OMEGA_ELEMENTAL_ELEMENT = NO_ELEMENT;
-constexpr int OMEGA_ELEMENTAL_HEALTH = 2000;
-constexpr int OMEGA_ELEMENTAL_RETREAT_COST = 2000;
+constexpr int OMEGA_ELEMENTAL_HEALTH = 1500;
+constexpr int OMEGA_ELEMENTAL_RETREAT_COST = 0;
 constexpr const char* OMEGA_ELEMENTAL_OLD_RANK = ELEMENTAL_ABILITY_NAME;
 constexpr const char* OMEGA_ELEMENTAL_ABILITY_NAME = "Unify";
 constexpr const char* OMEGA_ELEMENTAL_ABILITY_DESCRIPTION =
@@ -16800,12 +16800,10 @@ const DeckCode CLEAR_DECK(
 const DeckCode AGGRO_DECK(
 	"Aggro",
 	"This is an aggressive deck that uses Hot Rodder and "
-	"Pyrotechnician to deal high amounts of damage every turn.\n\n"
-	"Vacuumancer helps to force out key targets and lock them in the active position.\n\n"
-	"Cloud Surfer can be used to one-shot many fighters by "
-	"allowing a second weaker attack when it is played.\n\n"
-	"Assassin, Sniper, and Cheerleader can allow "
-	"for many fighters to be defeated a turn early.",
+	"Pyrotechnician to deal high amounts of damage every turn!\n\n"
+	"Vacuumancer helps to force out key targets and lock them in the active position!\n\n"
+	"Assassin, Sniper, Cheerleader, Bounty Hunter, and Matchmaker can be used "
+	"to make quick work of the opponent's important or unranked fighters.",
 	{
 		// Fighter Cards
 		1, // DRIVER
@@ -16830,8 +16828,8 @@ const DeckCode AGGRO_DECK(
 		0, // SCUBA DIVER
 		1, // WELDER
 		1, // PYROTECHNICIAN
-		1, // WIND RUNNER
-		1, // CLOUD SURFER
+		0, // WIND RUNNER
+		0, // CLOUD SURFER
 		
 		0, // LOST SOUL
 		0, // BANISHER
@@ -16853,10 +16851,10 @@ const DeckCode AGGRO_DECK(
 		
 		// Supporter Cards
 		1, // PROFESSOR
-		0, // LECTURER
-		0, // INVESTOR
+		1, // LECTURER
+		1, // INVESTOR
 		1, // RESEARCHER
-		1, // GAMBLER
+		0, // GAMBLER
 		
 		1, // CHEF
 		1, // TRADER
@@ -16889,20 +16887,20 @@ const DeckCode AGGRO_DECK(
 		
 		0, // PEACEMAKER
 		1, // MATCHMAKER
-		0, // PLUMBER
+		1, // PLUMBER
 		0, // LOCKSMITH
 		0, // LOCK PICKER
-		0, // GATEKEEPER
+		1, // GATEKEEPER
 		0, // MILLER
 		0, // ARSONIST
 		
 		// Energy Cards
 		4, // FIRE ENERGY
-		4, // AIR ENERGY
+		2, // AIR ENERGY
 		0, // WATER ENERGY
 		0, // EARTH ENERGY
 		
-		0, // UNIVERSAL ENERGY
+		1, // UNIVERSAL ENERGY
 		0, // ALPHA ENERGY
 		2, // OMEGA ENERGY
 		0  // BOND ENERGY
@@ -16911,15 +16909,13 @@ const DeckCode AGGRO_DECK(
 
 const DeckCode TEMPO_DECK(
 	"Tempo",
-	"This is a deck that focuses on offense, with fighters "
-	"that can be strengthened with good planning.\n\n"
-	"Monster Trucker's damage is increased with the size of the trash.\n\n"
-	"Boxer's damage is decreased with the size of the hand.\n\n"
-	"Pyrotechnician's damage is increased with its energy.\n\n"
-	"Scuba Diver's damage is boosted if it attacks with invincibility.",
+	"This is an offensive deck that also has some strong defensive options.\n\n"
+	"Monster Trucker can heal itself and has an attack that gains power over time!\n\n"
+	"Warlock deals a ton of damage and can return cards from the trash back to the hand!\n\n"
+	"Scuba Diver can be used to stall, burst, or maintain tempo when played.",
 	{
 		// Fighter Cards
-		1, // DRIVER
+		0, // DRIVER
 		0, // RACER
 		0, // HOT RODDER
 		0, // SAILOR
@@ -16929,9 +16925,9 @@ const DeckCode TEMPO_DECK(
 		0, // PILOT
 		0, // ASTRONAUT
 		
-		0, // MAGE
+		1, // MAGE
 		0, // PYROMANCER
-		0, // WARLOCK
+		1, // WARLOCK
 		0, // CLERIC
 		0, // VACUUMANCER
 		
@@ -16939,8 +16935,8 @@ const DeckCode TEMPO_DECK(
 		0, // EXCAVATOR
 		1, // SWIMMER
 		1, // SCUBA DIVER
-		1, // WELDER
-		1, // PYROTECHNICIAN
+		0, // WELDER
+		0, // PYROTECHNICIAN
 		0, // WIND RUNNER
 		0, // CLOUD SURFER
 		
@@ -16954,7 +16950,7 @@ const DeckCode TEMPO_DECK(
 		0, // NINJA
 		0, // SAMURAI
 		
-		1, // BOXER
+		0, // BOXER
 		
 		0, // FIRE ELEMENTAL
 		0, // AIR ELEMENTAL
@@ -16967,7 +16963,7 @@ const DeckCode TEMPO_DECK(
 		1, // LECTURER
 		1, // INVESTOR
 		1, // RESEARCHER
-		1, // GAMBLER
+		0, // GAMBLER
 		
 		1, // CHEF
 		1, // TRADER
@@ -16982,14 +16978,14 @@ const DeckCode TEMPO_DECK(
 		0, // BANKER
 		0, // GLUTTON
 		
-		0, // SUBSTITUTE
+		1, // SUBSTITUTE
 		1, // BOUNTY HUNTER
 		
-		0, // NURSE
-		0, // INNKEEPER
+		1, // NURSE
+		1, // INNKEEPER
 		1, // MIRACLE WORKER
 		0, // DOCTOR
-		0, // ESCAPE ARTIST
+		1, // ESCAPE ARTIST
 		
 		1, // ASSASSIN
 		1, // SNIPER
@@ -17003,19 +16999,19 @@ const DeckCode TEMPO_DECK(
 		0, // PLUMBER
 		0, // LOCKSMITH
 		0, // LOCK PICKER
-		0, // GATEKEEPER
+		1, // GATEKEEPER
 		0, // MILLER
 		0, // ARSONIST
 		
 		// Energy Cards
-		3, // FIRE ENERGY
+		0, // FIRE ENERGY
 		0, // AIR ENERGY
 		2, // WATER ENERGY
-		3, // EARTH ENERGY
+		4, // EARTH ENERGY
 		
-		1, // UNIVERSAL ENERGY
+		0, // UNIVERSAL ENERGY
 		0, // ALPHA ENERGY
-		2, // OMEGA ENERGY
+		3, // OMEGA ENERGY
 		0  // BOND ENERGY
 	}
 );
@@ -17024,13 +17020,11 @@ const DeckCode CONTROL_DECK(
 	"Control",
 	"This is a defensive deck that focuses on keeping its "
 	"fighters healthy to eventually overcome the opponent.\n\n"
-	"Cleric heals all of the friendly fighters at the end of your turn.\n\n"
+	"Cleric heals all of the friendly fighters at the end of your turn!\n\n"
 	"Astronaut can allow fighters to retreat freely to "
-	"distribute splash healing as efficiently as possible.\n\n"
+	"distribute splash healing as efficiently as possible!\n\n"
 	"Excavator can return energy cards to hand and shuffle them "
-	"back into the deck to slow down aggressive opponents.\n\n"
-	"Scuba Diver can become invincible for a turn to stall for time "
-	"or attack to defeat a key target with a powereful attack.",
+	"back into the deck to slow down aggressive opponents.",
 	{
 		// Fighter Cards
 		1, // DRIVER
@@ -17051,8 +17045,8 @@ const DeckCode CONTROL_DECK(
 		
 		1, // MINER
 		1, // EXCAVATOR
-		1, // SWIMMER
-		1, // SCUBA DIVER
+		0, // SWIMMER
+		0, // SCUBA DIVER
 		0, // WELDER
 		0, // PYROTECHNICIAN
 		0, // WIND RUNNER
@@ -17081,22 +17075,22 @@ const DeckCode CONTROL_DECK(
 		0, // LECTURER
 		1, // INVESTOR
 		1, // RESEARCHER
-		0, // GAMBLER
+		1, // GAMBLER
 		
-		0, // CHEF
+		1, // CHEF
 		1, // TRADER
 		1, // LIBRARIAN
-		0, // EXPERIMENTER
-		0, // PERSONAL TRAINER
+		1, // EXPERIMENTER
+		1, // PERSONAL TRAINER
 		1, // SCAPEGOAT
 		
-		0, // ELECTRICIAN
+		1, // ELECTRICIAN
 		1, // ALCHEMIST
 		1, // TIME TRAVELLER
 		1, // BANKER
 		1, // GLUTTON
 		
-		1, // SUBSTITUTE
+		0, // SUBSTITUTE
 		0, // BOUNTY HUNTER
 		
 		1, // NURSE
@@ -17123,28 +17117,28 @@ const DeckCode CONTROL_DECK(
 		
 		// Energy Cards
 		0, // FIRE ENERGY
-		0, // AIR ENERGY
+		1, // AIR ENERGY
 		2, // WATER ENERGY
 		2, // EARTH ENERGY
 		
-		2, // UNIVERSAL ENERGY
-		2, // ALPHA ENERGY
+		0, // UNIVERSAL ENERGY
+		3, // ALPHA ENERGY
 		0, // OMEGA ENERGY
-		2  // BOND ENERGY
+		0  // BOND ENERGY
 	}
 );
 
 const DeckCode OTK_COMBO_DECK(
 	"OTK Combo",
 	"This is a one-turn kill combo deck that aims to defeat "
-	"all of the opponent's fighters in a single turn.\n\n"
-	"Maniac boosts damage to the sky, if the player's deck, hand, and bench are empty.\n\n"
+	"all of the opponent's fighters in a single turn!\n\n"
+	"Maniac boosts damage to the sky, if the player's deck, hand, and bench are empty!\n\n"
 	"Cloud Surfer attacks all opposing fighters simultaneously, so Maniac "
-	"allows it to defeat all of the opposing fighters in one fell swoop.\n\n"
+	"allows it to defeat all of the opposing fighters in one fell swoop!\n\n"
 	"Emptying the deck, playing Banker to shuffle Maniac into the "
 	"deck, and playing Professor is one way to pull off the combo.\n\n"
-	"Pirate, Warlock, and Excavator are included, "
-	"as they can help find or reuse combo pieces.",
+	"Pirate can help to find combo pieces.\n\n"
+	"Boxer can protect Cloud Surfer from being forced into the active position.",
 	{
 		// Fighter Cards
 		1, // DRIVER
@@ -17157,14 +17151,14 @@ const DeckCode OTK_COMBO_DECK(
 		0, // PILOT
 		0, // ASTRONAUT
 		
-		1, // MAGE
+		0, // MAGE
 		0, // PYROMANCER
-		1, // WARLOCK
+		0, // WARLOCK
 		0, // CLERIC
 		0, // VACUUMANCER
 		
-		1, // MINER
-		1, // EXCAVATOR
+		0, // MINER
+		0, // EXCAVATOR
 		0, // SWIMMER
 		0, // SCUBA DIVER
 		0, // WELDER
@@ -17182,7 +17176,7 @@ const DeckCode OTK_COMBO_DECK(
 		0, // NINJA
 		0, // SAMURAI
 		
-		0, // BOXER
+		1, // BOXER
 		
 		0, // FIRE ELEMENTAL
 		0, // AIR ELEMENTAL
@@ -17192,7 +17186,7 @@ const DeckCode OTK_COMBO_DECK(
 		
 		// Supporter Cards
 		1, // PROFESSOR
-		0, // LECTURER
+		1, // LECTURER
 		1, // INVESTOR
 		1, // RESEARCHER
 		1, // GAMBLER
@@ -17214,7 +17208,7 @@ const DeckCode OTK_COMBO_DECK(
 		0, // BOUNTY HUNTER
 		
 		1, // NURSE
-		0, // INNKEEPER
+		1, // INNKEEPER
 		1, // MIRACLE WORKER
 		0, // DOCTOR
 		1, // ESCAPE ARTIST
@@ -17228,7 +17222,7 @@ const DeckCode OTK_COMBO_DECK(
 		
 		1, // PEACEMAKER
 		0, // MATCHMAKER
-		0, // PLUMBER
+		1, // PLUMBER
 		0, // LOCKSMITH
 		1, // LOCK PICKER
 		1, // GATEKEEPER
@@ -17237,13 +17231,13 @@ const DeckCode OTK_COMBO_DECK(
 		
 		// Energy Cards
 		0, // FIRE ENERGY
-		2, // AIR ENERGY
-		0, // WATER ENERGY
-		2, // EARTH ENERGY
+		3, // AIR ENERGY
+		2, // WATER ENERGY
+		0, // EARTH ENERGY
 		
-		0, // UNIVERSAL ENERGY
-		4, // ALPHA ENERGY
-		1, // OMEGA ENERGY
+		1, // UNIVERSAL ENERGY
+		3, // ALPHA ENERGY
+		0, // OMEGA ENERGY
 		0  // BOND ENERGY
 	}
 );
@@ -17256,8 +17250,9 @@ const DeckCode MILL_DECK(
 	"Pyromancer can discard random cards from both "
 	"decks, so both decks can be emptied quickly.\n\n"
 	"Glutton shuffles discarded energy cards back into the deck, "
-	"so you don't draw life cards while your opponent does.\n\n"
-	"Lost Soul, Miller, and Arsonist also help to mill the opponent.",
+	"so you don't draw life cards while your opponent does!\n\n"
+	"Lost Soul, Miller, and Arsonist also help to mill the opponent.\n\n"
+	"Boxer can protect Pyromancer from being forced into the active position.",
 	{
 		// Fighter Cards
 		0, // DRIVER
@@ -17295,7 +17290,7 @@ const DeckCode MILL_DECK(
 		0, // NINJA
 		0, // SAMURAI
 		
-		0, // BOXER
+		1, // BOXER
 		
 		0, // FIRE ELEMENTAL
 		0, // AIR ELEMENTAL
@@ -17304,7 +17299,7 @@ const DeckCode MILL_DECK(
 		0, // OMEGA ELEMENTAL
 		
 		// Supporter Cards
-		0, // PROFESSOR
+		1, // PROFESSOR
 		1, // LECTURER
 		1, // INVESTOR
 		0, // RESEARCHER
@@ -17313,7 +17308,7 @@ const DeckCode MILL_DECK(
 		0, // CHEF
 		1, // TRADER
 		1, // LIBRARIAN
-		1, // EXPERIMENTER
+		0, // EXPERIMENTER
 		0, // PERSONAL TRAINER
 		1, // SCAPEGOAT
 		
@@ -17323,21 +17318,21 @@ const DeckCode MILL_DECK(
 		1, // BANKER
 		1, // GLUTTON
 		
-		0, // SUBSTITUTE
+		1, // SUBSTITUTE
 		0, // BOUNTY HUNTER
 		
 		1, // NURSE
 		1, // INNKEEPER
 		1, // MIRACLE WORKER
 		1, // DOCTOR
-		0, // ESCAPE ARTIST
+		1, // ESCAPE ARTIST
 		
 		0, // ASSASSIN
 		0, // SNIPER
 		
 		0, // CHEERLEADER
 		0, // ARMS SMUGGLER
-		0, // MANIAC
+		1, // MANIAC
 		
 		1, // PEACEMAKER
 		0, // MATCHMAKER
@@ -17355,7 +17350,7 @@ const DeckCode MILL_DECK(
 		0, // EARTH ENERGY
 		
 		4, // UNIVERSAL ENERGY
-		4, // ALPHA ENERGY
+		0, // ALPHA ENERGY
 		4, // OMEGA ENERGY
 		4  // BOND ENERGY
 	}
@@ -17364,13 +17359,11 @@ const DeckCode MILL_DECK(
 const DeckCode MIDRANGE_DECK(
 	"Midrange",
 	"This is a midrange deck that is powered up with the size of the Void.\n\n"
-	"Lost Soul draws all of the fighters out of the deck and sends "
-	"cards from both player's decks to the Void upon defeat.\n\n"
-	"Banisher sends cards in your trash to the Void to further empower the fighters.\n\n"
-	"Arsonist is a disruptive supporter card that also boosts your fighters' power.\n\n"
-	"Cultist can use the attack of any banished fighter and heal any friendly fighter.\n\n"
-	"Banshee is the deck's main big hitter and is energised and empowered by the Void.\n\n"
-	"Omega Elemental is a fighter that can be banished, so Cultist can use its attack.",
+	"Banisher sends cards in your trash to the Void to empower your fighters!\n\n"
+	"Banshee is the deck's main big hitter and is energised and empowered by the Void!\n\n"
+	"Cultist can use the attack of any banished fighter and heal any friendly fighter!\n\n"
+	"Omega Elemental is a fighter that can be banished, so Cultist can use its attack.\n\n"
+	"Arsonist is a disruptive supporter card that also strengthens your fighters.",
 	{
 		// Fighter Cards
 		0, // DRIVER
@@ -17398,7 +17391,7 @@ const DeckCode MIDRANGE_DECK(
 		0, // WIND RUNNER
 		0, // CLOUD SURFER
 		
-		1, // LOST SOUL
+		0, // LOST SOUL
 		1, // BANISHER
 		1, // BANSHEE
 		1, // CULTIST
@@ -17418,12 +17411,12 @@ const DeckCode MIDRANGE_DECK(
 		
 		// Supporter Cards
 		1, // PROFESSOR
-		0, // LECTURER
-		0, // INVESTOR
+		1, // LECTURER
+		1, // INVESTOR
 		1, // RESEARCHER
 		1, // GAMBLER
 		
-		0, // CHEF
+		1, // CHEF
 		1, // TRADER
 		1, // LIBRARIAN
 		1, // EXPERIMENTER
@@ -17431,9 +17424,9 @@ const DeckCode MIDRANGE_DECK(
 		1, // SCAPEGOAT
 		
 		0, // ELECTRICIAN
-		1, // ALCHEMIST
-		1, // TIME TRAVELLER
-		1, // BANKER
+		0, // ALCHEMIST
+		0, // TIME TRAVELLER
+		0, // BANKER
 		0, // GLUTTON
 		
 		1, // SUBSTITUTE
@@ -17442,7 +17435,7 @@ const DeckCode MIDRANGE_DECK(
 		1, // NURSE
 		1, // INNKEEPER
 		1, // MIRACLE WORKER
-		0, // DOCTOR
+		1, // DOCTOR
 		1, // ESCAPE ARTIST
 		
 		1, // ASSASSIN
@@ -17457,18 +17450,18 @@ const DeckCode MIDRANGE_DECK(
 		1, // PLUMBER
 		1, // LOCKSMITH
 		1, // LOCK PICKER
-		0, // GATEKEEPER
+		1, // GATEKEEPER
 		0, // MILLER
 		1, // ARSONIST
 		
 		// Energy Cards
-		2, // FIRE ENERGY
+		0, // FIRE ENERGY
 		0, // AIR ENERGY
-		2, // WATER ENERGY
-		3, // EARTH ENERGY
+		0, // WATER ENERGY
+		0, // EARTH ENERGY
 		
-		0, // UNIVERSAL ENERGY
-		0, // ALPHA ENERGY
+		4, // UNIVERSAL ENERGY
+		2, // ALPHA ENERGY
 		2, // OMEGA ENERGY
 		0  // BOND ENERGY
 	}
@@ -17477,10 +17470,10 @@ const DeckCode MIDRANGE_DECK(
 const DeckCode AGGRO_COMBO_DECK(
 	"Aggro Combo",
 	"This is a combo-oriented offensive deck that uses Ninja "
-	"and Samurai to deal a huge amount of damage every turn.\n\n"
-	"Ninja and Samurai have the ability to attack in tandem.\n\n"
+	"and Samurai to deal a huge amount of damage every turn!\n\n"
+	"Ninja and Samurai have the ability to attack in tandem!\n\n"
 	"If one of them attacks and the other is benched "
-	"with enough energy to attack, it also attacks.\n\n"
+	"with enough energy to attack, it also attacks!\n\n"
 	"Ninja and Samurai both rank up from the same "
 	"fighter, so Bond Energy can help to get them "
 	"both in play without dicarding their old ranks.\n\n"
@@ -17531,7 +17524,7 @@ const DeckCode AGGRO_COMBO_DECK(
 		0, // OMEGA ELEMENTAL
 		
 		// Supporter Cards
-		1, // PROFESSOR
+		0, // PROFESSOR
 		1, // LECTURER
 		1, // INVESTOR
 		1, // RESEARCHER
@@ -17551,23 +17544,23 @@ const DeckCode AGGRO_COMBO_DECK(
 		0, // GLUTTON
 		
 		0, // SUBSTITUTE
-		0, // BOUNTY HUNTER
+		1, // BOUNTY HUNTER
 		
 		1, // NURSE
 		0, // INNKEEPER
 		1, // MIRACLE WORKER
 		0, // DOCTOR
-		0, // ESCAPE ARTIST
+		1, // ESCAPE ARTIST
 		
-		1, // ASSASSIN
-		1, // SNIPER
+		0, // ASSASSIN
+		0, // SNIPER
 		
 		1, // CHEERLEADER
 		1, // ARMS SMUGGLER
 		0, // MANIAC
 		
 		1, // PEACEMAKER
-		0, // MATCHMAKER
+		1, // MATCHMAKER
 		1, // PLUMBER
 		1, // LOCKSMITH
 		1, // LOCK PICKER
@@ -17581,9 +17574,9 @@ const DeckCode AGGRO_COMBO_DECK(
 		0, // WATER ENERGY
 		0, // EARTH ENERGY
 		
-		2, // UNIVERSAL ENERGY
-		4, // ALPHA ENERGY
-		0, // OMEGA ENERGY
+		4, // UNIVERSAL ENERGY
+		0, // ALPHA ENERGY
+		2, // OMEGA ENERGY
 		4  // BOND ENERGY
 	}
 );
@@ -17593,10 +17586,10 @@ const DeckCode CONTROL_COMBO_DECK(
 	"This is a combo-oriented defensive deck that uses elementals.\n\n"
 	"The 4 basic elementals, Fire, Air, Water, and "
 	"Earth elemental, are weak unranked fighters.\n\n"
-	"However, if all 4 are in play simultaneously, "
-	"they can fuse into Omega Elemental.\n\n"
+	"However, if 3 are in play simultaneously, "
+	"they can fuse into Omega Elemental!\n\n"
 	"Omega Elemental is an exceptionally powerful fighter "
-	"that can deal a huge amount of damage and heal itself.\n\n"
+	"that can deal a lot of damage and heal itself!\n\n"
 	"Its ability allows one to draw a card chosen from the opponent hand!",
 	{
 		// Fighter Cards
@@ -17650,24 +17643,24 @@ const DeckCode CONTROL_COMBO_DECK(
 		1, // RESEARCHER
 		1, // GAMBLER
 		
-		0, // CHEF
-		0, // TRADER
+		1, // CHEF
+		1, // TRADER
 		1, // LIBRARIAN
 		1, // EXPERIMENTER
 		0, // PERSONAL TRAINER
 		1, // SCAPEGOAT
 		
-		0, // ELECTRICIAN
+		1, // ELECTRICIAN
 		1, // ALCHEMIST
 		1, // TIME TRAVELLER
 		1, // BANKER
 		1, // GLUTTON
 		
 		1, // SUBSTITUTE
-		1, // BOUNTY HUNTER
+		0, // BOUNTY HUNTER
 		
 		1, // NURSE
-		1, // INNKEEPER
+		0, // INNKEEPER
 		1, // MIRACLE WORKER
 		1, // DOCTOR
 		0, // ESCAPE ARTIST
@@ -17680,7 +17673,7 @@ const DeckCode CONTROL_COMBO_DECK(
 		0, // MANIAC
 		
 		1, // PEACEMAKER
-		1, // MATCHMAKER
+		0, // MATCHMAKER
 		1, // PLUMBER
 		1, // LOCKSMITH
 		1, // LOCK PICKER
@@ -17696,8 +17689,8 @@ const DeckCode CONTROL_COMBO_DECK(
 		
 		4, // UNIVERSAL ENERGY
 		4, // ALPHA ENERGY
-		2, // OMEGA ENERGY
-		0  // BOND ENERGY
+		0, // OMEGA ENERGY
+		2  // BOND ENERGY
 	}
 );
 
@@ -22316,4 +22309,35 @@ int main(int argc, char** argv) noexcept {
 	   sdlandnet v2.1 is now used.
 	   std::uniform_int_distribution instances have been replaced with calls
 	     to the function, Random::get_int() (for cross-platform synchronisation).
+     v1.5:
+	   The number of life cards was decreased from 4 to 3.
+	   The number of cards in the starting hand was increased from 8 to 10.
+	   Dirt Biker's health was decreased from 1300 to 1250.
+	   Dirt Biker's retreat cost was decreased from 2000 to 1500.
+	   Quick Fix's healing was reduced from 400 to 250.
+	   Shred's cost was reduced from 2000 to 1500.
+	   Monster Trucker's health was decreased from 1600 to 1500.
+	   Monster Trucker's retreat cost was decreased from 3000 to 2000.
+	   Scrap Metal's healing was decreased from 600 to 450.
+	   Pilot's health was increased from 1250 to 1300.
+	   Pilot's retreat cost was decreased from 2500 to 1000.
+	   Airborne's agility aura was decreased from 2500 to 2000.
+	   Divebomb's damage was increased from 300 to 400.
+	   Divebomb's agility reduction was decreased from 2500 to 1000.
+	   Divebomb's cost was increased from 500 to 1000.
+	   Astronaut's health was increased from 1500 to 1600.
+	   Astronaut's retreat cost was decreased from 4000 to 2000.
+	   Zero Gravity's agility aura was decreased from 4000 to 2000.
+	   Gravity Flip's damage was increased from 450 to 500.
+	   Gravity Flip's agility reduction was decreased from 4000 to 2000.
+	   Gravity Flip's cost was increased form 500 to 1000.
+	   Healing Aura's healing was increased from 100 to 125.
+	   Vacuum Wave was renamed to Air Lock.
+	   Banshee's retreat cost was reduced from 4000 to 2000.
+	   Void Pact's scaling was decreased from 25 to 20.
+	   Void Pact's ceiling was decreased from 500 to 400.
+	   Omega Fusion's defeat requirement was decreased from 3 to 2.
+	   Omega Elemental's health was decreased from 2000 to 1500.
+	   Omega Elemental's retreat cost was decreased from 2000 to 0.
+	   Major changes to the decklists' contents and descriptions.
  */
