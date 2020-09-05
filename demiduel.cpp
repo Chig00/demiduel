@@ -7,7 +7,7 @@
 // System Constants
 //{
 // The current version of the program.
-constexpr int VERSION[] = {1, 5, 0, 0};
+constexpr int VERSION[] = {1, 6, 0, 0};
 
 // The title of the game in string form.
 constexpr const char* TITLE_STRING = "Demi Duel";
@@ -97,10 +97,10 @@ constexpr bool TAILS = false;
 //{
 // Count Constants
 //{
-constexpr int DECK_SIZE = 40;
+constexpr int DECK_SIZE = 30;
 constexpr int CARD_TYPES = 3;
 constexpr int BENCH_INDEX = 1;
-constexpr int HAND_SIZE = 10;
+constexpr int HAND_SIZE = 6;
 constexpr int LIFE_SIZE = 3;
 constexpr int TURN_DRAW = 1;
 constexpr int MAX_FIGHTER_COPIES = 1;
@@ -3843,48 +3843,6 @@ constexpr int CLOUD_SURFER_ATTACK_COST = 2000;
 
 // Void Family
 //{
-// Lost Soul
-//{
-constexpr const char* LOST_SOUL_NAME = "Lost Soul";
-constexpr const char* LOST_SOUL_ELEMENT = AIR_ELEMENT;
-constexpr int LOST_SOUL_HEALTH = 1000;
-constexpr int LOST_SOUL_RETREAT_COST = 0;
-constexpr const char* LOST_SOUL_OLD_RANK = NO_OLD_RANK;
-constexpr const char* LOST_SOUL_ABILITY_NAME = "Forsaken";
-constexpr const char* LOST_SOUL_ABILITY_DESCRIPTION =
-	"When this fighter is defeated, banish it, its energy cards, "
-	"its life card, and the top card of each player's deck."
-;
-const std::string LOST_SOUL_ABILITY_EFFECTS(
-	std::string(FORSAKEN_EFFECT) // forsaken
-	+ EFFECT_SEPARATOR           //
-	+ "1"                        // 1
-);
-constexpr bool LOST_SOUL_ABILITY_PASSIVE = true;
-constexpr int LOST_SOUL_ABILITY_USES = PASSIVE_USES;
-constexpr const char* LOST_SOUL_ATTACK_NAME = "Wander";
-constexpr const char* LOST_SOUL_ATTACK_DESCRIPTION =
-	"If your deck has no fighter cards, deal 300 "
-	"damage to your opponent's active fighter.\n"
-	"Draw a fighter card from your deck."
-;
-const std::string LOST_SOUL_ATTACK_EFFECTS(
-	std::string(POWER_EFFECT) // power
-	+ EFFECT_SEPARATOR        //
-	+ FIGHTERLESS_EFFECT      // fighterless
-	+ EFFECT_SEPARATOR        //
-	+ "300"                   // 300
-	+ EFFECT_TERMINATOR
-	+ DRAW_EFFECT             // draw
-	+ EFFECT_SEPARATOR        //
-	+ FIGHTER_TYPE            // Fighter
-	+ EFFECT_SEPARATOR        //
-	+ "1"                     // 1
-);
-constexpr int LOST_SOUL_ATTACK_DAMAGE = 0;
-constexpr int LOST_SOUL_ATTACK_COST = 0;
-//}
-
 // Banisher
 //{
 constexpr const char* BANISHER_NAME = "Banisher";
@@ -4184,6 +4142,48 @@ const std::string BOXER_ATTACK_EFFECTS(
 constexpr int BOXER_ATTACK_DAMAGE = 800;
 constexpr int BOXER_ATTACK_COST = 0;
 //}
+
+// Lost Soul
+//{
+constexpr const char* LOST_SOUL_NAME = "Lost Soul";
+constexpr const char* LOST_SOUL_ELEMENT = AIR_ELEMENT;
+constexpr int LOST_SOUL_HEALTH = 1000;
+constexpr int LOST_SOUL_RETREAT_COST = 0;
+constexpr const char* LOST_SOUL_OLD_RANK = NO_OLD_RANK;
+constexpr const char* LOST_SOUL_ABILITY_NAME = "Forsaken";
+constexpr const char* LOST_SOUL_ABILITY_DESCRIPTION =
+	"When this fighter is defeated, banish it, its energy cards, "
+	"its life card, and the top card of each player's deck."
+;
+const std::string LOST_SOUL_ABILITY_EFFECTS(
+	std::string(FORSAKEN_EFFECT) // forsaken
+	+ EFFECT_SEPARATOR           //
+	+ "1"                        // 1
+);
+constexpr bool LOST_SOUL_ABILITY_PASSIVE = true;
+constexpr int LOST_SOUL_ABILITY_USES = PASSIVE_USES;
+constexpr const char* LOST_SOUL_ATTACK_NAME = "Wander";
+constexpr const char* LOST_SOUL_ATTACK_DESCRIPTION =
+	"If your deck has no fighter cards, deal 300 "
+	"damage to your opponent's active fighter.\n"
+	"Draw a fighter card from your deck."
+;
+const std::string LOST_SOUL_ATTACK_EFFECTS(
+	std::string(POWER_EFFECT) // power
+	+ EFFECT_SEPARATOR        //
+	+ FIGHTERLESS_EFFECT      // fighterless
+	+ EFFECT_SEPARATOR        //
+	+ "300"                   // 300
+	+ EFFECT_TERMINATOR
+	+ DRAW_EFFECT             // draw
+	+ EFFECT_SEPARATOR        //
+	+ FIGHTER_TYPE            // Fighter
+	+ EFFECT_SEPARATOR        //
+	+ "1"                     // 1
+);
+constexpr int LOST_SOUL_ATTACK_DAMAGE = 0;
+constexpr int LOST_SOUL_ATTACK_COST = 0;
+//}
 //}
 
 // Elemental Family
@@ -4358,7 +4358,7 @@ constexpr int OMEGA_ELEMENTAL_ATTACK_COST = 2000;
 constexpr const char* PROFESSOR_NAME = "Professor";
 constexpr const char* PROFESSOR_DESCRIPTION =
 	"Discard your hand.\n"
-	"Draw 8 cards.";
+	"Draw 6 cards.";
 const std::string PROFESSOR_EFFECTS(
 	std::string(DISCARD_EFFECT) // discard
 	+ EFFECT_SEPARATOR          //
@@ -4366,7 +4366,7 @@ const std::string PROFESSOR_EFFECTS(
 	+ EFFECT_TERMINATOR
 	+ DRAW_EFFECT               // draw
 	+ EFFECT_SEPARATOR          //
-	+ "8"                       // 8
+	+ "6"                       // 6
 );
 //}
 
@@ -4375,7 +4375,7 @@ const std::string PROFESSOR_EFFECTS(
 constexpr const char* LECTURER_NAME = "Lecturer";
 constexpr const char* LECTURER_DESCRIPTION =
 	"Shuffle your hand into your deck.\n"
-	"Draw 7 cards."
+	"Draw 5 cards."
 ;
 const std::string LECTURER_EFFECTS(
 	std::string(SHUFFLE_EFFECT) // shuffle
@@ -4384,7 +4384,7 @@ const std::string LECTURER_EFFECTS(
 	+ EFFECT_TERMINATOR
 	+ DRAW_EFFECT               // draw
 	+ EFFECT_SEPARATOR          //
-	+ "7"                       // 7
+	+ "5"                       // 5
 );
 //}
 
@@ -4393,7 +4393,7 @@ const std::string LECTURER_EFFECTS(
 constexpr const char* INVESTOR_NAME = "Investor";
 constexpr const char* INVESTOR_DESCRIPTION =
 	"Shuffle your hand into your deck.\n"
-	"At the start of your next turn, draw 9 cards."
+	"At the start of your next turn, draw 7 cards."
 ;
 const std::string INVESTOR_EFFECTS(
 	std::string(SHUFFLE_EFFECT) // shuffle
@@ -4402,18 +4402,18 @@ const std::string INVESTOR_EFFECTS(
 	+ EFFECT_TERMINATOR
 	+ END_DRAW_EFFECT           // end_draw
 	+ EFFECT_SEPARATOR          //
-	+ "9"                       // 9
+	+ "7"                       // 7
 );
 //}
 
 // Researcher
 //{
 constexpr const char* RESEARCHER_NAME = "Researcher";
-constexpr const char* RESEARCHER_DESCRIPTION = "Draw 3 cards.";
+constexpr const char* RESEARCHER_DESCRIPTION = "Draw 2 cards.";
 const std::string RESEARCHER_EFFECTS(
 	std::string(DRAW_EFFECT) // draw
 	+ EFFECT_SEPARATOR
-	+ "3"                    // 3
+	+ "2"                    // 2
 );
 //}
 
@@ -4423,7 +4423,7 @@ constexpr const char* GAMBLER_NAME = "Gambler";
 constexpr const char* GAMBLER_DESCRIPTION =
 	"Discard a card from your hand.\n"
 	"Flip a coin.\n"
-	"If you get heads, draw 6 cards.\n"
+	"If you get heads, draw 4 cards.\n"
 	"If you get tails, draw 2 cards."
 ;
 const std::string GAMBLER_EFFECTS(
@@ -4439,7 +4439,7 @@ const std::string GAMBLER_EFFECTS(
 	+ EFFECT_SEPARATOR          //
 	+ DRAW_EFFECT               // draw
 	+ EFFECT_SEPARATOR          //
-	+ "6"                       // 6
+	+ "4"                       // 4
 	+ EFFECT_TERMINATOR
 	+ TAILS_EFFECT              // tails
 	+ EFFECT_SEPARATOR          //
@@ -4948,7 +4948,7 @@ const std::string PLUMBER_EFFECTS(
 constexpr const char* LOCKSMITH_NAME = "Locksmith";
 constexpr const char* LOCKSMITH_DESCRIPTION =
 	"Shuffle both player's hands into their decks.\n"
-	"Both players draw 4 cards."
+	"Both players draw 3 cards."
 ;
 const std::string LOCKSMITH_EFFECTS(
 	std::string(SHUFFLE_EFFECT) // shuffle
@@ -4965,11 +4965,11 @@ const std::string LOCKSMITH_EFFECTS(
 	+ EFFECT_SEPARATOR          //
 	+ OPPONENT_EFFECT           // opponent
 	+ EFFECT_SEPARATOR          //
-	+ "4"                       // 4
+	+ "3"                       // 3
 	+ EFFECT_TERMINATOR
 	+ DRAW_EFFECT               // draw
 	+ EFFECT_SEPARATOR          //
-	+ "4"                       // 4
+	+ "3"                       // 3
 );
 //}
 
@@ -7339,24 +7339,6 @@ const Fighter CLOUD_SURFER(
 
 // Void Family
 //{
-const Fighter LOST_SOUL(
-	LOST_SOUL_NAME,
-	LOST_SOUL_ELEMENT,
-	LOST_SOUL_HEALTH,
-	LOST_SOUL_RETREAT_COST,
-	LOST_SOUL_OLD_RANK,
-	LOST_SOUL_ABILITY_NAME,
-	LOST_SOUL_ABILITY_DESCRIPTION,
-	LOST_SOUL_ABILITY_EFFECTS,
-	LOST_SOUL_ABILITY_PASSIVE,
-	LOST_SOUL_ABILITY_USES,
-	LOST_SOUL_ATTACK_NAME,
-	LOST_SOUL_ATTACK_DESCRIPTION,
-	LOST_SOUL_ATTACK_EFFECTS,
-	LOST_SOUL_ATTACK_DAMAGE,
-	LOST_SOUL_ATTACK_COST
-);
-
 const Fighter BANISHER(
 	BANISHER_NAME,
 	BANISHER_ELEMENT,
@@ -7506,6 +7488,24 @@ const Fighter BOXER(
 	BOXER_ATTACK_DAMAGE,
 	BOXER_ATTACK_COST
 );
+
+const Fighter LOST_SOUL(
+	LOST_SOUL_NAME,
+	LOST_SOUL_ELEMENT,
+	LOST_SOUL_HEALTH,
+	LOST_SOUL_RETREAT_COST,
+	LOST_SOUL_OLD_RANK,
+	LOST_SOUL_ABILITY_NAME,
+	LOST_SOUL_ABILITY_DESCRIPTION,
+	LOST_SOUL_ABILITY_EFFECTS,
+	LOST_SOUL_ABILITY_PASSIVE,
+	LOST_SOUL_ABILITY_USES,
+	LOST_SOUL_ATTACK_NAME,
+	LOST_SOUL_ATTACK_DESCRIPTION,
+	LOST_SOUL_ATTACK_EFFECTS,
+	LOST_SOUL_ATTACK_DAMAGE,
+	LOST_SOUL_ATTACK_COST
+);
 //}
 
 // Elemental Family
@@ -7625,7 +7625,6 @@ const Fighter* const ALL_FIGHTERS[FIGHTER_COUNT] = {
 	&PYROTECHNICIAN,
 	&WIND_RUNNER,
 	&CLOUD_SURFER,
-	&LOST_SOUL,
 	&BANISHER,
 	&BANSHEE,
 	&CULTIST,
@@ -7634,6 +7633,7 @@ const Fighter* const ALL_FIGHTERS[FIGHTER_COUNT] = {
 	&NINJA,
 	&SAMURAI,
 	&BOXER,
+	&LOST_SOUL,
 	&FIRE_ELEMENTAL,
 	&AIR_ELEMENTAL,
 	&WATER_ELEMENTAL,
@@ -8266,16 +8266,28 @@ class CardStore {
 		std::unique_ptr<Card> draw(std::mt19937& generator) {
 			// Draws a random card.
 			if (std::is_same<Type, Card>::value) {
+				if (!size()) {
+					throw std::runtime_error(EMPTY_CARD_STORE);
+				}
+			
 				return remove(Random::get_int(generator, 0, size() - 1));
 			}
 			
 			// Draws a random fighter card.
 			else if (std::is_same<Type, Fighter>::value) {
+				if (!fighters.size()) {
+					throw std::runtime_error(EMPTY_CARD_STORE);
+				}
+			
 				return remove(Random::get_int(generator, 0, fighters.size() - 1));
 			}
 			
 			// Draws a random supporter card.
 			else if (std::is_same<Type, Supporter>::value) {
+				if (!supporters.size()) {
+					throw std::runtime_error(EMPTY_CARD_STORE);
+				}
+				
 				return remove(
 					Random::get_int(
 						generator,
@@ -8287,6 +8299,10 @@ class CardStore {
 			
 			// Draws a random energy card.
 			else {
+				if (!energy.size()) {
+					throw std::runtime_error(EMPTY_CARD_STORE);
+				}
+				
 				return remove(
 					Random::get_int(
 						generator,
@@ -9303,7 +9319,41 @@ class Player: public Affectable {
 			int display_height = display_sprite.get_height();
 			
 			// The cards are drawn from the deck to form the starting hand.
-			draw(HAND_SIZE);
+			draw(HAND_SIZE - 1);
+			
+			// If the hand is valid, a random card is drawn
+			if (hand.valid()) {
+				draw(1);
+			}
+			
+			// If the hand is invalid, an unranked fighter is drawn.
+			else {
+				std::vector<int> indices;
+				
+				for (int i = 0; i < deck.size<Fighter>(); ++i) {
+					if (deck.get_fighters()[i].get_old_rank() == NO_OLD_RANK) {
+						indices.push_back(i);
+					}
+				}
+				
+				int index = Random::get_int(
+					generator,
+					0,
+					indices.size() - 1
+				);
+				
+				hand.store(
+					deck.remove(
+						indices[
+							Random::get_int(
+								generator,
+								0,
+								indices.size() - 1
+							)
+						]
+					)
+				);
+			}
 			
 			// If the hand is invalid, the hand is displayed are shuffled back into the deck.
 			if (!hand.valid()) {
@@ -9395,7 +9445,20 @@ class Player: public Affectable {
 		 */
 		void set_life_cards() noexcept {
 			for (int i = 0; i < LIFE_SIZE; ++i) {
-				life_cards.store(deck.draw<Supporter>(generator));
+				// Supporter cards are the 1st priority.
+				if (deck.size<Supporter>()) {
+					life_cards.store(deck.draw<Supporter>(generator));
+				}
+				
+				// Energy cards are the 2nd priority.
+				else if (deck.size<Energy>()) {
+					life_cards.store(deck.draw<Energy>(generator));
+				}
+				
+				// Fighter cards are the 3rd priority.
+				else {
+					life_cards.store(deck.draw<Fighter>(generator));
+				}
 			}
 			
 			// The components of the display are extracted.
@@ -16608,14 +16671,13 @@ const DeckCode TEST_DECK(
 		
 		0, // MINER
 		0, // EXCAVATOR
-		8, // SWIMMER
-		8, // SCUBA DIVER
+		0, // SWIMMER
+		0, // SCUBA DIVER
 		0, // WELDER
 		0, // PYROTECHNICIAN
 		0, // WIND RUNNER
 		0, // CLOUD SURFER
 		
-		0, // LOST SOUL
 		0, // BANISHER
 		0, // BANSHEE
 		0, // CULTIST
@@ -16626,6 +16688,7 @@ const DeckCode TEST_DECK(
 		0, // SAMURAI
 		
 		0, // BOXER
+		0, // LOST SOUL
 		
 		0, // FIRE ELEMENTAL
 		0, // AIR ELEMENTAL
@@ -16649,7 +16712,7 @@ const DeckCode TEST_DECK(
 		
 		0, // ELECTRICIAN
 		0, // ALCHEMIST
-		8, // TIME TRAVELLER
+		0, // TIME TRAVELLER
 		0, // BANKER
 		0, // GLUTTON
 		
@@ -16666,7 +16729,7 @@ const DeckCode TEST_DECK(
 		0, // SNIPER
 		
 		0, // CHEERLEADER
-		8, // ARMS SMUGGLER
+		0, // ARMS SMUGGLER
 		0, // MANIAC
 		
 		0, // PEACEMAKER
@@ -16681,7 +16744,7 @@ const DeckCode TEST_DECK(
 		// Energy Cards
 		0, // FIRE ENERGY
 		0, // AIR ENERGY
-		8, // WATER ENERGY
+		0, // WATER ENERGY
 		0, // EARTH ENERGY
 		
 		0, // UNIVERSAL ENERGY
@@ -16721,7 +16784,6 @@ const DeckCode CLEAR_DECK(
 		0, // WIND RUNNER
 		0, // CLOUD SURFER
 		
-		0, // LOST SOUL
 		0, // BANISHER
 		0, // BANSHEE
 		0, // CULTIST
@@ -16732,6 +16794,7 @@ const DeckCode CLEAR_DECK(
 		0, // SAMURAI
 		
 		0, // BOXER
+		0, // LOST SOUL
 		
 		0, // FIRE ELEMENTAL
 		0, // AIR ELEMENTAL
@@ -16831,7 +16894,6 @@ const DeckCode AGGRO_DECK(
 		0, // WIND RUNNER
 		0, // CLOUD SURFER
 		
-		0, // LOST SOUL
 		0, // BANISHER
 		0, // BANSHEE
 		0, // CULTIST
@@ -16842,6 +16904,7 @@ const DeckCode AGGRO_DECK(
 		0, // SAMURAI
 		
 		0, // BOXER
+		0, // LOST SOUL
 		
 		0, // FIRE ELEMENTAL
 		0, // AIR ELEMENTAL
@@ -16852,16 +16915,16 @@ const DeckCode AGGRO_DECK(
 		// Supporter Cards
 		1, // PROFESSOR
 		1, // LECTURER
-		1, // INVESTOR
-		1, // RESEARCHER
+		0, // INVESTOR
+		0, // RESEARCHER
 		0, // GAMBLER
 		
 		1, // CHEF
-		1, // TRADER
-		1, // LIBRARIAN
-		1, // EXPERIMENTER
+		0, // TRADER
+		0, // LIBRARIAN
+		0, // EXPERIMENTER
 		1, // PERSONAL TRAINER
-		1, // SCAPEGOAT
+		0, // SCAPEGOAT
 		
 		1, // ELECTRICIAN
 		1, // ALCHEMIST
@@ -16869,7 +16932,7 @@ const DeckCode AGGRO_DECK(
 		0, // BANKER
 		0, // GLUTTON
 		
-		1, // SUBSTITUTE
+		0, // SUBSTITUTE
 		1, // BOUNTY HUNTER
 		
 		1, // NURSE
@@ -16887,7 +16950,7 @@ const DeckCode AGGRO_DECK(
 		
 		0, // PEACEMAKER
 		1, // MATCHMAKER
-		1, // PLUMBER
+		0, // PLUMBER
 		0, // LOCKSMITH
 		0, // LOCK PICKER
 		1, // GATEKEEPER
@@ -16896,13 +16959,13 @@ const DeckCode AGGRO_DECK(
 		
 		// Energy Cards
 		4, // FIRE ENERGY
-		2, // AIR ENERGY
+		3, // AIR ENERGY
 		0, // WATER ENERGY
 		0, // EARTH ENERGY
 		
-		1, // UNIVERSAL ENERGY
+		0, // UNIVERSAL ENERGY
 		0, // ALPHA ENERGY
-		2, // OMEGA ENERGY
+		0, // OMEGA ENERGY
 		0  // BOND ENERGY
 	}
 );
@@ -16915,7 +16978,7 @@ const DeckCode TEMPO_DECK(
 	"Scuba Diver can be used to stall, burst, or maintain tempo when played.",
 	{
 		// Fighter Cards
-		0, // DRIVER
+		1, // DRIVER
 		0, // RACER
 		0, // HOT RODDER
 		0, // SAILOR
@@ -16940,7 +17003,6 @@ const DeckCode TEMPO_DECK(
 		0, // WIND RUNNER
 		0, // CLOUD SURFER
 		
-		0, // LOST SOUL
 		0, // BANISHER
 		0, // BANSHEE
 		0, // CULTIST
@@ -16951,6 +17013,7 @@ const DeckCode TEMPO_DECK(
 		0, // SAMURAI
 		
 		0, // BOXER
+		0, // LOST SOUL
 		
 		0, // FIRE ELEMENTAL
 		0, // AIR ELEMENTAL
@@ -16961,16 +17024,16 @@ const DeckCode TEMPO_DECK(
 		// Supporter Cards
 		1, // PROFESSOR
 		1, // LECTURER
-		1, // INVESTOR
-		1, // RESEARCHER
+		0, // INVESTOR
+		0, // RESEARCHER
 		0, // GAMBLER
 		
 		1, // CHEF
-		1, // TRADER
-		1, // LIBRARIAN
-		1, // EXPERIMENTER
+		0, // TRADER
+		0, // LIBRARIAN
+		0, // EXPERIMENTER
 		1, // PERSONAL TRAINER
-		1, // SCAPEGOAT
+		0, // SCAPEGOAT
 		
 		1, // ELECTRICIAN
 		1, // ALCHEMIST
@@ -16978,14 +17041,14 @@ const DeckCode TEMPO_DECK(
 		0, // BANKER
 		0, // GLUTTON
 		
-		1, // SUBSTITUTE
+		0, // SUBSTITUTE
 		1, // BOUNTY HUNTER
 		
 		1, // NURSE
-		1, // INNKEEPER
+		0, // INNKEEPER
 		1, // MIRACLE WORKER
 		0, // DOCTOR
-		1, // ESCAPE ARTIST
+		0, // ESCAPE ARTIST
 		
 		1, // ASSASSIN
 		1, // SNIPER
@@ -17011,7 +17074,7 @@ const DeckCode TEMPO_DECK(
 		
 		0, // UNIVERSAL ENERGY
 		0, // ALPHA ENERGY
-		3, // OMEGA ENERGY
+		1, // OMEGA ENERGY
 		0  // BOND ENERGY
 	}
 );
@@ -17052,7 +17115,6 @@ const DeckCode CONTROL_DECK(
 		0, // WIND RUNNER
 		0, // CLOUD SURFER
 		
-		0, // LOST SOUL
 		0, // BANISHER
 		0, // BANSHEE
 		0, // CULTIST
@@ -17063,6 +17125,7 @@ const DeckCode CONTROL_DECK(
 		0, // SAMURAI
 		
 		0, // BOXER
+		0, // LOST SOUL
 		
 		0, // FIRE ELEMENTAL
 		0, // AIR ELEMENTAL
@@ -17073,21 +17136,21 @@ const DeckCode CONTROL_DECK(
 		// Supporter Cards
 		0, // PROFESSOR
 		0, // LECTURER
-		1, // INVESTOR
+		0, // INVESTOR
 		1, // RESEARCHER
 		1, // GAMBLER
 		
-		1, // CHEF
-		1, // TRADER
-		1, // LIBRARIAN
-		1, // EXPERIMENTER
-		1, // PERSONAL TRAINER
-		1, // SCAPEGOAT
+		0, // CHEF
+		0, // TRADER
+		0, // LIBRARIAN
+		0, // EXPERIMENTER
+		0, // PERSONAL TRAINER
+		0, // SCAPEGOAT
 		
-		1, // ELECTRICIAN
+		0, // ELECTRICIAN
 		1, // ALCHEMIST
 		1, // TIME TRAVELLER
-		1, // BANKER
+		0, // BANKER
 		1, // GLUTTON
 		
 		0, // SUBSTITUTE
@@ -17111,20 +17174,20 @@ const DeckCode CONTROL_DECK(
 		1, // PLUMBER
 		1, // LOCKSMITH
 		1, // LOCK PICKER
-		1, // GATEKEEPER
+		0, // GATEKEEPER
 		1, // MILLER
 		0, // ARSONIST
 		
 		// Energy Cards
 		0, // FIRE ENERGY
-		1, // AIR ENERGY
-		2, // WATER ENERGY
+		0, // AIR ENERGY
+		0, // WATER ENERGY
 		2, // EARTH ENERGY
 		
-		0, // UNIVERSAL ENERGY
-		3, // ALPHA ENERGY
+		2, // UNIVERSAL ENERGY
+		2, // ALPHA ENERGY
 		0, // OMEGA ENERGY
-		0  // BOND ENERGY
+		2  // BOND ENERGY
 	}
 );
 
@@ -17166,7 +17229,6 @@ const DeckCode OTK_COMBO_DECK(
 		1, // WIND RUNNER
 		1, // CLOUD SURFER
 		
-		0, // LOST SOUL
 		0, // BANISHER
 		0, // BANSHEE
 		0, // CULTIST
@@ -17177,6 +17239,7 @@ const DeckCode OTK_COMBO_DECK(
 		0, // SAMURAI
 		
 		1, // BOXER
+		0, // LOST SOUL
 		
 		0, // FIRE ELEMENTAL
 		0, // AIR ELEMENTAL
@@ -17186,21 +17249,21 @@ const DeckCode OTK_COMBO_DECK(
 		
 		// Supporter Cards
 		1, // PROFESSOR
-		1, // LECTURER
-		1, // INVESTOR
+		0, // LECTURER
+		0, // INVESTOR
 		1, // RESEARCHER
 		1, // GAMBLER
 		
-		0, // CHEF
-		1, // TRADER
+		1, // CHEF
+		0, // TRADER
 		1, // LIBRARIAN
 		1, // EXPERIMENTER
-		1, // PERSONAL TRAINER
+		0, // PERSONAL TRAINER
 		1, // SCAPEGOAT
 		
 		0, // ELECTRICIAN
-		1, // ALCHEMIST
-		1, // TIME TRAVELLER
+		0, // ALCHEMIST
+		0, // TIME TRAVELLER
 		1, // BANKER
 		0, // GLUTTON
 		
@@ -17208,7 +17271,7 @@ const DeckCode OTK_COMBO_DECK(
 		0, // BOUNTY HUNTER
 		
 		1, // NURSE
-		1, // INNKEEPER
+		0, // INNKEEPER
 		1, // MIRACLE WORKER
 		0, // DOCTOR
 		1, // ESCAPE ARTIST
@@ -17225,18 +17288,18 @@ const DeckCode OTK_COMBO_DECK(
 		1, // PLUMBER
 		0, // LOCKSMITH
 		1, // LOCK PICKER
-		1, // GATEKEEPER
+		0, // GATEKEEPER
 		1, // MILLER
-		1, // ARSONIST
+		0, // ARSONIST
 		
 		// Energy Cards
 		0, // FIRE ENERGY
-		3, // AIR ENERGY
-		2, // WATER ENERGY
+		2, // AIR ENERGY
+		1, // WATER ENERGY
 		0, // EARTH ENERGY
 		
-		1, // UNIVERSAL ENERGY
-		3, // ALPHA ENERGY
+		0, // UNIVERSAL ENERGY
+		4, // ALPHA ENERGY
 		0, // OMEGA ENERGY
 		0  // BOND ENERGY
 	}
@@ -17280,7 +17343,6 @@ const DeckCode MILL_DECK(
 		0, // WIND RUNNER
 		0, // CLOUD SURFER
 		
-		1, // LOST SOUL
 		0, // BANISHER
 		0, // BANSHEE
 		0, // CULTIST
@@ -17291,6 +17353,7 @@ const DeckCode MILL_DECK(
 		0, // SAMURAI
 		
 		1, // BOXER
+		1, // LOST SOUL
 		
 		0, // FIRE ELEMENTAL
 		0, // AIR ELEMENTAL
@@ -17299,8 +17362,8 @@ const DeckCode MILL_DECK(
 		0, // OMEGA ELEMENTAL
 		
 		// Supporter Cards
-		1, // PROFESSOR
-		1, // LECTURER
+		0, // PROFESSOR
+		0, // LECTURER
 		1, // INVESTOR
 		0, // RESEARCHER
 		0, // GAMBLER
@@ -17318,28 +17381,28 @@ const DeckCode MILL_DECK(
 		1, // BANKER
 		1, // GLUTTON
 		
-		1, // SUBSTITUTE
+		0, // SUBSTITUTE
 		0, // BOUNTY HUNTER
 		
 		1, // NURSE
 		1, // INNKEEPER
 		1, // MIRACLE WORKER
 		1, // DOCTOR
-		1, // ESCAPE ARTIST
+		0, // ESCAPE ARTIST
 		
 		0, // ASSASSIN
 		0, // SNIPER
 		
 		0, // CHEERLEADER
 		0, // ARMS SMUGGLER
-		1, // MANIAC
+		0, // MANIAC
 		
 		1, // PEACEMAKER
 		0, // MATCHMAKER
 		1, // PLUMBER
 		1, // LOCKSMITH
 		1, // LOCK PICKER
-		1, // GATEKEEPER
+		0, // GATEKEEPER
 		1, // MILLER
 		1, // ARSONIST
 		
@@ -17351,7 +17414,7 @@ const DeckCode MILL_DECK(
 		
 		4, // UNIVERSAL ENERGY
 		0, // ALPHA ENERGY
-		4, // OMEGA ENERGY
+		0, // OMEGA ENERGY
 		4  // BOND ENERGY
 	}
 );
@@ -17391,7 +17454,6 @@ const DeckCode MIDRANGE_DECK(
 		0, // WIND RUNNER
 		0, // CLOUD SURFER
 		
-		0, // LOST SOUL
 		1, // BANISHER
 		1, // BANSHEE
 		1, // CULTIST
@@ -17402,26 +17464,27 @@ const DeckCode MIDRANGE_DECK(
 		0, // SAMURAI
 		
 		0, // BOXER
+		0, // LOST SOUL
 		
 		0, // FIRE ELEMENTAL
 		0, // AIR ELEMENTAL
 		0, // WATER ELEMENTAL
 		0, // EARTH ELEMENTAL
-		1, // OMEGA ELEMENTAL
+		0, // OMEGA ELEMENTAL
 		
 		// Supporter Cards
 		1, // PROFESSOR
 		1, // LECTURER
 		1, // INVESTOR
-		1, // RESEARCHER
-		1, // GAMBLER
+		0, // RESEARCHER
+		0, // GAMBLER
 		
 		1, // CHEF
 		1, // TRADER
 		1, // LIBRARIAN
 		1, // EXPERIMENTER
 		0, // PERSONAL TRAINER
-		1, // SCAPEGOAT
+		0, // SCAPEGOAT
 		
 		0, // ELECTRICIAN
 		0, // ALCHEMIST
@@ -17433,10 +17496,10 @@ const DeckCode MIDRANGE_DECK(
 		1, // BOUNTY HUNTER
 		
 		1, // NURSE
-		1, // INNKEEPER
+		0, // INNKEEPER
 		1, // MIRACLE WORKER
-		1, // DOCTOR
-		1, // ESCAPE ARTIST
+		0, // DOCTOR
+		0, // ESCAPE ARTIST
 		
 		1, // ASSASSIN
 		1, // SNIPER
@@ -17446,7 +17509,7 @@ const DeckCode MIDRANGE_DECK(
 		0, // MANIAC
 		
 		1, // PEACEMAKER
-		1, // MATCHMAKER
+		0, // MATCHMAKER
 		1, // PLUMBER
 		1, // LOCKSMITH
 		1, // LOCK PICKER
@@ -17461,7 +17524,7 @@ const DeckCode MIDRANGE_DECK(
 		0, // EARTH ENERGY
 		
 		4, // UNIVERSAL ENERGY
-		2, // ALPHA ENERGY
+		0, // ALPHA ENERGY
 		2, // OMEGA ENERGY
 		0  // BOND ENERGY
 	}
@@ -17505,7 +17568,6 @@ const DeckCode AGGRO_COMBO_DECK(
 		0, // WIND RUNNER
 		0, // CLOUD SURFER
 		
-		1, // LOST SOUL
 		0, // BANISHER
 		0, // BANSHEE
 		0, // CULTIST
@@ -17516,6 +17578,7 @@ const DeckCode AGGRO_COMBO_DECK(
 		1, // SAMURAI
 		
 		0, // BOXER
+		1, // LOST SOUL
 		
 		0, // FIRE ELEMENTAL
 		0, // AIR ELEMENTAL
@@ -17527,19 +17590,19 @@ const DeckCode AGGRO_COMBO_DECK(
 		0, // PROFESSOR
 		1, // LECTURER
 		1, // INVESTOR
-		1, // RESEARCHER
-		1, // GAMBLER
+		0, // RESEARCHER
+		0, // GAMBLER
 		
 		1, // CHEF
-		1, // TRADER
-		1, // LIBRARIAN
-		1, // EXPERIMENTER
+		0, // TRADER
+		0, // LIBRARIAN
+		0, // EXPERIMENTER
 		1, // PERSONAL TRAINER
-		1, // SCAPEGOAT
+		0, // SCAPEGOAT
 		
 		1, // ELECTRICIAN
-		1, // ALCHEMIST
-		1, // TIME TRAVELLER
+		0, // ALCHEMIST
+		0, // TIME TRAVELLER
 		0, // BANKER
 		0, // GLUTTON
 		
@@ -17552,8 +17615,8 @@ const DeckCode AGGRO_COMBO_DECK(
 		0, // DOCTOR
 		1, // ESCAPE ARTIST
 		
-		0, // ASSASSIN
-		0, // SNIPER
+		1, // ASSASSIN
+		1, // SNIPER
 		
 		1, // CHEERLEADER
 		1, // ARMS SMUGGLER
@@ -17574,9 +17637,9 @@ const DeckCode AGGRO_COMBO_DECK(
 		0, // WATER ENERGY
 		0, // EARTH ENERGY
 		
-		4, // UNIVERSAL ENERGY
+		2, // UNIVERSAL ENERGY
 		0, // ALPHA ENERGY
-		2, // OMEGA ENERGY
+		0, // OMEGA ENERGY
 		4  // BOND ENERGY
 	}
 );
@@ -17618,7 +17681,6 @@ const DeckCode CONTROL_COMBO_DECK(
 		0, // WIND RUNNER
 		0, // CLOUD SURFER
 		
-		0, // LOST SOUL
 		0, // BANISHER
 		0, // BANSHEE
 		0, // CULTIST
@@ -17629,6 +17691,7 @@ const DeckCode CONTROL_COMBO_DECK(
 		0, // SAMURAI
 		
 		0, // BOXER
+		0, // LOST SOUL
 		
 		1, // FIRE ELEMENTAL
 		1, // AIR ELEMENTAL
@@ -17648,13 +17711,13 @@ const DeckCode CONTROL_COMBO_DECK(
 		1, // LIBRARIAN
 		1, // EXPERIMENTER
 		0, // PERSONAL TRAINER
-		1, // SCAPEGOAT
+		0, // SCAPEGOAT
 		
-		1, // ELECTRICIAN
+		0, // ELECTRICIAN
 		1, // ALCHEMIST
 		1, // TIME TRAVELLER
-		1, // BANKER
-		1, // GLUTTON
+		0, // BANKER
+		0, // GLUTTON
 		
 		1, // SUBSTITUTE
 		0, // BOUNTY HUNTER
@@ -17677,8 +17740,8 @@ const DeckCode CONTROL_COMBO_DECK(
 		1, // PLUMBER
 		1, // LOCKSMITH
 		1, // LOCK PICKER
-		1, // GATEKEEPER
-		1, // MILLER
+		0, // GATEKEEPER
+		0, // MILLER
 		0, // ARSONIST
 		
 		// Energy Cards
@@ -17687,10 +17750,10 @@ const DeckCode CONTROL_COMBO_DECK(
 		0, // WATER ENERGY
 		0, // EARTH ENERGY
 		
-		4, // UNIVERSAL ENERGY
+		2, // UNIVERSAL ENERGY
 		4, // ALPHA ENERGY
 		0, // OMEGA ENERGY
-		2  // BOND ENERGY
+		0  // BOND ENERGY
 	}
 );
 
@@ -17719,12 +17782,11 @@ const DeckCode RANDOM_DECK(
 		0, // EXCAVATOR
 		0, // SWIMMER
 		0, // SCUBA DIVER
-		4, // WELDER
-		4, // PYROTECHNICIAN
+		0, // WELDER
+		0, // PYROTECHNICIAN
 		0, // WIND RUNNER
 		0, // CLOUD SURFER
 		
-		0, // LOST SOUL
 		0, // BANISHER
 		0, // BANSHEE
 		0, // CULTIST
@@ -17735,11 +17797,12 @@ const DeckCode RANDOM_DECK(
 		0, // SAMURAI
 		
 		0, // BOXER
+		0, // LOST SOUL
 		
-		4, // FIRE ELEMENTAL
-		4, // AIR ELEMENTAL
-		4, // WATER ELEMENTAL
-		4, // EARTH ELEMENTAL
+		0, // FIRE ELEMENTAL
+		0, // AIR ELEMENTAL
+		0, // WATER ELEMENTAL
+		0, // EARTH ELEMENTAL
 		0, // OMEGA ELEMENTAL
 		
 		// Supporter Cards
@@ -17788,10 +17851,10 @@ const DeckCode RANDOM_DECK(
 		0, // ARSONIST
 		
 		// Energy Cards
-		4, // FIRE ENERGY
-		4, // AIR ENERGY
-		4, // WATER ENERGY
-		4, // EARTH ENERGY
+		0, // FIRE ENERGY
+		0, // AIR ENERGY
+		0, // WATER ENERGY
+		0, // EARTH ENERGY
 		
 		0, // UNIVERSAL ENERGY
 		0, // ALPHA ENERGY
@@ -22333,11 +22396,25 @@ int main(int argc, char** argv) noexcept {
 	   Gravity Flip's cost was increased form 500 to 1000.
 	   Healing Aura's healing was increased from 100 to 125.
 	   Vacuum Wave was renamed to Air Lock.
-	   Banshee's retreat cost was reduced from 4000 to 2000.
+	   Banshee's retreat cost was decreased from 4000 to 2000.
 	   Void Pact's scaling was decreased from 25 to 20.
 	   Void Pact's ceiling was decreased from 500 to 400.
 	   Omega Fusion's defeat requirement was decreased from 3 to 2.
 	   Omega Elemental's health was decreased from 2000 to 1500.
 	   Omega Elemental's retreat cost was decreased from 2000 to 0.
 	   Major changes to the decklists' contents and descriptions.
+	 v1.6:
+	   The number of cards per deck has been reduced from 40 to 30.
+	   The number of cards in the starting hand have been reduced from 10 to 6.
+	   An unranked fighter is always guaranteed to be drawn in the initial starting hand.
+	   Life cards can now store energy cards when there are no supporter cards in the deck.
+	   Life cards can now store fighter cards when there are no other cards in the deck.
+	   Professor's draw count was reduced from 8 to 6.
+	   Lecturer's draw count was reduced from 7 to 5.
+	   Investor's draw count was reduced from 9 to 7.
+	   Researcher's draw count was reduced from 3 to 2.
+	   Gambler's draw count with heads was reduced from 6 to 4.
+	   Locksmith's draw count was decreased from 4 to 3.
+	   Major changes to all of the decklists.
+	   Drawing from empty card stores or substores throws an exception.
  */
