@@ -7,7 +7,7 @@
 // System Constants
 //{
 // The current version of the program.
-constexpr int VERSION[] = {1, 6, 0, 0};
+constexpr int VERSION[] = {1, 6, 0, 1};
 
 // The title of the game in string form.
 constexpr const char* TITLE_STRING = "Demi Duel";
@@ -3841,6 +3841,81 @@ constexpr int CLOUD_SURFER_ATTACK_COST = 2000;
 //}
 //}
 
+// Unranked Family
+//{
+// Boxer
+//{
+constexpr const char* BOXER_NAME = "Boxer";
+constexpr const char* BOXER_ELEMENT = FIRE_ELEMENT;
+constexpr int BOXER_HEALTH = 1100;
+constexpr int BOXER_RETREAT_COST = 0;
+constexpr const char* BOXER_OLD_RANK = NO_OLD_RANK;
+constexpr const char* BOXER_ABILITY_NAME = "Aggressive";
+constexpr const char* BOXER_ABILITY_DESCRIPTION =
+	"If this fighter is on your bench, switch it into the active position."
+;
+constexpr const char* BOXER_ABILITY_EFFECTS = AGGRESSIVE_EFFECT; // aggressive
+constexpr bool BOXER_ABILITY_PASSIVE = true;
+constexpr int BOXER_ABILITY_USES = PASSIVE_USES;
+constexpr const char* BOXER_ATTACK_NAME = "Haymaker";
+constexpr const char* BOXER_ATTACK_DESCRIPTION =
+	"Deal 800 damage to your opponent's active fighter. "
+	"Deal 50 less damage for each card in your hand."
+;
+const std::string BOXER_ATTACK_EFFECTS(
+	std::string(POWER_EFFECT) // power
+	+ EFFECT_SEPARATOR        //
+	+ HAND_EFFECT             // hand
+	+ EFFECT_SEPARATOR        //
+	+ "-50"                   // -50
+);
+constexpr int BOXER_ATTACK_DAMAGE = 800;
+constexpr int BOXER_ATTACK_COST = 0;
+//}
+
+// Lost Soul
+//{
+constexpr const char* LOST_SOUL_NAME = "Lost Soul";
+constexpr const char* LOST_SOUL_ELEMENT = AIR_ELEMENT;
+constexpr int LOST_SOUL_HEALTH = 1000;
+constexpr int LOST_SOUL_RETREAT_COST = 0;
+constexpr const char* LOST_SOUL_OLD_RANK = NO_OLD_RANK;
+constexpr const char* LOST_SOUL_ABILITY_NAME = "Forsaken";
+constexpr const char* LOST_SOUL_ABILITY_DESCRIPTION =
+	"When this fighter is defeated, banish it, its energy cards, "
+	"its life card, and the top card of each player's deck."
+;
+const std::string LOST_SOUL_ABILITY_EFFECTS(
+	std::string(FORSAKEN_EFFECT) // forsaken
+	+ EFFECT_SEPARATOR           //
+	+ "1"                        // 1
+);
+constexpr bool LOST_SOUL_ABILITY_PASSIVE = true;
+constexpr int LOST_SOUL_ABILITY_USES = PASSIVE_USES;
+constexpr const char* LOST_SOUL_ATTACK_NAME = "Wander";
+constexpr const char* LOST_SOUL_ATTACK_DESCRIPTION =
+	"If your deck has no fighter cards, deal 300 "
+	"damage to your opponent's active fighter.\n"
+	"Draw a fighter card from your deck."
+;
+const std::string LOST_SOUL_ATTACK_EFFECTS(
+	std::string(POWER_EFFECT) // power
+	+ EFFECT_SEPARATOR        //
+	+ FIGHTERLESS_EFFECT      // fighterless
+	+ EFFECT_SEPARATOR        //
+	+ "300"                   // 300
+	+ EFFECT_TERMINATOR
+	+ DRAW_EFFECT             // draw
+	+ EFFECT_SEPARATOR        //
+	+ FIGHTER_TYPE            // Fighter
+	+ EFFECT_SEPARATOR        //
+	+ "1"                     // 1
+);
+constexpr int LOST_SOUL_ATTACK_DAMAGE = 0;
+constexpr int LOST_SOUL_ATTACK_COST = 0;
+//}
+//}
+
 // Void Family
 //{
 // Banisher
@@ -4108,81 +4183,6 @@ const std::string SAMURAI_ATTACK_EFFECTS(
 );
 constexpr int SAMURAI_ATTACK_DAMAGE = 275;
 constexpr int SAMURAI_ATTACK_COST = 1500;
-//}
-//}
-
-// Unranked Family
-//{
-// Boxer
-//{
-constexpr const char* BOXER_NAME = "Boxer";
-constexpr const char* BOXER_ELEMENT = FIRE_ELEMENT;
-constexpr int BOXER_HEALTH = 1100;
-constexpr int BOXER_RETREAT_COST = 0;
-constexpr const char* BOXER_OLD_RANK = NO_OLD_RANK;
-constexpr const char* BOXER_ABILITY_NAME = "Aggressive";
-constexpr const char* BOXER_ABILITY_DESCRIPTION =
-	"If this fighter is on your bench, switch it into the active position."
-;
-constexpr const char* BOXER_ABILITY_EFFECTS = AGGRESSIVE_EFFECT; // aggressive
-constexpr bool BOXER_ABILITY_PASSIVE = true;
-constexpr int BOXER_ABILITY_USES = PASSIVE_USES;
-constexpr const char* BOXER_ATTACK_NAME = "Haymaker";
-constexpr const char* BOXER_ATTACK_DESCRIPTION =
-	"Deal 800 damage to your opponent's active fighter. "
-	"Deal 50 less damage for each card in your hand."
-;
-const std::string BOXER_ATTACK_EFFECTS(
-	std::string(POWER_EFFECT) // power
-	+ EFFECT_SEPARATOR        //
-	+ HAND_EFFECT             // hand
-	+ EFFECT_SEPARATOR        //
-	+ "-50"                   // -50
-);
-constexpr int BOXER_ATTACK_DAMAGE = 800;
-constexpr int BOXER_ATTACK_COST = 0;
-//}
-
-// Lost Soul
-//{
-constexpr const char* LOST_SOUL_NAME = "Lost Soul";
-constexpr const char* LOST_SOUL_ELEMENT = AIR_ELEMENT;
-constexpr int LOST_SOUL_HEALTH = 1000;
-constexpr int LOST_SOUL_RETREAT_COST = 0;
-constexpr const char* LOST_SOUL_OLD_RANK = NO_OLD_RANK;
-constexpr const char* LOST_SOUL_ABILITY_NAME = "Forsaken";
-constexpr const char* LOST_SOUL_ABILITY_DESCRIPTION =
-	"When this fighter is defeated, banish it, its energy cards, "
-	"its life card, and the top card of each player's deck."
-;
-const std::string LOST_SOUL_ABILITY_EFFECTS(
-	std::string(FORSAKEN_EFFECT) // forsaken
-	+ EFFECT_SEPARATOR           //
-	+ "1"                        // 1
-);
-constexpr bool LOST_SOUL_ABILITY_PASSIVE = true;
-constexpr int LOST_SOUL_ABILITY_USES = PASSIVE_USES;
-constexpr const char* LOST_SOUL_ATTACK_NAME = "Wander";
-constexpr const char* LOST_SOUL_ATTACK_DESCRIPTION =
-	"If your deck has no fighter cards, deal 300 "
-	"damage to your opponent's active fighter.\n"
-	"Draw a fighter card from your deck."
-;
-const std::string LOST_SOUL_ATTACK_EFFECTS(
-	std::string(POWER_EFFECT) // power
-	+ EFFECT_SEPARATOR        //
-	+ FIGHTERLESS_EFFECT      // fighterless
-	+ EFFECT_SEPARATOR        //
-	+ "300"                   // 300
-	+ EFFECT_TERMINATOR
-	+ DRAW_EFFECT             // draw
-	+ EFFECT_SEPARATOR        //
-	+ FIGHTER_TYPE            // Fighter
-	+ EFFECT_SEPARATOR        //
-	+ "1"                     // 1
-);
-constexpr int LOST_SOUL_ATTACK_DAMAGE = 0;
-constexpr int LOST_SOUL_ATTACK_COST = 0;
 //}
 //}
 
@@ -7337,6 +7337,45 @@ const Fighter CLOUD_SURFER(
 //}
 //}
 
+// Unranked Family
+//{
+const Fighter BOXER(
+	BOXER_NAME,
+	BOXER_ELEMENT,
+	BOXER_HEALTH,
+	BOXER_RETREAT_COST,
+	BOXER_OLD_RANK,
+	BOXER_ABILITY_NAME,
+	BOXER_ABILITY_DESCRIPTION,
+	BOXER_ABILITY_EFFECTS,
+	BOXER_ABILITY_PASSIVE,
+	BOXER_ABILITY_USES,
+	BOXER_ATTACK_NAME,
+	BOXER_ATTACK_DESCRIPTION,
+	BOXER_ATTACK_EFFECTS,
+	BOXER_ATTACK_DAMAGE,
+	BOXER_ATTACK_COST
+);
+
+const Fighter LOST_SOUL(
+	LOST_SOUL_NAME,
+	LOST_SOUL_ELEMENT,
+	LOST_SOUL_HEALTH,
+	LOST_SOUL_RETREAT_COST,
+	LOST_SOUL_OLD_RANK,
+	LOST_SOUL_ABILITY_NAME,
+	LOST_SOUL_ABILITY_DESCRIPTION,
+	LOST_SOUL_ABILITY_EFFECTS,
+	LOST_SOUL_ABILITY_PASSIVE,
+	LOST_SOUL_ABILITY_USES,
+	LOST_SOUL_ATTACK_NAME,
+	LOST_SOUL_ATTACK_DESCRIPTION,
+	LOST_SOUL_ATTACK_EFFECTS,
+	LOST_SOUL_ATTACK_DAMAGE,
+	LOST_SOUL_ATTACK_COST
+);
+//}
+
 // Void Family
 //{
 const Fighter BANISHER(
@@ -7469,45 +7508,6 @@ const Fighter SAMURAI(
 );
 //}
 
-// Unranked Family
-//{
-const Fighter BOXER(
-	BOXER_NAME,
-	BOXER_ELEMENT,
-	BOXER_HEALTH,
-	BOXER_RETREAT_COST,
-	BOXER_OLD_RANK,
-	BOXER_ABILITY_NAME,
-	BOXER_ABILITY_DESCRIPTION,
-	BOXER_ABILITY_EFFECTS,
-	BOXER_ABILITY_PASSIVE,
-	BOXER_ABILITY_USES,
-	BOXER_ATTACK_NAME,
-	BOXER_ATTACK_DESCRIPTION,
-	BOXER_ATTACK_EFFECTS,
-	BOXER_ATTACK_DAMAGE,
-	BOXER_ATTACK_COST
-);
-
-const Fighter LOST_SOUL(
-	LOST_SOUL_NAME,
-	LOST_SOUL_ELEMENT,
-	LOST_SOUL_HEALTH,
-	LOST_SOUL_RETREAT_COST,
-	LOST_SOUL_OLD_RANK,
-	LOST_SOUL_ABILITY_NAME,
-	LOST_SOUL_ABILITY_DESCRIPTION,
-	LOST_SOUL_ABILITY_EFFECTS,
-	LOST_SOUL_ABILITY_PASSIVE,
-	LOST_SOUL_ABILITY_USES,
-	LOST_SOUL_ATTACK_NAME,
-	LOST_SOUL_ATTACK_DESCRIPTION,
-	LOST_SOUL_ATTACK_EFFECTS,
-	LOST_SOUL_ATTACK_DAMAGE,
-	LOST_SOUL_ATTACK_COST
-);
-//}
-
 // Elemental Family
 //{
 const Fighter FIRE_ELEMENTAL(
@@ -7625,6 +7625,8 @@ const Fighter* const ALL_FIGHTERS[FIGHTER_COUNT] = {
 	&PYROTECHNICIAN,
 	&WIND_RUNNER,
 	&CLOUD_SURFER,
+	&BOXER,
+	&LOST_SOUL,
 	&BANISHER,
 	&BANSHEE,
 	&CULTIST,
@@ -7632,8 +7634,6 @@ const Fighter* const ALL_FIGHTERS[FIGHTER_COUNT] = {
 	&SENSEIS_CHOSEN,
 	&NINJA,
 	&SAMURAI,
-	&BOXER,
-	&LOST_SOUL,
 	&FIRE_ELEMENTAL,
 	&AIR_ELEMENTAL,
 	&WATER_ELEMENTAL,
@@ -9335,12 +9335,6 @@ class Player: public Affectable {
 						indices.push_back(i);
 					}
 				}
-				
-				int index = Random::get_int(
-					generator,
-					0,
-					indices.size() - 1
-				);
 				
 				hand.store(
 					deck.remove(
@@ -16678,6 +16672,9 @@ const DeckCode TEST_DECK(
 		0, // WIND RUNNER
 		0, // CLOUD SURFER
 		
+		0, // BOXER
+		0, // LOST SOUL
+		
 		0, // BANISHER
 		0, // BANSHEE
 		0, // CULTIST
@@ -16686,9 +16683,6 @@ const DeckCode TEST_DECK(
 		0, // SENSEI'S CHOSEN
 		0, // NINJA
 		0, // SAMURAI
-		
-		0, // BOXER
-		0, // LOST SOUL
 		
 		0, // FIRE ELEMENTAL
 		0, // AIR ELEMENTAL
@@ -16784,6 +16778,9 @@ const DeckCode CLEAR_DECK(
 		0, // WIND RUNNER
 		0, // CLOUD SURFER
 		
+		0, // BOXER
+		0, // LOST SOUL
+		
 		0, // BANISHER
 		0, // BANSHEE
 		0, // CULTIST
@@ -16792,9 +16789,6 @@ const DeckCode CLEAR_DECK(
 		0, // SENSEI'S CHOSEN
 		0, // NINJA
 		0, // SAMURAI
-		
-		0, // BOXER
-		0, // LOST SOUL
 		
 		0, // FIRE ELEMENTAL
 		0, // AIR ELEMENTAL
@@ -16894,6 +16888,9 @@ const DeckCode AGGRO_DECK(
 		0, // WIND RUNNER
 		0, // CLOUD SURFER
 		
+		0, // BOXER
+		0, // LOST SOUL
+		
 		0, // BANISHER
 		0, // BANSHEE
 		0, // CULTIST
@@ -16902,9 +16899,6 @@ const DeckCode AGGRO_DECK(
 		0, // SENSEI'S CHOSEN
 		0, // NINJA
 		0, // SAMURAI
-		
-		0, // BOXER
-		0, // LOST SOUL
 		
 		0, // FIRE ELEMENTAL
 		0, // AIR ELEMENTAL
@@ -17003,6 +16997,9 @@ const DeckCode TEMPO_DECK(
 		0, // WIND RUNNER
 		0, // CLOUD SURFER
 		
+		0, // BOXER
+		0, // LOST SOUL
+		
 		0, // BANISHER
 		0, // BANSHEE
 		0, // CULTIST
@@ -17011,9 +17008,6 @@ const DeckCode TEMPO_DECK(
 		0, // SENSEI'S CHOSEN
 		0, // NINJA
 		0, // SAMURAI
-		
-		0, // BOXER
-		0, // LOST SOUL
 		
 		0, // FIRE ELEMENTAL
 		0, // AIR ELEMENTAL
@@ -17115,6 +17109,9 @@ const DeckCode CONTROL_DECK(
 		0, // WIND RUNNER
 		0, // CLOUD SURFER
 		
+		0, // BOXER
+		0, // LOST SOUL
+		
 		0, // BANISHER
 		0, // BANSHEE
 		0, // CULTIST
@@ -17123,9 +17120,6 @@ const DeckCode CONTROL_DECK(
 		0, // SENSEI'S CHOSEN
 		0, // NINJA
 		0, // SAMURAI
-		
-		0, // BOXER
-		0, // LOST SOUL
 		
 		0, // FIRE ELEMENTAL
 		0, // AIR ELEMENTAL
@@ -17229,6 +17223,9 @@ const DeckCode OTK_COMBO_DECK(
 		1, // WIND RUNNER
 		1, // CLOUD SURFER
 		
+		1, // BOXER
+		0, // LOST SOUL
+		
 		0, // BANISHER
 		0, // BANSHEE
 		0, // CULTIST
@@ -17237,9 +17234,6 @@ const DeckCode OTK_COMBO_DECK(
 		0, // SENSEI'S CHOSEN
 		0, // NINJA
 		0, // SAMURAI
-		
-		1, // BOXER
-		0, // LOST SOUL
 		
 		0, // FIRE ELEMENTAL
 		0, // AIR ELEMENTAL
@@ -17343,6 +17337,9 @@ const DeckCode MILL_DECK(
 		0, // WIND RUNNER
 		0, // CLOUD SURFER
 		
+		1, // BOXER
+		1, // LOST SOUL
+		
 		0, // BANISHER
 		0, // BANSHEE
 		0, // CULTIST
@@ -17351,9 +17348,6 @@ const DeckCode MILL_DECK(
 		0, // SENSEI'S CHOSEN
 		0, // NINJA
 		0, // SAMURAI
-		
-		1, // BOXER
-		1, // LOST SOUL
 		
 		0, // FIRE ELEMENTAL
 		0, // AIR ELEMENTAL
@@ -17454,6 +17448,9 @@ const DeckCode MIDRANGE_DECK(
 		0, // WIND RUNNER
 		0, // CLOUD SURFER
 		
+		0, // BOXER
+		0, // LOST SOUL
+		
 		1, // BANISHER
 		1, // BANSHEE
 		1, // CULTIST
@@ -17462,9 +17459,6 @@ const DeckCode MIDRANGE_DECK(
 		0, // SENSEI'S CHOSEN
 		0, // NINJA
 		0, // SAMURAI
-		
-		0, // BOXER
-		0, // LOST SOUL
 		
 		0, // FIRE ELEMENTAL
 		0, // AIR ELEMENTAL
@@ -17568,6 +17562,9 @@ const DeckCode AGGRO_COMBO_DECK(
 		0, // WIND RUNNER
 		0, // CLOUD SURFER
 		
+		0, // BOXER
+		1, // LOST SOUL
+		
 		0, // BANISHER
 		0, // BANSHEE
 		0, // CULTIST
@@ -17576,9 +17573,6 @@ const DeckCode AGGRO_COMBO_DECK(
 		1, // SENSEI'S CHOSEN
 		1, // NINJA
 		1, // SAMURAI
-		
-		0, // BOXER
-		1, // LOST SOUL
 		
 		0, // FIRE ELEMENTAL
 		0, // AIR ELEMENTAL
@@ -17681,6 +17675,9 @@ const DeckCode CONTROL_COMBO_DECK(
 		0, // WIND RUNNER
 		0, // CLOUD SURFER
 		
+		0, // BOXER
+		0, // LOST SOUL
+		
 		0, // BANISHER
 		0, // BANSHEE
 		0, // CULTIST
@@ -17689,9 +17686,6 @@ const DeckCode CONTROL_COMBO_DECK(
 		0, // SENSEI'S CHOSEN
 		0, // NINJA
 		0, // SAMURAI
-		
-		0, // BOXER
-		0, // LOST SOUL
 		
 		1, // FIRE ELEMENTAL
 		1, // AIR ELEMENTAL
@@ -17787,6 +17781,9 @@ const DeckCode RANDOM_DECK(
 		0, // WIND RUNNER
 		0, // CLOUD SURFER
 		
+		0, // BOXER
+		0, // LOST SOUL
+		
 		0, // BANISHER
 		0, // BANSHEE
 		0, // CULTIST
@@ -17795,9 +17792,6 @@ const DeckCode RANDOM_DECK(
 		0, // SENSEI'S CHOSEN
 		0, // NINJA
 		0, // SAMURAI
-		
-		0, // BOXER
-		0, // LOST SOUL
 		
 		0, // FIRE ELEMENTAL
 		0, // AIR ELEMENTAL
@@ -22417,4 +22411,8 @@ int main(int argc, char** argv) noexcept {
 	   Locksmith's draw count was decreased from 4 to 3.
 	   Major changes to all of the decklists.
 	   Drawing from empty card stores or substores throws an exception.
+	 v1.6.0.1:
+	   Removed a useless RNG call that desynchronised the desktop and mobile versions.
+	   Reoredered the fighters - the Unranked Family was moved before the Void Family.
+	   README.txt was updated.
  */

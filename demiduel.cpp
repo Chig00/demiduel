@@ -22412,6 +22412,7 @@ int main(int argc, char** argv) noexcept {
 	   Major changes to all of the decklists.
 	   Drawing from empty card stores or substores throws an exception.
 	 v1.6.0.1:
+	   Removed a useless RNG call that desynchronised the desktop and mobile versions.
 	   Reoredered the fighters - the Unranked Family was moved before the Void Family.
 	   README.txt was updated.
  */
