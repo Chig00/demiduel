@@ -23,7 +23,7 @@ INSTRUCTIONS:
 	The player may choose to build their deck, generate
 	  a premade deck, or edit a premade deck.
 	  
-	A deck must have exactly 40 cards.
+	A deck must have exactly 30 cards.
 	A deck must have at lest one unranked fighter.
 	A deck can only have, at most, one copy
 	  of a fighter or supporter card.
@@ -34,10 +34,10 @@ INSTRUCTIONS:
 	A player is randomly chosen to go first.
 	The player that goes first can't attack on their first turn.
 	The player that goes second can play an extra card on their first turn.
-	Players draw 5 cards until they have an unranked fighter in their hand.
-	The player that performs fewer redraws can draw extra cards.
+	Players draw 6 cards from their deck at the start of the game.
+	An unranked fighter is guaranteed in the starting hand.
 	
-	Players can then place 4 life cards from their deck onto the board.
+	Players can then place 3 life cards from their deck onto the board.
 	Life cards are drawn when the player's fighter is defeated.
 	
 	An unranked fighter is then chosen to be the active fighter.
