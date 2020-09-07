@@ -9,7 +9,7 @@
 // System Constants
 //{
 // The current version of the program.
-constexpr int VERSION[] = {1, 6, 0, 1};
+constexpr int VERSION[] = {1, 6, 1, 0};
 
 // The title of the game in string form.
 constexpr const char* TITLE_STRING = "Demi Duel";
@@ -3236,14 +3236,14 @@ constexpr int DIRT_BIKER_ABILITY_USES = 1;
 constexpr const char* DIRT_BIKER_ATTACK_NAME = "Shred";
 constexpr const char* DIRT_BIKER_ATTACK_DESCRIPTION =
 	"Deal 400 damage to your opponent's active fighter.\n"
-	"Deal 5 more damage for each card in your trash."
+	"Deal 7 more damage for each card in your trash."
 ;
 const std::string DIRT_BIKER_ATTACK_EFFECTS(
 	std::string(POWER_EFFECT) // power
 	+ EFFECT_SEPARATOR        //
 	+ TRASH_EFFECT            // trash
 	+ EFFECT_SEPARATOR        //
-	+ "5"                     // 5
+	+ "7"                     // 7
 );
 constexpr int DIRT_BIKER_ATTACK_DAMAGE = 400;
 constexpr int DIRT_BIKER_ATTACK_COST = 1500;
@@ -3279,14 +3279,14 @@ constexpr int MONSTER_TRUCKER_ABILITY_USES = 1;
 constexpr const char* MONSTER_TRUCKER_ATTACK_NAME = "Crush";
 constexpr const char* MONSTER_TRUCKER_ATTACK_DESCRIPTION =
 	"Deal 500 damage to your opponent's active fighter.\n"
-	"Deal 10 more damage for each card in your trash."
+	"Deal 15 more damage for each card in your trash."
 ;
 const std::string MONSTER_TRUCKER_ATTACK_EFFECTS(
 	std::string(POWER_EFFECT) // power
 	+ EFFECT_SEPARATOR        //
 	+ TRASH_EFFECT            // trash
 	+ EFFECT_SEPARATOR        //
-	+ "10"                    // 10
+	+ "15"                    // 15
 );
 constexpr int MONSTER_TRUCKER_ATTACK_DAMAGE = 500;
 constexpr int MONSTER_TRUCKER_ATTACK_COST = 2000;
@@ -3600,7 +3600,7 @@ constexpr int MINER_ATTACK_COST = 1000;
 constexpr const char* EXCAVATOR_NAME = "Excavator";
 constexpr const char* EXCAVATOR_ELEMENT = EARTH_ELEMENT;
 constexpr int EXCAVATOR_HEALTH = 1400;
-constexpr int EXCAVATOR_RETREAT_COST = 3000;
+constexpr int EXCAVATOR_RETREAT_COST = 2000;
 constexpr const char* EXCAVATOR_OLD_RANK = MINER_NAME;
 constexpr const char* EXCAVATOR_ABILITY_NAME = "Undermine";
 constexpr const char* EXCAVATOR_ABILITY_DESCRIPTION =
@@ -3642,7 +3642,7 @@ const std::string EXCAVATOR_ATTACK_EFFECTS(
 	+ DRAW_COUNT_EFFECT         // draw_count
 );
 constexpr int EXCAVATOR_ATTACK_DAMAGE = 500;
-constexpr int EXCAVATOR_ATTACK_COST = 2000;
+constexpr int EXCAVATOR_ATTACK_COST = 1000;
 //}
 //}
 
@@ -3747,7 +3747,7 @@ constexpr const char* PYROTECHNICIAN_ELEMENT = FIRE_ELEMENT;
 constexpr int PYROTECHNICIAN_HEALTH = 1200;
 constexpr int PYROTECHNICIAN_RETREAT_COST = 2000;
 constexpr const char* PYROTECHNICIAN_OLD_RANK = WELDER_NAME;
-constexpr const char* PYROTECHNICIAN_ABILITY_NAME = "Pyromaniac";
+constexpr const char* PYROTECHNICIAN_ABILITY_NAME = "Pyromania";
 constexpr const char* PYROTECHNICIAN_ABILITY_DESCRIPTION =
 	"When this fighter card is played from your hand, "
 	"convert all of your cards to this fighter's element."
@@ -3761,18 +3761,18 @@ constexpr bool PYROTECHNICIAN_ABILITY_PASSIVE = true;
 constexpr int PYROTECHNICIAN_ABILITY_USES = PASSIVE_USES;
 constexpr const char* PYROTECHNICIAN_ATTACK_NAME = "Primed Payload";
 constexpr const char* PYROTECHNICIAN_ATTACK_DESCRIPTION =
-	"Deal 0.275 damage to your opponent's active fighter "
+	"Deal 0.25 damage to your opponent's active fighter "
 	"multiplied by this fighter's total energy value "
-	"for a maximum of 700 damage."
+	"for a maximum of 650 damage."
 ;
 const std::string PYROTECHNICIAN_ATTACK_EFFECTS(
 	std::string(POWER_EFFECT) // power
 	+ EFFECT_SEPARATOR        //
 	+ ENERGY_TYPE             // Energy
 	+ EFFECT_SEPARATOR        //
-	+ "0.275"                 // 0.275
+	+ "0.25"                  // 0.25
 	+ EFFECT_SEPARATOR        //
-	+ "700"                   // 700
+	+ "650"                   // 650
 );
 constexpr int PYROTECHNICIAN_ATTACK_DAMAGE = 0;
 constexpr int PYROTECHNICIAN_ATTACK_COST = 2000;
@@ -3849,7 +3849,7 @@ constexpr int CLOUD_SURFER_ATTACK_COST = 2000;
 //{
 constexpr const char* BOXER_NAME = "Boxer";
 constexpr const char* BOXER_ELEMENT = FIRE_ELEMENT;
-constexpr int BOXER_HEALTH = 1100;
+constexpr int BOXER_HEALTH = 1000;
 constexpr int BOXER_RETREAT_COST = 0;
 constexpr const char* BOXER_OLD_RANK = NO_OLD_RANK;
 constexpr const char* BOXER_ABILITY_NAME = "Aggressive";
@@ -3861,7 +3861,7 @@ constexpr bool BOXER_ABILITY_PASSIVE = true;
 constexpr int BOXER_ABILITY_USES = PASSIVE_USES;
 constexpr const char* BOXER_ATTACK_NAME = "Haymaker";
 constexpr const char* BOXER_ATTACK_DESCRIPTION =
-	"Deal 800 damage to your opponent's active fighter. "
+	"Deal 600 damage to your opponent's active fighter. "
 	"Deal 50 less damage for each card in your hand."
 ;
 const std::string BOXER_ATTACK_EFFECTS(
@@ -3871,7 +3871,7 @@ const std::string BOXER_ATTACK_EFFECTS(
 	+ EFFECT_SEPARATOR        //
 	+ "-50"                   // -50
 );
-constexpr int BOXER_ATTACK_DAMAGE = 800;
+constexpr int BOXER_ATTACK_DAMAGE = 600;
 constexpr int BOXER_ATTACK_COST = 0;
 //}
 
@@ -3936,7 +3936,7 @@ constexpr bool BANISHER_ABILITY_PASSIVE = true;
 constexpr int BANISHER_ABILITY_USES = PASSIVE_USES;
 constexpr const char* BANISHER_ATTACK_NAME = "Shadow Flame";
 constexpr const char* BANISHER_ATTACK_DESCRIPTION =
-	"Your opponent's active fighter takes 30 damage at "
+	"Your opponent's active fighter takes 40 damage at "
 	"the end of each turn, for each card in the void, "
 	"for a maximum of 600 damage."
 ;
@@ -3945,7 +3945,7 @@ const std::string BANISHER_ATTACK_EFFECTS(
 	+ EFFECT_SEPARATOR        //
 	+ VOID_EFFECT             // void
 	+ EFFECT_SEPARATOR        //
-	+ "30"                    // 30
+	+ "40"                    // 40
 	+ EFFECT_SEPARATOR        //
 	+ "600"                   // 600
 );
@@ -3962,21 +3962,21 @@ constexpr int BANSHEE_RETREAT_COST = 2000;
 constexpr const char* BANSHEE_OLD_RANK = NO_OLD_RANK;
 constexpr const char* BANSHEE_ABILITY_NAME = "Forbidden Fuel";
 constexpr const char* BANSHEE_ABILITY_DESCRIPTION =
-	"This fighter can attack and retreat for 200 less energy for each card in the void."
+	"This fighter can attack and retreat for 250 less energy for each card in the void."
 ;
 const std::string BANSHEE_ABILITY_EFFECTS(
 	std::string(FUEL_EFFECT) // fuel
 	+ EFFECT_SEPARATOR       //
 	+ VOID_EFFECT            // void
 	+ EFFECT_SEPARATOR       //
-	+ "200"                  // 200
+	+ "250"                  // 250
 );
 constexpr bool BANSHEE_ABILITY_PASSIVE = true;
 constexpr int BANSHEE_ABILITY_USES = PASSIVE_USES;
 constexpr const char* BANSHEE_ATTACK_NAME = "Screech";
 constexpr const char* BANSHEE_ATTACK_DESCRIPTION =
 	"For each card in the void, "
-	"deal 40 damage to your opponent's active fighter, "
+	"deal 55 damage to your opponent's active fighter, "
 	"for a maximum of 800 damage."
 ;
 const std::string BANSHEE_ATTACK_EFFECTS(
@@ -3984,7 +3984,7 @@ const std::string BANSHEE_ATTACK_EFFECTS(
 	+ EFFECT_SEPARATOR        //
 	+ VOID_EFFECT             // void
 	+ EFFECT_SEPARATOR        //
-	+ "40"                    // 40
+	+ "55"                    // 55
 	+ EFFECT_SEPARATOR        //
 	+ "800"                   // 800
 );
@@ -4002,7 +4002,7 @@ constexpr const char* CULTIST_OLD_RANK = NO_OLD_RANK;
 constexpr const char* CULTIST_ABILITY_NAME = "Void Pact";
 constexpr const char* CULTIST_ABILITY_DESCRIPTION =
 	"Once a turn, you may banish a card in your hand "
-	"and heal 20 damage from one "
+	"and heal 25 damage from one "
 	"of your fighters, for each card in the void, "
 	"for a maximum of 400 healing."
 ;
@@ -4015,7 +4015,7 @@ const std::string CULTIST_ABILITY_EFFECTS(
 	+ EFFECT_SEPARATOR         //
 	+ VOID_EFFECT              // void
 	+ EFFECT_SEPARATOR         //
-	+ "20"                     // 20
+	+ "25"                     // 25
 	+ EFFECT_SEPARATOR         //
 	+ "400"                    // 400
 );
@@ -4655,7 +4655,7 @@ const std::string BANKER_EFFECTS(
 //{
 constexpr const char* GLUTTON_NAME = "Glutton";
 constexpr const char* GLUTTON_DESCRIPTION =
-	"Shuffle the energy in your trash into your deck."
+	"Shuffle your discarded energy cards into your deck."
 ;
 const std::string GLUTTON_EFFECTS(
 	std::string(SHUFFLE_EFFECT) // shuffle
@@ -17509,7 +17509,7 @@ const DeckCode MIDRANGE_DECK(
 		0, // AIR ELEMENTAL
 		0, // WATER ELEMENTAL
 		0, // EARTH ELEMENTAL
-		0, // OMEGA ELEMENTAL
+		1, // OMEGA ELEMENTAL
 		
 		// Supporter Cards
 		1, // PROFESSOR
@@ -17543,7 +17543,7 @@ const DeckCode MIDRANGE_DECK(
 		1, // ASSASSIN
 		1, // SNIPER
 		
-		1, // CHEERLEADER
+		0, // CHEERLEADER
 		1, // ARMS SMUGGLER
 		0, // MANIAC
 		
@@ -22585,4 +22585,21 @@ int main(int argc, char** argv) noexcept {
 	   Removed a useless RNG call that desynchronised the desktop and mobile versions.
 	   Reoredered the fighters - the Unranked Family was moved before the Void Family.
 	   README.txt was updated.
+	 v1.6.1:
+	   Shred's damage scaling was increased from 5 to 7.
+	   Crush's damage scaling was increased from 10 to 15.
+	   Excavator's retreat cost was decreased from 3000 to 2000.
+	   Tunnel's cost was decreased from 2000 to 1000.
+	   Pyromaniac was renamed to Pyromania.
+	   Primed Payload's damage scaling was decreased from 0.275 to 0.25.
+	   Primed Payload's damage cap was decreased from 700 to 650.
+	   Boxer's health was decreased from 1100 to 1000.
+	   Haymaker's base damage was deceased from 800 to 600.
+	   Shadow Flame's damage scaling was increased from 30 to 40.
+	   Forbidden Fuel's energy scaling was increased from 200 to 250.
+	   Screech's damage scaling was increased from 40 to 55.
+	   Void Pact's healing scaling was increased from 20 to 25.
+	   Omega Elemental was returned to the Midrange deck.
+	   Changes to Glutton's description.
+	   Audio was removed from the mobile version.
  */
