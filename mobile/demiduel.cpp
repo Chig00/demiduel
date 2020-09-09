@@ -9,7 +9,7 @@
 // System Constants
 //{
 // The current version of the program.
-constexpr int VERSION[] = {1, 6, 1, 0};
+constexpr int VERSION[] = {1, 6, 2, 0};
 
 // The title of the game in string form.
 constexpr const char* TITLE_STRING = "Demi Duel";
@@ -237,6 +237,7 @@ constexpr const char* DEPLAY_EFFECT = "deplay";
 constexpr const char* ROOT_EFFECT = "root";
 constexpr const char* EXTRA_PLAY_EFFECT = "extra_play";
 constexpr const char* OVERLOAD_EFFECT = "overload";
+constexpr const char* DOUBLE_ROOT_EFFECT = "double_root";
 //}
 
 // The constants for effect explanations.
@@ -621,10 +622,12 @@ constexpr const char* OVERLOAD_REPRESENTATION = "Overloaded";
 //{
 #define ROOT_CONDITION effect_search(ROOT_EFFECT).size()
 constexpr const char* ROOT_REPRESENTATION = "Rooted";
-constexpr const char* ROOT_VALUE = "";
-constexpr const char* ROOT_EXPLANATION =
-	"This fighter can't be switched out until its player's next turn."
-;
+#define ROOT_VALUE (effect_search(DOUBLE_ROOT_EFFECT).size() ? " " : "")
+#define ROOT_EXPLANATION (                                    \
+	"This fighter can't be switched out until its player's"  \
+	+ std::string(effect_value.length() ? " next " : "")       \
+	+ "next turn."                                            \
+)
 //}
 //}
 
@@ -3003,6 +3006,17 @@ constexpr const char* BANISH_LIFE_ANNOUNCEMENT = "Choose a life card to banish."
 	+ " next turn!"                                \
 )
 //}
+
+// Announcement for opposing rooting.
+//{
+#define ROOT_OPPONENT_ANNOUNCEMENT (             \
+	(!opposing ? "Your opponent's " : "Your ")   \
+	+ opponent->fighters[0].get_name()           \
+	+ " can't be switched out until the end of " \
+	+ (opposing ? "their" : "your")              \
+	+ " next turn!"                              \
+)
+//}
 //}
 
 // Universal Effect Explanation Constants
@@ -3216,7 +3230,7 @@ constexpr const char* DIRT_BIKER_OLD_RANK = DRIVER_NAME;
 constexpr const char* DIRT_BIKER_ABILITY_NAME = "Quick Fix";
 constexpr const char* DIRT_BIKER_ABILITY_DESCRIPTION =
 	"Once a turn, you may discard the top card of "
-	"your deck and heal 250 damage from this fighter."
+	"your deck and heal 200 damage from this fighter."
 ;
 const std::string DIRT_BIKER_ABILITY_EFFECTS(
 	std::string(MILL_EFFECT) // mill
@@ -3229,7 +3243,7 @@ const std::string DIRT_BIKER_ABILITY_EFFECTS(
 	+ EFFECT_SEPARATOR       //
 	+ SELF_EFFECT            // self
 	+ EFFECT_SEPARATOR       //
-	+ "250"                  // 250
+	+ "200"                  // 200
 );
 constexpr bool DIRT_BIKER_ABILITY_PASSIVE = false;
 constexpr int DIRT_BIKER_ABILITY_USES = 1;
@@ -3259,7 +3273,7 @@ constexpr const char* MONSTER_TRUCKER_OLD_RANK = DIRT_BIKER_NAME;
 constexpr const char* MONSTER_TRUCKER_ABILITY_NAME = "Scrap Metal";
 constexpr const char* MONSTER_TRUCKER_ABILITY_DESCRIPTION =
 	"Once a turn, you may discard the top card of "
-	"your deck and heal 450 damage from this fighter."
+	"your deck and heal 400 damage from this fighter."
 ;
 const std::string MONSTER_TRUCKER_ABILITY_EFFECTS(
 	std::string(MILL_EFFECT) // mill
@@ -3272,7 +3286,7 @@ const std::string MONSTER_TRUCKER_ABILITY_EFFECTS(
 	+ EFFECT_SEPARATOR       //
 	+ SELF_EFFECT            // self
 	+ EFFECT_SEPARATOR       //
-	+ "450"                  // 450
+	+ "400"                  // 400
 );
 constexpr bool MONSTER_TRUCKER_ABILITY_PASSIVE = false;
 constexpr int MONSTER_TRUCKER_ABILITY_USES = 1;
@@ -3407,13 +3421,13 @@ constexpr int PYROMANCER_RETREAT_COST = 2000;
 constexpr const char* PYROMANCER_OLD_RANK = MAGE_NAME;
 constexpr const char* PYROMANCER_ABILITY_NAME = "Incinerate";
 constexpr const char* PYROMANCER_ABILITY_DESCRIPTION =
-	"Once a turn, you may discard the top 3 cards of your opponent's deck, "
-	"discard the top 2 cards of your deck, and search your deck for a card."
+	"Once a turn, you may discard the top 2 cards of "
+	"both players' decks and search your deck for a card."
 ;
 const std::string PYROMANCER_ABILITY_EFFECTS(
 	std::string(MILL_EFFECT) // mill
 	+ EFFECT_SEPARATOR       //
-	+ "3"                    // 3
+	+ "2"                    // 2
 	+ EFFECT_TERMINATOR
 	+ MILL_EFFECT            // mill
 	+ EFFECT_SEPARATOR       //
@@ -4159,7 +4173,7 @@ constexpr const char* SAMURAI_ABILITY_DESCRIPTION = APPRENTICE_FINAL_RANK_ABILIT
 constexpr const char* SAMURAI_ABILITY_EFFECTS = APPRENTICE_FINAL_RANK_ABILITY_EFFECTS;
 constexpr bool SAMURAI_ABILITY_PASSIVE = APPRENTICE_FINAL_RANK_ABILITY_PASSIVE;
 constexpr int SAMURAI_ABILITY_USES = APPRENTICE_FINAL_RANK_ABILITY_USES;
-constexpr const char* SAMURAI_ATTACK_NAME = "Katana Slash";
+constexpr const char* SAMURAI_ATTACK_NAME = "Subjugate";
 constexpr const char* SAMURAI_ATTACK_DESCRIPTION =
 	"Deal 275 damage to your opponent's active fighter.\n"
 	"Flip 2 coins.\n"
@@ -4734,14 +4748,14 @@ const std::string NURSE_EFFECTS(
 //{
 constexpr const char* INNKEEPER_NAME = "Innkeeper";
 constexpr const char* INNKEEPER_DESCRIPTION =
-	"Heal 300 damage from each of your fighters."
+	"Heal 400 damage from each of your fighters."
 ;
 const std::string INNKEEPER_EFFECTS(
 	std::string(HEAL_EFFECT) // heal
 	+ EFFECT_SEPARATOR       //
 	+ SPLASH_EFFECT          // splash
 	+ EFFECT_SEPARATOR       //
-	+ "300"                  // 300
+	+ "400"                  // 400
 );
 //}
 
@@ -4766,7 +4780,7 @@ const std::string MIRACLE_WORKER_EFFECTS(
 constexpr const char* DOCTOR_NAME = "Doctor";
 constexpr const char* DOCTOR_DESCRIPTION =
 	"Discard all of the energy cards in your hand.\n"
-	"Heal 250 damage from each of your fighters for each card discarded."
+	"Heal 400 damage from each of your fighters for each card discarded."
 ;
 const std::string DOCTOR_EFFECTS(
 	std::string(DISCARD_EFFECT) // discard
@@ -4781,7 +4795,7 @@ const std::string DOCTOR_EFFECTS(
 	+ EFFECT_SEPARATOR          //
 	+ DRAW_COUNT_EFFECT         // draw_count
 	+ EFFECT_SEPARATOR          //
-	+ "250"                     // 250
+	+ "400"                     // 400
 	+ EFFECT_TERMINATOR
 	+ CLEAR_EFFECT              // clear
 );
@@ -4929,7 +4943,7 @@ constexpr const char* MATCHMAKER_NAME = "Matchmaker";
 constexpr const char* MATCHMAKER_DESCRIPTION =
 	"Your opponent's active fighter can't retreat during their next turn."
 ;
-constexpr const char* MATCHMAKER_EFFECTS = CRIPPLE_EFFECT;
+constexpr const char* MATCHMAKER_EFFECTS = ROOT_EFFECT;
 //}
 
 // Plumber
@@ -5009,20 +5023,20 @@ const std::string GATEKEEPER_EFFECTS(
 //{
 constexpr const char* MILLER_NAME = "Miller";
 constexpr const char* MILLER_DESCRIPTION =
-	"Discard the top 3 cards of each player's deck.\n"
+	"Discard the top 2 cards of both player's deck.\n"
 	"Return this card to your hand.\n"
 	"At the end of your turn, discard this card."
 ;
 const std::string MILLER_EFFECTS(
 	std::string(MILL_EFFECT) // mill
 	+ EFFECT_SEPARATOR       //
-	+ "3"                    // 3
+	+ "2"                    // 2
 	+ EFFECT_TERMINATOR
 	+ MILL_EFFECT            // mill
 	+ EFFECT_SEPARATOR       //
 	+ SELF_EFFECT            // self
 	+ EFFECT_SEPARATOR       //
-	+ "3"                    // 3
+	+ "2"                    // 2
 	+ EFFECT_TERMINATOR
 	+ RECYCLE_EFFECT         // recycle
 	+ EFFECT_SEPARATOR       //
@@ -5036,7 +5050,8 @@ const std::string MILLER_EFFECTS(
 //{
 constexpr const char* ARSONIST_NAME = "Arsonist";
 constexpr const char* ARSONIST_DESCRIPTION =
-	"Banish the top 3 cards of each player's deck."
+	"Banish the top 3 cards of each player's deck.\n"
+	"Search your deck for a card."
 ;
 const std::string ARSONIST_EFFECTS(
 	std::string(MILL_EFFECT) // mill
@@ -5052,6 +5067,10 @@ const std::string ARSONIST_EFFECTS(
 	+ BANISH_EFFECT          // banish
 	+ EFFECT_SEPARATOR       //
 	+ "3"                    // 3
+	+ EFFECT_TERMINATOR
+	+ SEARCH_EFFECT          // search
+	+ EFFECT_SEPARATOR       //
+	+ "1"                    // 1
 );
 //}
 //}
@@ -10912,7 +10931,10 @@ class Player: public Affectable {
 							searches = deck.size<Supporter>();
 						}
 						
-						else if (searches > deck.size<Energy>()) {
+						else if (
+							last_drawn->get_type() == ENERGY_TYPE
+							&& searches > deck.size<Energy>()
+						) {
 							searches = deck.size<Energy>();
 						}
 						
@@ -11413,7 +11435,7 @@ class Player: public Affectable {
 						}
 					
 						// Only fighters from the player's bench are applicable.
-						else if (effects[i][2] == BENCH_EFFECT) {
+						else if (effects[i][2] == BENCH_EFFECT && fighters.size() > 1) {
 							// Discards all of the energy attached to the chosen fighter.
 							if (effects[i][3] == UNIVERSAL_EFFECT) {
 								int index;
@@ -11533,40 +11555,43 @@ class Player: public Affectable {
 				// Returns the fighter and it previous ranks to hand.
 				else if (effects[i][0] == BOUNCE_EFFECT) {
 					int index = last_chosen;
-					fighters[index].reset();
-					Fighter last_fighter(fighters[index]);
-					fighters.erase(fighters.cbegin() + index);
 					
-					while (true) {
-						// The fighter is returned to hand.
-						hand.store(last_fighter);
-						announce(BOUNCE_ANNOUNCEMENT);
+					if (index > 0) {
+						fighters[index].reset();
+						Fighter last_fighter(fighters[index]);
+						fighters.erase(fighters.cbegin() + index);
 						
-						// The indices of previous ranks.
-						std::vector<int> indices;
-						
-						// The indices of the previous ranks are found.
-						for (int i = 0; i < trash.get_fighters().size(); ++i) {
-							if (
-								last_fighter.get_old_rank()
-								== trash.get_fighters()[i].get_name()
-							) {
-								indices.push_back(i);
-							}
-						}
-						
-						// A random previous rank is chosen to be returned to hand.
-						if (indices.size()) {
-							int rank_index = indices[
-								Random::get_int(generator, 0, indices.size() - 1)
-							];
+						while (true) {
+							// The fighter is returned to hand.
+							hand.store(last_fighter);
+							announce(BOUNCE_ANNOUNCEMENT);
 							
-							last_fighter = static_cast<Fighter&>(*trash.remove(rank_index));
-						}
-						
-						// No more previous ranks were found. The effect terminates.
-						else {
-							break;
+							// The indices of previous ranks.
+							std::vector<int> indices;
+							
+							// The indices of the previous ranks are found.
+							for (int i = 0; i < trash.get_fighters().size(); ++i) {
+								if (
+									last_fighter.get_old_rank()
+									== trash.get_fighters()[i].get_name()
+								) {
+									indices.push_back(i);
+								}
+							}
+							
+							// A random previous rank is chosen to be returned to hand.
+							if (indices.size()) {
+								int rank_index = indices[
+									Random::get_int(generator, 0, indices.size() - 1)
+								];
+								
+								last_fighter = static_cast<Fighter&>(*trash.remove(rank_index));
+							}
+							
+							// No more previous ranks were found. The effect terminates.
+							else {
+								break;
+							}
 						}
 					}
 				}
@@ -11769,6 +11794,13 @@ class Player: public Affectable {
 					
 					const std::string& overload = effects[i][1];
 					announce(OVERLOAD_ANNOUNCEMENT);
+				}
+			
+				// Roots the opponent's active fighter (no switch).
+				else if (effects[i][0] == ROOT_EFFECT) {
+					opponent->fighters[0].affect(effects[i][0]);
+					opponent->fighters[0].affect(DOUBLE_ROOT_EFFECT);
+					announce(ROOT_OPPONENT_ANNOUNCEMENT);
 				}
 			}
 			
@@ -15088,9 +15120,16 @@ class Player: public Affectable {
 						}
 						
 						// The attack is used an announced.
-						attack = static_cast<const Fighter&>(the_void[index]).get_attack();
-						i = -1;
-						announce(ATTACK_ANNOUNCEMENT);
+						Attack new_attack(
+							static_cast<const Fighter&>(the_void[index]).get_attack()
+						);
+						
+						// Another mimic attack can't be chosen.
+						if (!new_attack.effect_search(MIMIC_EFFECT).size()) {
+							attack = new_attack;
+							i = -1;
+							announce(ATTACK_ANNOUNCEMENT);
+						}
 					}
 				}
 			
@@ -16589,7 +16628,13 @@ class Player: public Affectable {
 		 */
 		void unroot() noexcept {
 			if (turn != opposing) {
-				fighters[0].unaffect(ROOT_EFFECT);
+				if (fighters[0].effect_search(DOUBLE_ROOT_EFFECT).size()) {
+					fighters[0].unaffect(DOUBLE_ROOT_EFFECT);
+				}
+				
+				else {
+					fighters[0].unaffect(ROOT_EFFECT);
+				}
 			}
 		}
 		
@@ -17301,8 +17346,8 @@ const DeckCode OTK_COMBO_DECK(
 		1, // SCAPEGOAT
 		
 		0, // ELECTRICIAN
-		0, // ALCHEMIST
-		0, // TIME TRAVELLER
+		1, // ALCHEMIST
+		1, // TIME TRAVELLER
 		1, // BANKER
 		0, // GLUTTON
 		
@@ -17311,7 +17356,7 @@ const DeckCode OTK_COMBO_DECK(
 		
 		1, // NURSE
 		0, // INNKEEPER
-		1, // MIRACLE WORKER
+		0, // MIRACLE WORKER
 		0, // DOCTOR
 		1, // ESCAPE ARTIST
 		
@@ -17322,7 +17367,7 @@ const DeckCode OTK_COMBO_DECK(
 		0, // ARMS SMUGGLER
 		1, // MANIAC
 		
-		1, // PEACEMAKER
+		0, // PEACEMAKER
 		0, // MATCHMAKER
 		1, // PLUMBER
 		0, // LOCKSMITH
@@ -17402,13 +17447,13 @@ const DeckCode MILL_DECK(
 		
 		// Supporter Cards
 		0, // PROFESSOR
-		0, // LECTURER
+		1, // LECTURER
 		1, // INVESTOR
 		0, // RESEARCHER
 		0, // GAMBLER
 		
 		0, // CHEF
-		1, // TRADER
+		0, // TRADER
 		1, // LIBRARIAN
 		0, // EXPERIMENTER
 		0, // PERSONAL TRAINER
@@ -17640,8 +17685,8 @@ const DeckCode AGGRO_COMBO_DECK(
 		0, // SCAPEGOAT
 		
 		1, // ELECTRICIAN
-		0, // ALCHEMIST
-		0, // TIME TRAVELLER
+		1, // ALCHEMIST
+		1, // TIME TRAVELLER
 		0, // BANKER
 		0, // GLUTTON
 		
@@ -17652,7 +17697,7 @@ const DeckCode AGGRO_COMBO_DECK(
 		0, // INNKEEPER
 		1, // MIRACLE WORKER
 		0, // DOCTOR
-		1, // ESCAPE ARTIST
+		0, // ESCAPE ARTIST
 		
 		1, // ASSASSIN
 		1, // SNIPER
@@ -17676,7 +17721,7 @@ const DeckCode AGGRO_COMBO_DECK(
 		0, // WATER ENERGY
 		0, // EARTH ENERGY
 		
-		2, // UNIVERSAL ENERGY
+		1, // UNIVERSAL ENERGY
 		0, // ALPHA ENERGY
 		0, // OMEGA ENERGY
 		4  // BOND ENERGY
@@ -22602,4 +22647,18 @@ int main(int argc, char** argv) noexcept {
 	   Omega Elemental was returned to the Midrange deck.
 	   Changes to Glutton's description.
 	   Audio was removed from the mobile version.
+	 v1.6.2:
+	   Quick Fix's healing was reduced from 250 to 200.
+	   Scrap Metal's healing was reduced from 450 to 400.
+	   Incinerate's opposing mill was decreased from 3 to 2.
+	   Shadow Bond will terminate if a mimic attack is chosen.
+	   Katana Slash was renamed to Subjugate.
+	   Trader no longer draws nothing when the deck has no energy cards.
+	   Innkeeper's healing scaling was increased from 300 to 400.
+	   Doctor's healing scaling was increased from 250 to 400.
+	   Escape Artist no longer causes a stalemate when played with an empty bench.
+	   Matchmaker now roots instead of crippling.
+	   Miller's mill was decreased from 3 to 2.
+	   Arsonist now searches for a card after banish milling.
+	   Changes to the decklists.
  */
