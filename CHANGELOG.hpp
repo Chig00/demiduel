@@ -1,4 +1,18 @@
 /* CHANGELOG:
+	 v1.7.1:
+	   Miner's health was decreased from 1200 to 1100.
+	   Swimmer's health was decreased from 1100 to 1050.
+	   Banshee's health was decreased from 1200 to 1100.
+	   Screech's damage scaling was increased from 55 to 60.
+	   Screech's maximum damage was increased from 800 to 900.
+	   Screech's cost was decreased from 4000 to 2000.
+	   Void Pact's maximum healing was decreased from 400 to 375.
+	   Shadow Bond's cost was decreased from 3000 to 2000.
+	   Unify was renamed to Synthesise.
+	   Synthesise now generates a copy of the chosen card instead of taking it.
+	   Synthesise no longer announces the chosen card.
+	   Added CARDS.hpp which records all of the card data in the game.
+	   Changed DECKLISTS.txt and CHANGELOG.txt to .hpp files.
 	 v1.7:
 	   The card, Recruiter, was added to the game.
 	   Airborne now correctly provides 2000 Agility Aura instead of 2500.

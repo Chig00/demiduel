@@ -9,7 +9,7 @@
 // System Constants
 //{
 // The current version of the program.
-constexpr int VERSION[] = {1, 7, 0, 0};
+constexpr int VERSION[] = {1, 7, 1, 0};
 
 // The title of the game in string form.
 constexpr const char* TITLE_STRING = "Demi Duel";
@@ -2465,8 +2465,8 @@ constexpr const char* DRAW_LIFE_ANNOUNCEMENT = "Choose a life card to draw.";
 // Announcement to declare that a card will be searched for in the opponent's hand.
 //{
 #define SEARCH_OPPONENT_HAND_ANNOUNCEMENT (                               \
-	opposing ? "Your opponent is searching your hand for a card to draw." \
-	: "Choose a card to draw from your opponent's hand."                  \
+	opposing ? "Your opponent is searching your hand for a card to draw a copy of." \
+	: "Choose a card to draw a copy of from your opponent's hand."                  \
 )
 //}
 
@@ -3603,7 +3603,7 @@ constexpr int RANKER_ABILITY_USES = 1;
 //{
 constexpr const char* MINER_NAME = "Miner";
 constexpr const char* MINER_ELEMENT = EARTH_ELEMENT;
-constexpr int MINER_HEALTH = 1200;
+constexpr int MINER_HEALTH = 1100;
 constexpr int MINER_RETREAT_COST = 1500;
 constexpr const char* MINER_OLD_RANK = NO_OLD_RANK;
 constexpr const char* MINER_ABILITY_NAME = RANKER_ABILITY_NAME;
@@ -3677,7 +3677,7 @@ constexpr int EXCAVATOR_ATTACK_COST = 1000;
 //{
 constexpr const char* SWIMMER_NAME = "Swimmer";
 constexpr const char* SWIMMER_ELEMENT = WATER_ELEMENT;
-constexpr int SWIMMER_HEALTH = 1100;
+constexpr int SWIMMER_HEALTH = 1050;
 constexpr int SWIMMER_RETREAT_COST = 1000;
 constexpr const char* SWIMMER_OLD_RANK = NO_OLD_RANK;
 constexpr const char* SWIMMER_ABILITY_NAME = RANKER_ABILITY_NAME;
@@ -3982,7 +3982,7 @@ constexpr int BANISHER_ATTACK_COST = 2000;
 //{
 constexpr const char* BANSHEE_NAME = "Banshee";
 constexpr const char* BANSHEE_ELEMENT = WATER_ELEMENT;
-constexpr int BANSHEE_HEALTH = 1200;
+constexpr int BANSHEE_HEALTH = 1100;
 constexpr int BANSHEE_RETREAT_COST = 2000;
 constexpr const char* BANSHEE_OLD_RANK = NO_OLD_RANK;
 constexpr const char* BANSHEE_ABILITY_NAME = "Forbidden Fuel";
@@ -4000,21 +4000,21 @@ constexpr bool BANSHEE_ABILITY_PASSIVE = true;
 constexpr int BANSHEE_ABILITY_USES = PASSIVE_USES;
 constexpr const char* BANSHEE_ATTACK_NAME = "Screech";
 constexpr const char* BANSHEE_ATTACK_DESCRIPTION =
-	"For each card in the void, "
-	"deal 55 damage to your opponent's active fighter, "
-	"for a maximum of 800 damage."
+	"Deal 60 damage to your opponent's active fighter, "
+	"for each card in the void, "
+	"for a maximum of 900 damage."
 ;
 const std::string BANSHEE_ATTACK_EFFECTS(
 	std::string(POWER_EFFECT) // power
 	+ EFFECT_SEPARATOR        //
 	+ VOID_EFFECT             // void
 	+ EFFECT_SEPARATOR        //
-	+ "55"                    // 55
+	+ "60"                    // 60
 	+ EFFECT_SEPARATOR        //
-	+ "800"                   // 800
+	+ "900"                   // 900
 );
 constexpr int BANSHEE_ATTACK_DAMAGE = 0;
-constexpr int BANSHEE_ATTACK_COST = 4000;
+constexpr int BANSHEE_ATTACK_COST = 2000;
 //}
 
 // Cultist
@@ -4029,7 +4029,7 @@ constexpr const char* CULTIST_ABILITY_DESCRIPTION =
 	"Once a turn, you may banish a card in your hand "
 	"and heal 25 damage from one "
 	"of your fighters, for each card in the void, "
-	"for a maximum of 400 healing."
+	"for a maximum of 375 healing."
 ;
 const std::string CULTIST_ABILITY_EFFECTS(
 	std::string(BANISH_EFFECT) // banish
@@ -4042,7 +4042,7 @@ const std::string CULTIST_ABILITY_EFFECTS(
 	+ EFFECT_SEPARATOR         //
 	+ "25"                     // 25
 	+ EFFECT_SEPARATOR         //
-	+ "400"                    // 400
+	+ "375"                    // 375
 );
 constexpr bool CULTIST_ABILITY_PASSIVE = false;
 constexpr int CULTIST_ABILITY_USES = 1;
@@ -4056,7 +4056,7 @@ const std::string CULTIST_ATTACK_EFFECTS(
 	+ VOID_EFFECT             // void
 );
 constexpr int CULTIST_ATTACK_DAMAGE = 0;
-constexpr int CULTIST_ATTACK_COST = 3000;
+constexpr int CULTIST_ATTACK_COST = 2000;
 //}
 //}
 
@@ -4346,9 +4346,9 @@ constexpr const char* OMEGA_ELEMENTAL_ELEMENT = NO_ELEMENT;
 constexpr int OMEGA_ELEMENTAL_HEALTH = 1500;
 constexpr int OMEGA_ELEMENTAL_RETREAT_COST = 0;
 constexpr const char* OMEGA_ELEMENTAL_OLD_RANK = ELEMENTAL_ABILITY_NAME;
-constexpr const char* OMEGA_ELEMENTAL_ABILITY_NAME = "Unify";
+constexpr const char* OMEGA_ELEMENTAL_ABILITY_NAME = "Synthesise";
 constexpr const char* OMEGA_ELEMENTAL_ABILITY_DESCRIPTION =
-	"Once a turn, you may search your opponent's hand for a card and draw it."
+	"Once a turn, you may search your opponent's hand for a card and draw a copy of it."
 ;
 const std::string OMEGA_ELEMENTAL_ABILITY_EFFECTS(
 	std::string(SEARCH_EFFECT) // search
@@ -13407,7 +13407,7 @@ class Player: public Affectable {
 							announce(SEARCH_ANNOUNCEMENT);
 						}
 						
-						// The hand is searched for a card to draw.
+						// The hand is searched for a card to draw a copy of.
 						else if (effects[i][2] == HAND_EFFECT) {
 							int searches = std::stoi(effects[i][3]);
 							
@@ -13450,8 +13450,8 @@ class Player: public Affectable {
 									);
 								}
 								
-								announce(SEARCH_OPPONENT_HAND_PEEK_ANNOUNCEMENT);
-								hand.store(opponent->hand.remove(index));
+								// A copy is drawn.
+								hand.store(opponent->hand[index]);
 							}
 							
 							announce(SEARCH_ANNOUNCEMENT);
@@ -15501,7 +15501,7 @@ class Player: public Affectable {
 					
 					// max_damage and indices are initialised.
 					for (int i = 0; i < opponent->fighters.size(); ++i) {
-						max_damage.push_back(opponent->fighters[i].get_max_health());
+						max_damage.push_back(opponent->fighters[i].get_health());
 						
 						if (max_damage[i]) {
 							indices.push_back(i);
@@ -17807,9 +17807,9 @@ const DeckCode MIDRANGE_DECK(
 		0, // WATER ENERGY
 		0, // EARTH ENERGY
 		
-		4, // UNIVERSAL ENERGY
+		3, // UNIVERSAL ENERGY
 		0, // ALPHA ENERGY
-		2, // OMEGA ENERGY
+		3, // OMEGA ENERGY
 		0  // BOND ENERGY
 	}
 );
@@ -17938,7 +17938,7 @@ const DeckCode CONTROL_COMBO_DECK(
 	"they can fuse into Omega Elemental!\n\n"
 	"Omega Elemental is an exceptionally powerful fighter "
 	"that can deal a lot of damage and heal itself!\n\n"
-	"Its ability allows one to draw a card chosen from the opponent hand!",
+	"Its ability allows one to draw a copy of a card chosen from the opponent's hand!",
 	{
 		// Fighter Cards
 		0, // DRIVER
@@ -18000,8 +18000,8 @@ const DeckCode CONTROL_COMBO_DECK(
 		0, // SCAPEGOAT
 		
 		0, // ELECTRICIAN
-		1, // ALCHEMIST
-		1, // TIME TRAVELLER
+		0, // ALCHEMIST
+		0, // TIME TRAVELLER
 		0, // BANKER
 		0, // GLUTTON
 		
@@ -18036,7 +18036,7 @@ const DeckCode CONTROL_COMBO_DECK(
 		0, // WATER ENERGY
 		0, // EARTH ENERGY
 		
-		2, // UNIVERSAL ENERGY
+		4, // UNIVERSAL ENERGY
 		4, // ALPHA ENERGY
 		0, // OMEGA ENERGY
 		0  // BOND ENERGY
@@ -22255,6 +22255,22 @@ int main(int argc, char** argv) noexcept {
 //}
 
 /* CHANGELOG:
+	 v1.7.1:
+	   Miner's health was decreased from 1200 to 1100.
+	   Swimmer's health was decreased from 1100 to 1050.
+	   Banshee's health was decreased from 1200 to 1100.
+	   Screech's damage scaling was increased from 55 to 60.
+	   Screech's maximum damage was increased from 800 to 900.
+	   Screech's cost was decreased from 4000 to 2000.
+	   Void Pact's maximum healing was decreased from 400 to 375.
+	   Shadow Bond's cost was decreased from 3000 to 2000.
+	   Unify was renamed to Synthesise.
+	   Synthesise now generates a copy of the chosen card instead of taking it.
+	   Synthesise no longer announces the chosen card.
+	   Assimilate no longer attempts to deal damage to defeated fighters.
+	   Changes to some decklists.
+	   Added CARDS.hpp which records all of the card data in the game.
+	   Changed DECKLISTS.txt and CHANGELOG.txt to .hpp files.
 	 v1.7:
 	   The card, Recruiter, was added to the game.
 	   Airborne now correctly provides 2000 Agility Aura instead of 2500.
