@@ -2,7 +2,7 @@ const DeckCode AGGRO_DECK(
 	"Aggro",
 	"This is an aggressive deck that uses Hot Rodder and "
 	"Pyrotechnician to deal high amounts of damage every turn!\n\n"
-	"Vacuumancer helps to force out key targets and lock them in the active position!\n\n"
+	"Hydromancer helps to force out key targets and lock them in the active position!\n\n"
 	"Assassin, Sniper, Cheerleader, Bounty Hunter, and Matchmaker can be used "
 	"to make quick work of the opponent's important or unranked fighters.",
 	{
@@ -21,7 +21,7 @@ const DeckCode AGGRO_DECK(
 		0, // PYROMANCER
 		0, // WARLOCK
 		0, // CLERIC
-		1, // VACUUMANCER
+		1, // HYDROMANCER
 		
 		0, // MINER
 		0, // EXCAVATOR
@@ -59,8 +59,8 @@ const DeckCode AGGRO_DECK(
 		1, // RECRUITER
 		
 		0, // CHEF
-		0, // TRADER
-		0, // LIBRARIAN
+		1, // TRADER
+		1, // LIBRARIAN
 		0, // EXPERIMENTER
 		1, // PERSONAL TRAINER
 		0, // SCAPEGOAT
@@ -97,14 +97,14 @@ const DeckCode AGGRO_DECK(
 		0, // ARSONIST
 		
 		// Energy Cards
-		4, // FIRE ENERGY
-		3, // AIR ENERGY
-		0, // WATER ENERGY
+		2, // FIRE ENERGY
+		0, // AIR ENERGY
+		2, // WATER ENERGY
 		0, // EARTH ENERGY
 		
 		0, // UNIVERSAL ENERGY
 		0, // ALPHA ENERGY
-		0, // OMEGA ENERGY
+		1, // OMEGA ENERGY
 		0  // BOND ENERGY
 	}
 );
@@ -131,7 +131,7 @@ const DeckCode TEMPO_DECK(
 		0, // PYROMANCER
 		1, // WARLOCK
 		0, // CLERIC
-		0, // VACUUMANCER
+		0, // HYDROMANCER
 		
 		0, // MINER
 		0, // EXCAVATOR
@@ -210,9 +210,9 @@ const DeckCode TEMPO_DECK(
 		0, // FIRE ENERGY
 		0, // AIR ENERGY
 		2, // WATER ENERGY
-		4, // EARTH ENERGY
+		2, // EARTH ENERGY
 		
-		0, // UNIVERSAL ENERGY
+		2, // UNIVERSAL ENERGY
 		0, // ALPHA ENERGY
 		1, // OMEGA ENERGY
 		0  // BOND ENERGY
@@ -244,7 +244,7 @@ const DeckCode CONTROL_DECK(
 		0, // PYROMANCER
 		0, // WARLOCK
 		1, // CLERIC
-		0, // VACUUMANCER
+		0, // HYDROMANCER
 		
 		1, // MINER
 		1, // EXCAVATOR
@@ -321,11 +321,11 @@ const DeckCode CONTROL_DECK(
 		
 		// Energy Cards
 		0, // FIRE ENERGY
-		0, // AIR ENERGY
+		2, // AIR ENERGY
 		0, // WATER ENERGY
 		2, // EARTH ENERGY
 		
-		2, // UNIVERSAL ENERGY
+		0, // UNIVERSAL ENERGY
 		2, // ALPHA ENERGY
 		0, // OMEGA ENERGY
 		2  // BOND ENERGY
@@ -359,7 +359,7 @@ const DeckCode OTK_COMBO_DECK(
 		0, // PYROMANCER
 		0, // WARLOCK
 		0, // CLERIC
-		0, // VACUUMANCER
+		0, // HYDROMANCER
 		
 		0, // MINER
 		0, // EXCAVATOR
@@ -425,9 +425,9 @@ const DeckCode OTK_COMBO_DECK(
 		0, // ARMS SMUGGLER
 		1, // MANIAC
 		
-		0, // PEACEMAKER
+		1, // PEACEMAKER
 		0, // MATCHMAKER
-		0, // PLUMBER
+		1, // PLUMBER
 		0, // LOCKSMITH
 		1, // LOCK PICKER
 		0, // GATEKEEPER
@@ -441,7 +441,7 @@ const DeckCode OTK_COMBO_DECK(
 		0, // EARTH ENERGY
 		
 		0, // UNIVERSAL ENERGY
-		4, // ALPHA ENERGY
+		2, // ALPHA ENERGY
 		0, // OMEGA ENERGY
 		0  // BOND ENERGY
 	}
@@ -474,7 +474,7 @@ const DeckCode MILL_DECK(
 		1, // PYROMANCER
 		0, // WARLOCK
 		0, // CLERIC
-		0, // VACUUMANCER
+		0, // HYDROMANCER
 		
 		0, // MINER
 		0, // EXCAVATOR
@@ -550,15 +550,15 @@ const DeckCode MILL_DECK(
 		1, // ARSONIST
 		
 		// Energy Cards
-		0, // FIRE ENERGY
+		2, // FIRE ENERGY
 		0, // AIR ENERGY
 		0, // WATER ENERGY
 		0, // EARTH ENERGY
 		
-		4, // UNIVERSAL ENERGY
-		0, // ALPHA ENERGY
-		0, // OMEGA ENERGY
-		4  // BOND ENERGY
+		2, // UNIVERSAL ENERGY
+		2, // ALPHA ENERGY
+		2, // OMEGA ENERGY
+		0  // BOND ENERGY
 	}
 );
 
@@ -586,7 +586,7 @@ const DeckCode MIDRANGE_DECK(
 		0, // PYROMANCER
 		0, // WARLOCK
 		0, // CLERIC
-		0, // VACUUMANCER
+		0, // HYDROMANCER
 		
 		0, // MINER
 		0, // EXCAVATOR
@@ -632,7 +632,7 @@ const DeckCode MIDRANGE_DECK(
 		
 		0, // ELECTRICIAN
 		0, // ALCHEMIST
-		0, // TIME TRAVELLER
+		1, // TIME TRAVELLER
 		0, // BANKER
 		0, // GLUTTON
 		
@@ -640,7 +640,7 @@ const DeckCode MIDRANGE_DECK(
 		1, // BOUNTY HUNTER
 		
 		1, // NURSE
-		0, // INNKEEPER
+		1, // INNKEEPER
 		1, // MIRACLE WORKER
 		0, // DOCTOR
 		0, // ESCAPE ARTIST
@@ -667,7 +667,7 @@ const DeckCode MIDRANGE_DECK(
 		0, // WATER ENERGY
 		0, // EARTH ENERGY
 		
-		4, // UNIVERSAL ENERGY
+		2, // UNIVERSAL ENERGY
 		0, // ALPHA ENERGY
 		2, // OMEGA ENERGY
 		0  // BOND ENERGY
@@ -701,7 +701,7 @@ const DeckCode AGGRO_COMBO_DECK(
 		0, // PYROMANCER
 		0, // WARLOCK
 		0, // CLERIC
-		0, // VACUUMANCER
+		0, // HYDROMANCER
 		
 		0, // MINER
 		0, // EXCAVATOR
@@ -783,9 +783,9 @@ const DeckCode AGGRO_COMBO_DECK(
 		0, // EARTH ENERGY
 		
 		1, // UNIVERSAL ENERGY
-		0, // ALPHA ENERGY
+		2, // ALPHA ENERGY
 		0, // OMEGA ENERGY
-		4  // BOND ENERGY
+		2  // BOND ENERGY
 	}
 );
 
@@ -798,7 +798,7 @@ const DeckCode CONTROL_COMBO_DECK(
 	"they can fuse into Omega Elemental!\n\n"
 	"Omega Elemental is an exceptionally powerful fighter "
 	"that can deal a lot of damage and heal itself!\n\n"
-	"Its ability allows one to draw a card chosen from the opponent hand!",
+	"Its ability allows one to draw a copy of a card chosen from the opponent's hand!",
 	{
 		// Fighter Cards
 		0, // DRIVER
@@ -815,7 +815,7 @@ const DeckCode CONTROL_COMBO_DECK(
 		0, // PYROMANCER
 		0, // WARLOCK
 		0, // CLERIC
-		0, // VACUUMANCER
+		0, // HYDROMANCER
 		
 		0, // MINER
 		0, // EXCAVATOR
@@ -860,10 +860,10 @@ const DeckCode CONTROL_COMBO_DECK(
 		0, // SCAPEGOAT
 		
 		0, // ELECTRICIAN
-		1, // ALCHEMIST
-		1, // TIME TRAVELLER
-		0, // BANKER
-		0, // GLUTTON
+		0, // ALCHEMIST
+		0, // TIME TRAVELLER
+		1, // BANKER
+		1, // GLUTTON
 		
 		1, // SUBSTITUTE
 		0, // BOUNTY HUNTER
@@ -886,8 +886,8 @@ const DeckCode CONTROL_COMBO_DECK(
 		1, // PLUMBER
 		1, // LOCKSMITH
 		1, // LOCK PICKER
-		0, // GATEKEEPER
-		0, // MILLER
+		1, // GATEKEEPER
+		1, // MILLER
 		0, // ARSONIST
 		
 		// Energy Cards
@@ -896,9 +896,9 @@ const DeckCode CONTROL_COMBO_DECK(
 		0, // WATER ENERGY
 		0, // EARTH ENERGY
 		
-		2, // UNIVERSAL ENERGY
-		4, // ALPHA ENERGY
-		0, // OMEGA ENERGY
+		0, // UNIVERSAL ENERGY
+		2, // ALPHA ENERGY
+		2, // OMEGA ENERGY
 		0  // BOND ENERGY
 	}
 );

@@ -1,7 +1,5 @@
 #include <iostream>
 #include <type_traits>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_net.h>
 #include "sdlandnet.hpp"
 
 // Constants
@@ -5272,49 +5270,6 @@ const std::string BOND_ENERGY_EFFECTS(
 constexpr int BOND_ENERGY_VALUE = 750;
 //}
 //}
-//}
-//}
-
-// Mobile Constants
-//{
-// Sources, positions, and dimensions of the numbers (for number entry).
-//{
-constexpr const char* NUMBER_SOURCES[NUMBERS] = {
-	"data/0.bmp",
-	"data/1.bmp",
-	"data/2.bmp",
-	"data/3.bmp",
-	"data/4.bmp",
-	"data/5.bmp",
-	"data/6.bmp",
-	"data/7.bmp",
-	"data/8.bmp",
-	"data/9.bmp"
-};
-constexpr double NUMBER_WIDTH = 0.05;
-constexpr double NUMBER_HEIGHT = 0.1;
-constexpr double NUMBER_X[] = {
-	0.2,
-	0.275,
-	0.35,
-	0.425,
-	0.5,
-	0.575,
-	0.65,
-	0.725,
-	0.8,
-	0.875
-};
-constexpr double NUMBER_Y = 0.75;
-//}
-
-// Source, position, and dimensions of the dot (for address entry).
-//{
-constexpr const char* DOT_SOURCE = "data/fullstop.bmp";
-constexpr double DOT_WIDTH = NUMBER_WIDTH;
-constexpr double DOT_HEIGHT = NUMBER_HEIGHT;
-constexpr double DOT_X = NUMBER_X[0] - DOT_WIDTH;
-constexpr double DOT_Y = NUMBER_Y;
 //}
 //}
 //}
@@ -18215,37 +18170,6 @@ std::string bonus_draw(
 	// The number of cards to be drawn.
 	std::string bonus;
 	
-	// The back button is initialised.
-	Button back_button(
-		renderer.render(
-			BACK_STRING,
-			BACK_WIDTH * display.width(),
-			BACK_HEIGHT * display.height(),
-			BACK_SEPARATION * display.width()
-		),
-		display,
-		BACK_X,
-		BACK_Y
-	);
-	
-	// A vector of number buttons for use on mobile devices.
-	std::vector<Button> number_buttons;
-	
-	for (int i = 0; i < NUMBERS; ++i) {
-		number_buttons.push_back(
-			Button(
-				Sprite(
-					NUMBER_SOURCES[i],
-					NUMBER_WIDTH * display.width(),
-					NUMBER_HEIGHT * display.height()
-				),
-				display,
-				NUMBER_X[i],
-				NUMBER_Y
-			)
-		);
-	}
-	
 	// True if the function should return.
 	bool end = false;
 	
@@ -18255,14 +18179,6 @@ std::string bonus_draw(
 		display_sprite.fill();
 		display_sprite.blit(bonus_sprite, BONUS_X, BONUS_Y);
 		next_button.blit_to(display_sprite);
-		
-		if (bonus.length()) {
-			back_button.blit_to(display_sprite);
-		}
-		
-		for (int i = 0; i < NUMBERS; ++i) {
-			number_buttons[i].blit_to(display);
-		}
 		
 		// The host port is rendered.
 		display_sprite.blit(
@@ -18311,12 +18227,7 @@ std::string bonus_draw(
 			
 			// If the user presses the delete button,
 			//   the last character entered is removed.
-			else if (
-				(
-					Events::unpress(DELETE_KEY)
-					|| back_button.get_rectangle().unclick()
-				) && bonus.length()
-			) {
+			else if (Events::unpress(DELETE_KEY) && bonus.length()) {
 				bonus.pop_back();
 				break;
 			}
@@ -18328,10 +18239,7 @@ std::string bonus_draw(
 				
 				// The numbers are checked.
 				for (int i = 0; !found && i < NUMBERS; i++) {
-					if (
-						Events::unpress(Events::NUMBERS[i])
-						|| number_buttons[i].get_rectangle().unclick()
-					) {
+					if (Events::unpress(Events::NUMBERS[i])) {
 						bonus += '0' + i;
 						found = true;
 					}
@@ -18484,7 +18392,7 @@ void mulligan(
 		));
 	}
 	
-	// If the opponent performed fewer mulligans, they may draw extra cards.
+	// If the opponent performed fewer mulligans, the may draw extra cards.
 	else if (difference < 0) {
 		// The opponent's draw potential is revealed.
 		display_sprite.fill();
@@ -21606,24 +21514,6 @@ void set_port(
 	// The host's port.
 	std::string port;
 	
-	// A vector of number buttons for use on mobile devices.
-	std::vector<Button> number_buttons;
-	
-	for (int i = 0; i < NUMBERS; ++i) {
-		number_buttons.push_back(
-			Button(
-				Sprite(
-					NUMBER_SOURCES[i],
-					NUMBER_WIDTH * display.width(),
-					NUMBER_HEIGHT * display.height()
-				),
-				display,
-				NUMBER_X[i],
-				NUMBER_Y
-			)
-		);
-	}
-	
 	// True if the function should return.
 	bool end = false;
 	
@@ -21634,10 +21524,6 @@ void set_port(
 		display_sprite.blit(port_sprite, PORT_X, PORT_Y);
 		back_button.blit_to(display_sprite);
 		next_button.blit_to(display_sprite);
-		
-		for (int i = 0; i < NUMBERS; ++i) {
-			number_buttons[i].blit_to(display);
-		}
 		
 		// The host port is rendered.
 		display_sprite.blit(
@@ -21660,8 +21546,7 @@ void set_port(
 			//   the quit key, the address menu is returned to.
 			if (
 				Events::unpress(QUIT_KEY)
-				|| !port.length()
-				&& back_button.get_rectangle().unclick()
+				|| back_button.get_rectangle().unclick()
 			) {
 				end = true;
 				break;
@@ -21707,12 +21592,7 @@ void set_port(
 			
 			// If the user presses the delete button,
 			//   the last character entered is removed.
-			else if (
-				(
-					Events::unpress(DELETE_KEY)
-					|| back_button.get_rectangle().unclick()
-				) && port.length()
-			) {
+			else if (Events::unpress(DELETE_KEY) && port.length()) {
 				port.pop_back();
 				break;
 			}
@@ -21724,10 +21604,7 @@ void set_port(
 				
 				// The numbers are checked.
 				for (int i = 0; !found && i < NUMBERS; i++) {
-					if (
-						Events::unpress(Events::NUMBERS[i])
-						|| number_buttons[i].get_rectangle().unclick()
-					) {
+					if (Events::unpress(Events::NUMBERS[i])) {
 						port += '0' + i;
 						found = true;
 					}
@@ -21773,36 +21650,6 @@ void set_address(
 	// The address of the host.
 	std::string address;
 	
-	// A dot button for use on mobile devices.
-	Button dot_button(
-		Sprite(
-			DOT_SOURCE,
-			DOT_WIDTH * display.width(),
-			DOT_HEIGHT * display.height()
-		),
-		display,
-		DOT_X,
-		DOT_Y
-	);
-	
-	// A vector of number buttons for use on mobile devices.
-	std::vector<Button> number_buttons;
-	
-	for (int i = 0; i < NUMBERS; ++i) {
-		number_buttons.push_back(
-			Button(
-				Sprite(
-					NUMBER_SOURCES[i],
-					NUMBER_WIDTH * display.width(),
-					NUMBER_HEIGHT * display.height()
-				),
-				display,
-				NUMBER_X[i],
-				NUMBER_Y
-			)
-		);
-	}
-	
 	// True if the function should return.
 	bool end = false;
 	
@@ -21813,11 +21660,6 @@ void set_address(
 		display_sprite.blit(address_sprite, ADDRESS_X, ADDRESS_Y);
 		back_button.blit_to(display_sprite);
 		next_button.blit_to(display_sprite);
-		dot_button.blit_to(display);
-		
-		for (int i = 0; i < NUMBERS; ++i) {
-			number_buttons[i].blit_to(display);
-		}
 		
 		// The host address is rendered.
 		display_sprite.blit(
@@ -21840,8 +21682,7 @@ void set_address(
 			//   the quit key, the connect menu is returned to.
 			if (
 				Events::unpress(QUIT_KEY)
-				|| !address.length()
-				&& back_button.get_rectangle().unclick()
+				|| back_button.get_rectangle().unclick()
 			) {
 				end = true;
 				break;
@@ -21868,22 +21709,14 @@ void set_address(
 			
 			// If the user presses the delete button,
 			//   the last character entered is removed.
-			else if (
-				(
-					Events::unpress(DELETE_KEY)
-					|| back_button.get_rectangle().unclick()
-				) && address.length()
-			) {
+			else if (Events::unpress(DELETE_KEY) && address.length()) {
 				address.pop_back();
 				break;
 			}
 			
 			// A full stop is appended to the address, if
 			//   the user pressed the full stop button.
-			else if (
-				Events::unpress(Events::FULL_STOP)
-				|| dot_button.get_rectangle().unclick()
-			) {
+			else if (Events::unpress(Events::FULL_STOP)) {
 				address += '.';
 				break;
 			}
@@ -21895,10 +21728,7 @@ void set_address(
 				
 				// The numbers are checked.
 				for (int i = 0; !found && i < NUMBERS; i++) {
-					if (
-						Events::unpress(Events::NUMBERS[i])
-						|| number_buttons[i].get_rectangle().unclick()
-					) {
+					if (Events::unpress(Events::NUMBERS[i])) {
 						address += '0' + i;
 						found = true;
 					}
@@ -22255,6 +22085,24 @@ int main(int argc, char** argv) noexcept {
 //}
 
 /* CHANGELOG:
+     v1.8:
+	   The number of copies of a single energy card was decreased from 4 to 2.
+	   Heat Wave's cost was decreased from 2000 to 0.
+	   Cleric's element was changed from the Water to Air.
+	   Radiant Pulse's cost was decreased from 2000 to 1000.
+	   Vacuumancer was renamed to Hydromancer.
+	   Hydromancer's element was changed from Air to Water.
+	   Hydromancer's retreat cost was decreased from 2000 to 1000.
+	   Air Lock was renamed to Whirlpool.
+	   Slipstream's damage was decreased from 650 to 600.
+	   Slipstream's cost was decreased from 2000 to 1000.
+	   Sensei's Chosen's retreat cost was decreased from 1500 to 1000.
+	   Flying Kick's cost was decreased from 1500 to 1000.
+	   Ninja's retreat cost was decreased from 500 to 0.
+	   Shuriken Storm's cost was decreased from 1500 to 1000.
+	   Samurai's retreat cost was decreased from 1500 to 1000.
+	   Subjugate's cost was decreased from 1500 to 1000.
+	   Changes to the decklists.
 	 v1.7.1:
 	   Miner's health was decreased from 1200 to 1100.
 	   Swimmer's health was decreased from 1100 to 1050.

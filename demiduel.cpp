@@ -7,7 +7,7 @@
 // System Constants
 //{
 // The current version of the program.
-constexpr int VERSION[] = {1, 7, 1, 0};
+constexpr int VERSION[] = {1, 8, 0, 0};
 
 // The title of the game in string form.
 constexpr const char* TITLE_STRING = "Demi Duel";
@@ -105,7 +105,7 @@ constexpr int LIFE_SIZE = 3;
 constexpr int TURN_DRAW = 1;
 constexpr int MAX_FIGHTER_COPIES = 1;
 constexpr int MAX_SUPPORTER_COPIES = MAX_FIGHTER_COPIES;
-constexpr int MAX_ENERGY_COPIES = 4;
+constexpr int MAX_ENERGY_COPIES = 2;
 constexpr int BASE_CARD_LIMIT = 1;
 constexpr int CARD_LIMIT_INCREMENT = 1;
 
@@ -3466,7 +3466,7 @@ const std::string PYROMANCER_ATTACK_EFFECTS(
 	+ "200"                    // 200
 );
 constexpr int PYROMANCER_ATTACK_DAMAGE = 200;
-constexpr int PYROMANCER_ATTACK_COST = 2000;
+constexpr int PYROMANCER_ATTACK_COST = 0;
 //}
 
 // Warlock
@@ -3511,7 +3511,7 @@ constexpr int WARLOCK_ATTACK_COST = 2000;
 // Cleric
 //{
 constexpr const char* CLERIC_NAME = "Cleric";
-constexpr const char* CLERIC_ELEMENT = WATER_ELEMENT;
+constexpr const char* CLERIC_ELEMENT = AIR_ELEMENT;
 constexpr int CLERIC_HEALTH = 1300;
 constexpr int CLERIC_RETREAT_COST = 2000;
 constexpr const char* CLERIC_OLD_RANK = MAGE_NAME;
@@ -3539,23 +3539,23 @@ const std::string CLERIC_ATTACK_EFFECTS(
 	+ "100"                  // 100
 );
 constexpr int CLERIC_ATTACK_DAMAGE = 400;
-constexpr int CLERIC_ATTACK_COST = 2000;
+constexpr int CLERIC_ATTACK_COST = 1000;
 //}
 
-// Vacuumancer
+// Hydromancer
 //{
-constexpr const char* VACUUMANCER_NAME = "Vacuumancer";
-constexpr const char* VACUUMANCER_ELEMENT = AIR_ELEMENT;
-constexpr int VACUUMANCER_HEALTH = 1000;
-constexpr int VACUUMANCER_RETREAT_COST = 2000;
-constexpr const char* VACUUMANCER_OLD_RANK = MAGE_NAME;
-constexpr const char* VACUUMANCER_ABILITY_NAME = "Air Lock";
-constexpr const char* VACUUMANCER_ABILITY_DESCRIPTION =
+constexpr const char* HYDROMANCER_NAME = "Hydromancer";
+constexpr const char* HYDROMANCER_ELEMENT = WATER_ELEMENT;
+constexpr int HYDROMANCER_HEALTH = 1000;
+constexpr int HYDROMANCER_RETREAT_COST = 1000;
+constexpr const char* HYDROMANCER_OLD_RANK = MAGE_NAME;
+constexpr const char* HYDROMANCER_ABILITY_NAME = "Whirlpool";
+constexpr const char* HYDROMANCER_ABILITY_DESCRIPTION =
 	"You may banish a random fighter in your trash that ranks up into this one.\n"
 	"If you do, switch in one of your opponent's benched fighters.\n"
 	"Your opponent's active fighter can't retreat during your opponent's next turn."
 ;
-const std::string VACUUMANCER_ABILITY_EFFECTS(
+const std::string HYDROMANCER_ABILITY_EFFECTS(
 	std::string(ABANDON_EFFECT) // abandon
 	+ EFFECT_SEPARATOR          //
 	+ "1"                       // 1
@@ -3564,16 +3564,16 @@ const std::string VACUUMANCER_ABILITY_EFFECTS(
 	+ EFFECT_SEPARATOR          //
 	+ CRIPPLE_EFFECT            // cripple
 );
-constexpr bool VACUUMANCER_ABILITY_PASSIVE = false;
-constexpr int VACUUMANCER_ABILITY_USES = 1;
-constexpr const char* VACUUMANCER_ATTACK_NAME = "Slipstream";
-constexpr const char* VACUUMANCER_ATTACK_DESCRIPTION =
-	"Deal 650 to your opponent's active fighter.\n"
+constexpr bool HYDROMANCER_ABILITY_PASSIVE = false;
+constexpr int HYDROMANCER_ABILITY_USES = 1;
+constexpr const char* HYDROMANCER_ATTACK_NAME = "Slipstream";
+constexpr const char* HYDROMANCER_ATTACK_DESCRIPTION =
+	"Deal 600 to your opponent's active fighter.\n"
 	"Switch in a fighter from your bench."
 ;
-constexpr const char* VACUUMANCER_ATTACK_EFFECTS = SWITCH_EFFECT; // switch
-constexpr int VACUUMANCER_ATTACK_DAMAGE = 650;
-constexpr int VACUUMANCER_ATTACK_COST = 2000;
+constexpr const char* HYDROMANCER_ATTACK_EFFECTS = SWITCH_EFFECT; // switch
+constexpr int HYDROMANCER_ATTACK_DAMAGE = 600;
+constexpr int HYDROMANCER_ATTACK_COST = 1000;
 //}
 //}
 
@@ -4104,7 +4104,7 @@ constexpr int APPRENTICE_ATTACK_COST = 1000;
 constexpr const char* SENSEIS_CHOSEN_NAME = "Sensei's Chosen";
 constexpr const char* SENSEIS_CHOSEN_ELEMENT = EARTH_ELEMENT;
 constexpr int SENSEIS_CHOSEN_HEALTH = 1200;
-constexpr int SENSEIS_CHOSEN_RETREAT_COST = 1500;
+constexpr int SENSEIS_CHOSEN_RETREAT_COST = 1000;
 constexpr const char* SENSEIS_CHOSEN_OLD_RANK = APPRENTICE_NAME;
 constexpr const char* SENSEIS_CHOSEN_ABILITY_NAME = "Air Affinity";
 constexpr const char* SENSEIS_CHOSEN_ABILITY_DESCRIPTION =
@@ -4135,7 +4135,7 @@ const std::string SENSEIS_CHOSEN_ATTACK_EFFECTS(
 	+ "100"                  // 100
 );
 constexpr int SENSEIS_CHOSEN_ATTACK_DAMAGE = 400;
-constexpr int SENSEIS_CHOSEN_ATTACK_COST = 1500;
+constexpr int SENSEIS_CHOSEN_ATTACK_COST = 1000;
 //}
 
 // Ninja
@@ -4143,7 +4143,7 @@ constexpr int SENSEIS_CHOSEN_ATTACK_COST = 1500;
 constexpr const char* NINJA_NAME = "Ninja";
 constexpr const char* NINJA_ELEMENT = AIR_ELEMENT;
 constexpr int NINJA_HEALTH = 1200;
-constexpr int NINJA_RETREAT_COST = 500;
+constexpr int NINJA_RETREAT_COST = 0;
 constexpr const char* NINJA_OLD_RANK = SENSEIS_CHOSEN_NAME;
 constexpr const char* NINJA_ABILITY_NAME = APPRENTICE_FINAL_RANK_ABILITY_NAME;
 constexpr const char* NINJA_ABILITY_DESCRIPTION = APPRENTICE_FINAL_RANK_ABILITY_DESCRIPTION;
@@ -4177,7 +4177,7 @@ const std::string NINJA_ATTACK_EFFECTS(
 	+ "175"                  // 175
 );
 constexpr int NINJA_ATTACK_DAMAGE = 0;
-constexpr int NINJA_ATTACK_COST = 1500;
+constexpr int NINJA_ATTACK_COST = 1000;
 //}
 
 // Samurai
@@ -4185,7 +4185,7 @@ constexpr int NINJA_ATTACK_COST = 1500;
 constexpr const char* SAMURAI_NAME = "Samurai";
 constexpr const char* SAMURAI_ELEMENT = EARTH_ELEMENT;
 constexpr int SAMURAI_HEALTH = 1400;
-constexpr int SAMURAI_RETREAT_COST = 1500;
+constexpr int SAMURAI_RETREAT_COST = 1000;
 constexpr const char* SAMURAI_OLD_RANK = SENSEIS_CHOSEN_NAME;
 constexpr const char* SAMURAI_ABILITY_NAME = APPRENTICE_FINAL_RANK_ABILITY_NAME;
 constexpr const char* SAMURAI_ABILITY_DESCRIPTION = APPRENTICE_FINAL_RANK_ABILITY_DESCRIPTION;
@@ -4217,7 +4217,7 @@ const std::string SAMURAI_ATTACK_EFFECTS(
 	+ CRIPPLE_EFFECT         // cripple
 );
 constexpr int SAMURAI_ATTACK_DAMAGE = 275;
-constexpr int SAMURAI_ATTACK_COST = 1500;
+constexpr int SAMURAI_ATTACK_COST = 1000;
 //}
 //}
 
@@ -7232,22 +7232,22 @@ const Fighter CLERIC(
 	CLERIC_ATTACK_COST
 );
 
-const Fighter VACUUMANCER(
-	VACUUMANCER_NAME,
-	VACUUMANCER_ELEMENT,
-	VACUUMANCER_HEALTH,
-	VACUUMANCER_RETREAT_COST,
-	VACUUMANCER_OLD_RANK,
-	VACUUMANCER_ABILITY_NAME,
-	VACUUMANCER_ABILITY_DESCRIPTION,
-	VACUUMANCER_ABILITY_EFFECTS,
-	VACUUMANCER_ABILITY_PASSIVE,
-	VACUUMANCER_ABILITY_USES,
-	VACUUMANCER_ATTACK_NAME,
-	VACUUMANCER_ATTACK_DESCRIPTION,
-	VACUUMANCER_ATTACK_EFFECTS,
-	VACUUMANCER_ATTACK_DAMAGE,
-	VACUUMANCER_ATTACK_COST
+const Fighter HYDROMANCER(
+	HYDROMANCER_NAME,
+	HYDROMANCER_ELEMENT,
+	HYDROMANCER_HEALTH,
+	HYDROMANCER_RETREAT_COST,
+	HYDROMANCER_OLD_RANK,
+	HYDROMANCER_ABILITY_NAME,
+	HYDROMANCER_ABILITY_DESCRIPTION,
+	HYDROMANCER_ABILITY_EFFECTS,
+	HYDROMANCER_ABILITY_PASSIVE,
+	HYDROMANCER_ABILITY_USES,
+	HYDROMANCER_ATTACK_NAME,
+	HYDROMANCER_ATTACK_DESCRIPTION,
+	HYDROMANCER_ATTACK_EFFECTS,
+	HYDROMANCER_ATTACK_DAMAGE,
+	HYDROMANCER_ATTACK_COST
 );
 //}
 
@@ -7689,7 +7689,7 @@ const Fighter* const ALL_FIGHTERS[FIGHTER_COUNT] = {
 	&PYROMANCER,
 	&WARLOCK,
 	&CLERIC,
-	&VACUUMANCER,
+	&HYDROMANCER,
 	&MINER,
 	&EXCAVATOR,
 	&SWIMMER,
@@ -16898,7 +16898,7 @@ const DeckCode TEST_DECK(
 		0, // PYROMANCER
 		0, // WARLOCK
 		0, // CLERIC
-		0, // VACUUMANCER
+		0, // HYDROMANCER
 		
 		0, // MINER
 		0, // EXCAVATOR
@@ -17005,7 +17005,7 @@ const DeckCode CLEAR_DECK(
 		0, // PYROMANCER
 		0, // WARLOCK
 		0, // CLERIC
-		0, // VACUUMANCER
+		0, // HYDROMANCER
 		
 		0, // MINER
 		0, // EXCAVATOR
@@ -17097,7 +17097,7 @@ const DeckCode AGGRO_DECK(
 	"Aggro",
 	"This is an aggressive deck that uses Hot Rodder and "
 	"Pyrotechnician to deal high amounts of damage every turn!\n\n"
-	"Vacuumancer helps to force out key targets and lock them in the active position!\n\n"
+	"Hydromancer helps to force out key targets and lock them in the active position!\n\n"
 	"Assassin, Sniper, Cheerleader, Bounty Hunter, and Matchmaker can be used "
 	"to make quick work of the opponent's important or unranked fighters.",
 	{
@@ -17116,7 +17116,7 @@ const DeckCode AGGRO_DECK(
 		0, // PYROMANCER
 		0, // WARLOCK
 		0, // CLERIC
-		1, // VACUUMANCER
+		1, // HYDROMANCER
 		
 		0, // MINER
 		0, // EXCAVATOR
@@ -17154,8 +17154,8 @@ const DeckCode AGGRO_DECK(
 		1, // RECRUITER
 		
 		0, // CHEF
-		0, // TRADER
-		0, // LIBRARIAN
+		1, // TRADER
+		1, // LIBRARIAN
 		0, // EXPERIMENTER
 		1, // PERSONAL TRAINER
 		0, // SCAPEGOAT
@@ -17192,14 +17192,14 @@ const DeckCode AGGRO_DECK(
 		0, // ARSONIST
 		
 		// Energy Cards
-		4, // FIRE ENERGY
-		3, // AIR ENERGY
-		0, // WATER ENERGY
+		2, // FIRE ENERGY
+		0, // AIR ENERGY
+		2, // WATER ENERGY
 		0, // EARTH ENERGY
 		
 		0, // UNIVERSAL ENERGY
 		0, // ALPHA ENERGY
-		0, // OMEGA ENERGY
+		1, // OMEGA ENERGY
 		0  // BOND ENERGY
 	}
 );
@@ -17226,7 +17226,7 @@ const DeckCode TEMPO_DECK(
 		0, // PYROMANCER
 		1, // WARLOCK
 		0, // CLERIC
-		0, // VACUUMANCER
+		0, // HYDROMANCER
 		
 		0, // MINER
 		0, // EXCAVATOR
@@ -17305,9 +17305,9 @@ const DeckCode TEMPO_DECK(
 		0, // FIRE ENERGY
 		0, // AIR ENERGY
 		2, // WATER ENERGY
-		4, // EARTH ENERGY
+		2, // EARTH ENERGY
 		
-		0, // UNIVERSAL ENERGY
+		2, // UNIVERSAL ENERGY
 		0, // ALPHA ENERGY
 		1, // OMEGA ENERGY
 		0  // BOND ENERGY
@@ -17339,7 +17339,7 @@ const DeckCode CONTROL_DECK(
 		0, // PYROMANCER
 		0, // WARLOCK
 		1, // CLERIC
-		0, // VACUUMANCER
+		0, // HYDROMANCER
 		
 		1, // MINER
 		1, // EXCAVATOR
@@ -17416,11 +17416,11 @@ const DeckCode CONTROL_DECK(
 		
 		// Energy Cards
 		0, // FIRE ENERGY
-		0, // AIR ENERGY
+		2, // AIR ENERGY
 		0, // WATER ENERGY
 		2, // EARTH ENERGY
 		
-		2, // UNIVERSAL ENERGY
+		0, // UNIVERSAL ENERGY
 		2, // ALPHA ENERGY
 		0, // OMEGA ENERGY
 		2  // BOND ENERGY
@@ -17454,7 +17454,7 @@ const DeckCode OTK_COMBO_DECK(
 		0, // PYROMANCER
 		0, // WARLOCK
 		0, // CLERIC
-		0, // VACUUMANCER
+		0, // HYDROMANCER
 		
 		0, // MINER
 		0, // EXCAVATOR
@@ -17520,9 +17520,9 @@ const DeckCode OTK_COMBO_DECK(
 		0, // ARMS SMUGGLER
 		1, // MANIAC
 		
-		0, // PEACEMAKER
+		1, // PEACEMAKER
 		0, // MATCHMAKER
-		0, // PLUMBER
+		1, // PLUMBER
 		0, // LOCKSMITH
 		1, // LOCK PICKER
 		0, // GATEKEEPER
@@ -17536,7 +17536,7 @@ const DeckCode OTK_COMBO_DECK(
 		0, // EARTH ENERGY
 		
 		0, // UNIVERSAL ENERGY
-		4, // ALPHA ENERGY
+		2, // ALPHA ENERGY
 		0, // OMEGA ENERGY
 		0  // BOND ENERGY
 	}
@@ -17569,7 +17569,7 @@ const DeckCode MILL_DECK(
 		1, // PYROMANCER
 		0, // WARLOCK
 		0, // CLERIC
-		0, // VACUUMANCER
+		0, // HYDROMANCER
 		
 		0, // MINER
 		0, // EXCAVATOR
@@ -17645,15 +17645,15 @@ const DeckCode MILL_DECK(
 		1, // ARSONIST
 		
 		// Energy Cards
-		0, // FIRE ENERGY
+		2, // FIRE ENERGY
 		0, // AIR ENERGY
 		0, // WATER ENERGY
 		0, // EARTH ENERGY
 		
-		4, // UNIVERSAL ENERGY
-		0, // ALPHA ENERGY
-		0, // OMEGA ENERGY
-		4  // BOND ENERGY
+		2, // UNIVERSAL ENERGY
+		2, // ALPHA ENERGY
+		2, // OMEGA ENERGY
+		0  // BOND ENERGY
 	}
 );
 
@@ -17681,7 +17681,7 @@ const DeckCode MIDRANGE_DECK(
 		0, // PYROMANCER
 		0, // WARLOCK
 		0, // CLERIC
-		0, // VACUUMANCER
+		0, // HYDROMANCER
 		
 		0, // MINER
 		0, // EXCAVATOR
@@ -17727,7 +17727,7 @@ const DeckCode MIDRANGE_DECK(
 		
 		0, // ELECTRICIAN
 		0, // ALCHEMIST
-		0, // TIME TRAVELLER
+		1, // TIME TRAVELLER
 		0, // BANKER
 		0, // GLUTTON
 		
@@ -17735,7 +17735,7 @@ const DeckCode MIDRANGE_DECK(
 		1, // BOUNTY HUNTER
 		
 		1, // NURSE
-		0, // INNKEEPER
+		1, // INNKEEPER
 		1, // MIRACLE WORKER
 		0, // DOCTOR
 		0, // ESCAPE ARTIST
@@ -17762,9 +17762,9 @@ const DeckCode MIDRANGE_DECK(
 		0, // WATER ENERGY
 		0, // EARTH ENERGY
 		
-		3, // UNIVERSAL ENERGY
+		2, // UNIVERSAL ENERGY
 		0, // ALPHA ENERGY
-		3, // OMEGA ENERGY
+		2, // OMEGA ENERGY
 		0  // BOND ENERGY
 	}
 );
@@ -17796,7 +17796,7 @@ const DeckCode AGGRO_COMBO_DECK(
 		0, // PYROMANCER
 		0, // WARLOCK
 		0, // CLERIC
-		0, // VACUUMANCER
+		0, // HYDROMANCER
 		
 		0, // MINER
 		0, // EXCAVATOR
@@ -17878,9 +17878,9 @@ const DeckCode AGGRO_COMBO_DECK(
 		0, // EARTH ENERGY
 		
 		1, // UNIVERSAL ENERGY
-		0, // ALPHA ENERGY
+		2, // ALPHA ENERGY
 		0, // OMEGA ENERGY
-		4  // BOND ENERGY
+		2  // BOND ENERGY
 	}
 );
 
@@ -17910,7 +17910,7 @@ const DeckCode CONTROL_COMBO_DECK(
 		0, // PYROMANCER
 		0, // WARLOCK
 		0, // CLERIC
-		0, // VACUUMANCER
+		0, // HYDROMANCER
 		
 		0, // MINER
 		0, // EXCAVATOR
@@ -17957,8 +17957,8 @@ const DeckCode CONTROL_COMBO_DECK(
 		0, // ELECTRICIAN
 		0, // ALCHEMIST
 		0, // TIME TRAVELLER
-		0, // BANKER
-		0, // GLUTTON
+		1, // BANKER
+		1, // GLUTTON
 		
 		1, // SUBSTITUTE
 		0, // BOUNTY HUNTER
@@ -17981,8 +17981,8 @@ const DeckCode CONTROL_COMBO_DECK(
 		1, // PLUMBER
 		1, // LOCKSMITH
 		1, // LOCK PICKER
-		0, // GATEKEEPER
-		0, // MILLER
+		1, // GATEKEEPER
+		1, // MILLER
 		0, // ARSONIST
 		
 		// Energy Cards
@@ -17991,9 +17991,9 @@ const DeckCode CONTROL_COMBO_DECK(
 		0, // WATER ENERGY
 		0, // EARTH ENERGY
 		
-		4, // UNIVERSAL ENERGY
-		4, // ALPHA ENERGY
-		0, // OMEGA ENERGY
+		0, // UNIVERSAL ENERGY
+		2, // ALPHA ENERGY
+		2, // OMEGA ENERGY
 		0  // BOND ENERGY
 	}
 );
@@ -18017,7 +18017,7 @@ const DeckCode RANDOM_DECK(
 		0, // PYROMANCER
 		0, // WARLOCK
 		0, // CLERIC
-		0, // VACUUMANCER
+		0, // HYDROMANCER
 		
 		0, // MINER
 		0, // EXCAVATOR
@@ -22085,6 +22085,24 @@ int main(int argc, char** argv) noexcept {
 //}
 
 /* CHANGELOG:
+     v1.8:
+	   The number of copies of a single energy card was decreased from 4 to 2.
+	   Heat Wave's cost was decreased from 2000 to 0.
+	   Cleric's element was changed from the Water to Air.
+	   Radiant Pulse's cost was decreased from 2000 to 1000.
+	   Vacuumancer was renamed to Hydromancer.
+	   Hydromancer's element was changed from Air to Water.
+	   Hydromancer's retreat cost was decreased from 2000 to 1000.
+	   Air Lock was renamed to Whirlpool.
+	   Slipstream's damage was decreased from 650 to 600.
+	   Slipstream's cost was decreased from 2000 to 1000.
+	   Sensei's Chosen's retreat cost was decreased from 1500 to 1000.
+	   Flying Kick's cost was decreased from 1500 to 1000.
+	   Ninja's retreat cost was decreased from 500 to 0.
+	   Shuriken Storm's cost was decreased from 1500 to 1000.
+	   Samurai's retreat cost was decreased from 1500 to 1000.
+	   Subjugate's cost was decreased from 1500 to 1000.
+	   Changes to the decklists.
 	 v1.7.1:
 	   Miner's health was decreased from 1200 to 1100.
 	   Swimmer's health was decreased from 1100 to 1050.

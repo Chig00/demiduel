@@ -1,5 +1,3 @@
-// Card Instance Constants
-//{
 // Fighter Cards
 //{
 // Driver Family
@@ -406,7 +404,7 @@ const std::string PYROMANCER_ATTACK_EFFECTS(
 	+ "200"                    // 200
 );
 constexpr int PYROMANCER_ATTACK_DAMAGE = 200;
-constexpr int PYROMANCER_ATTACK_COST = 2000;
+constexpr int PYROMANCER_ATTACK_COST = 0;
 //}
 
 // Warlock
@@ -451,7 +449,7 @@ constexpr int WARLOCK_ATTACK_COST = 2000;
 // Cleric
 //{
 constexpr const char* CLERIC_NAME = "Cleric";
-constexpr const char* CLERIC_ELEMENT = WATER_ELEMENT;
+constexpr const char* CLERIC_ELEMENT = AIR_ELEMENT;
 constexpr int CLERIC_HEALTH = 1300;
 constexpr int CLERIC_RETREAT_COST = 2000;
 constexpr const char* CLERIC_OLD_RANK = MAGE_NAME;
@@ -479,23 +477,23 @@ const std::string CLERIC_ATTACK_EFFECTS(
 	+ "100"                  // 100
 );
 constexpr int CLERIC_ATTACK_DAMAGE = 400;
-constexpr int CLERIC_ATTACK_COST = 2000;
+constexpr int CLERIC_ATTACK_COST = 1000;
 //}
 
-// Vacuumancer
+// Hydromancer
 //{
-constexpr const char* VACUUMANCER_NAME = "Vacuumancer";
-constexpr const char* VACUUMANCER_ELEMENT = AIR_ELEMENT;
-constexpr int VACUUMANCER_HEALTH = 1000;
-constexpr int VACUUMANCER_RETREAT_COST = 2000;
-constexpr const char* VACUUMANCER_OLD_RANK = MAGE_NAME;
-constexpr const char* VACUUMANCER_ABILITY_NAME = "Air Lock";
-constexpr const char* VACUUMANCER_ABILITY_DESCRIPTION =
+constexpr const char* HYDROMANCER_NAME = "Hydromancer";
+constexpr const char* HYDROMANCER_ELEMENT = WATER_ELEMENT;
+constexpr int HYDROMANCER_HEALTH = 1000;
+constexpr int HYDROMANCER_RETREAT_COST = 1000;
+constexpr const char* HYDROMANCER_OLD_RANK = MAGE_NAME;
+constexpr const char* HYDROMANCER_ABILITY_NAME = "Whirlpool";
+constexpr const char* HYDROMANCER_ABILITY_DESCRIPTION =
 	"You may banish a random fighter in your trash that ranks up into this one.\n"
 	"If you do, switch in one of your opponent's benched fighters.\n"
 	"Your opponent's active fighter can't retreat during your opponent's next turn."
 ;
-const std::string VACUUMANCER_ABILITY_EFFECTS(
+const std::string HYDROMANCER_ABILITY_EFFECTS(
 	std::string(ABANDON_EFFECT) // abandon
 	+ EFFECT_SEPARATOR          //
 	+ "1"                       // 1
@@ -504,16 +502,16 @@ const std::string VACUUMANCER_ABILITY_EFFECTS(
 	+ EFFECT_SEPARATOR          //
 	+ CRIPPLE_EFFECT            // cripple
 );
-constexpr bool VACUUMANCER_ABILITY_PASSIVE = false;
-constexpr int VACUUMANCER_ABILITY_USES = 1;
-constexpr const char* VACUUMANCER_ATTACK_NAME = "Slipstream";
-constexpr const char* VACUUMANCER_ATTACK_DESCRIPTION =
-	"Deal 650 to your opponent's active fighter.\n"
+constexpr bool HYDROMANCER_ABILITY_PASSIVE = false;
+constexpr int HYDROMANCER_ABILITY_USES = 1;
+constexpr const char* HYDROMANCER_ATTACK_NAME = "Slipstream";
+constexpr const char* HYDROMANCER_ATTACK_DESCRIPTION =
+	"Deal 600 to your opponent's active fighter.\n"
 	"Switch in a fighter from your bench."
 ;
-constexpr const char* VACUUMANCER_ATTACK_EFFECTS = SWITCH_EFFECT; // switch
-constexpr int VACUUMANCER_ATTACK_DAMAGE = 650;
-constexpr int VACUUMANCER_ATTACK_COST = 2000;
+constexpr const char* HYDROMANCER_ATTACK_EFFECTS = SWITCH_EFFECT; // switch
+constexpr int HYDROMANCER_ATTACK_DAMAGE = 600;
+constexpr int HYDROMANCER_ATTACK_COST = 1000;
 //}
 //}
 
@@ -1044,7 +1042,7 @@ constexpr int APPRENTICE_ATTACK_COST = 1000;
 constexpr const char* SENSEIS_CHOSEN_NAME = "Sensei's Chosen";
 constexpr const char* SENSEIS_CHOSEN_ELEMENT = EARTH_ELEMENT;
 constexpr int SENSEIS_CHOSEN_HEALTH = 1200;
-constexpr int SENSEIS_CHOSEN_RETREAT_COST = 1500;
+constexpr int SENSEIS_CHOSEN_RETREAT_COST = 1000;
 constexpr const char* SENSEIS_CHOSEN_OLD_RANK = APPRENTICE_NAME;
 constexpr const char* SENSEIS_CHOSEN_ABILITY_NAME = "Air Affinity";
 constexpr const char* SENSEIS_CHOSEN_ABILITY_DESCRIPTION =
@@ -1075,7 +1073,7 @@ const std::string SENSEIS_CHOSEN_ATTACK_EFFECTS(
 	+ "100"                  // 100
 );
 constexpr int SENSEIS_CHOSEN_ATTACK_DAMAGE = 400;
-constexpr int SENSEIS_CHOSEN_ATTACK_COST = 1500;
+constexpr int SENSEIS_CHOSEN_ATTACK_COST = 1000;
 //}
 
 // Ninja
@@ -1083,7 +1081,7 @@ constexpr int SENSEIS_CHOSEN_ATTACK_COST = 1500;
 constexpr const char* NINJA_NAME = "Ninja";
 constexpr const char* NINJA_ELEMENT = AIR_ELEMENT;
 constexpr int NINJA_HEALTH = 1200;
-constexpr int NINJA_RETREAT_COST = 500;
+constexpr int NINJA_RETREAT_COST = 0;
 constexpr const char* NINJA_OLD_RANK = SENSEIS_CHOSEN_NAME;
 constexpr const char* NINJA_ABILITY_NAME = APPRENTICE_FINAL_RANK_ABILITY_NAME;
 constexpr const char* NINJA_ABILITY_DESCRIPTION = APPRENTICE_FINAL_RANK_ABILITY_DESCRIPTION;
@@ -1117,7 +1115,7 @@ const std::string NINJA_ATTACK_EFFECTS(
 	+ "175"                  // 175
 );
 constexpr int NINJA_ATTACK_DAMAGE = 0;
-constexpr int NINJA_ATTACK_COST = 1500;
+constexpr int NINJA_ATTACK_COST = 1000;
 //}
 
 // Samurai
@@ -1125,7 +1123,7 @@ constexpr int NINJA_ATTACK_COST = 1500;
 constexpr const char* SAMURAI_NAME = "Samurai";
 constexpr const char* SAMURAI_ELEMENT = EARTH_ELEMENT;
 constexpr int SAMURAI_HEALTH = 1400;
-constexpr int SAMURAI_RETREAT_COST = 1500;
+constexpr int SAMURAI_RETREAT_COST = 1000;
 constexpr const char* SAMURAI_OLD_RANK = SENSEIS_CHOSEN_NAME;
 constexpr const char* SAMURAI_ABILITY_NAME = APPRENTICE_FINAL_RANK_ABILITY_NAME;
 constexpr const char* SAMURAI_ABILITY_DESCRIPTION = APPRENTICE_FINAL_RANK_ABILITY_DESCRIPTION;
@@ -1157,7 +1155,7 @@ const std::string SAMURAI_ATTACK_EFFECTS(
 	+ CRIPPLE_EFFECT         // cripple
 );
 constexpr int SAMURAI_ATTACK_DAMAGE = 275;
-constexpr int SAMURAI_ATTACK_COST = 1500;
+constexpr int SAMURAI_ATTACK_COST = 1000;
 //}
 //}
 
@@ -2208,7 +2206,6 @@ const std::string BOND_ENERGY_EFFECTS(
 	+ BOND_EFFECT                 // bond
 );
 constexpr int BOND_ENERGY_VALUE = 750;
-//}
 //}
 //}
 //}

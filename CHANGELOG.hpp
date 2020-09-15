@@ -1,4 +1,22 @@
 /* CHANGELOG:
+     v1.8:
+	   The number of copies of a single energy card was decreased from 4 to 2.
+	   Heat Wave's cost was decreased from 2000 to 0.
+	   Cleric's element was changed from the Water to Air.
+	   Radiant Pulse's cost was decreased from 2000 to 1000.
+	   Vacuumancer was renamed to Hydromancer.
+	   Hydromancer's element was changed from Air to Water.
+	   Hydromancer's retreat cost was decreased from 2000 to 1000.
+	   Air Lock was renamed to Whirlpool.
+	   Slipstream's damage was decreased from 650 to 600.
+	   Slipstream's cost was decreased from 2000 to 1000.
+	   Sensei's Chosen's retreat cost was decreased from 1500 to 1000.
+	   Flying Kick's cost was decreased from 1500 to 1000.
+	   Ninja's retreat cost was decreased from 500 to 0.
+	   Shuriken Storm's cost was decreased from 1500 to 1000.
+	   Samurai's retreat cost was decreased from 1500 to 1000.
+	   Subjugate's cost was decreased from 1500 to 1000.
+	   Changes to the decklists.
 	 v1.7.1:
 	   Miner's health was decreased from 1200 to 1100.
 	   Swimmer's health was decreased from 1100 to 1050.
@@ -11,6 +29,8 @@
 	   Unify was renamed to Synthesise.
 	   Synthesise now generates a copy of the chosen card instead of taking it.
 	   Synthesise no longer announces the chosen card.
+	   Assimilate no longer attempts to deal damage to defeated fighters.
+	   Changes to some decklists.
 	   Added CARDS.hpp which records all of the card data in the game.
 	   Changed DECKLISTS.txt and CHANGELOG.txt to .hpp files.
 	 v1.7:
