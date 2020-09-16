@@ -53,7 +53,7 @@ const DeckCode AGGRO_DECK(
 		// Supporter Cards
 		1, // PROFESSOR
 		1, // LECTURER
-		0, // INVESTOR
+		1, // INVESTOR
 		0, // RESEARCHER
 		0, // GAMBLER
 		1, // RECRUITER
@@ -76,7 +76,7 @@ const DeckCode AGGRO_DECK(
 		
 		1, // NURSE
 		0, // INNKEEPER
-		1, // MIRACLE WORKER
+		0, // MIRACLE WORKER
 		0, // DOCTOR
 		0, // ESCAPE ARTIST
 		
@@ -163,14 +163,14 @@ const DeckCode TEMPO_DECK(
 		// Supporter Cards
 		1, // PROFESSOR
 		1, // LECTURER
-		0, // INVESTOR
+		1, // INVESTOR
 		0, // RESEARCHER
 		0, // GAMBLER
 		0, // RECRUITER
 		
 		1, // CHEF
-		0, // TRADER
-		0, // LIBRARIAN
+		1, // TRADER
+		1, // LIBRARIAN
 		0, // EXPERIMENTER
 		1, // PERSONAL TRAINER
 		0, // SCAPEGOAT
@@ -193,7 +193,7 @@ const DeckCode TEMPO_DECK(
 		1, // ASSASSIN
 		1, // SNIPER
 		
-		1, // CHEERLEADER
+		0, // CHEERLEADER
 		1, // ARMS SMUGGLER
 		0, // MANIAC
 		
@@ -212,7 +212,7 @@ const DeckCode TEMPO_DECK(
 		2, // WATER ENERGY
 		2, // EARTH ENERGY
 		
-		2, // UNIVERSAL ENERGY
+		0, // UNIVERSAL ENERGY
 		0, // ALPHA ENERGY
 		1, // OMEGA ENERGY
 		0  // BOND ENERGY
@@ -281,7 +281,7 @@ const DeckCode CONTROL_DECK(
 		1, // GAMBLER
 		0, // RECRUITER
 		
-		0, // CHEF
+		1, // CHEF
 		0, // TRADER
 		0, // LIBRARIAN
 		0, // EXPERIMENTER
@@ -321,7 +321,7 @@ const DeckCode CONTROL_DECK(
 		
 		// Energy Cards
 		0, // FIRE ENERGY
-		2, // AIR ENERGY
+		1, // AIR ENERGY
 		0, // WATER ENERGY
 		2, // EARTH ENERGY
 		
@@ -618,13 +618,13 @@ const DeckCode MIDRANGE_DECK(
 		// Supporter Cards
 		1, // PROFESSOR
 		1, // LECTURER
-		0, // INVESTOR
+		1, // INVESTOR
 		0, // RESEARCHER
 		0, // GAMBLER
 		1, // RECRUITER
 		
 		1, // CHEF
-		1, // TRADER
+		0, // TRADER
 		1, // LIBRARIAN
 		1, // EXPERIMENTER
 		0, // PERSONAL TRAINER
@@ -863,7 +863,7 @@ const DeckCode CONTROL_COMBO_DECK(
 		0, // ALCHEMIST
 		0, // TIME TRAVELLER
 		1, // BANKER
-		1, // GLUTTON
+		0, // GLUTTON
 		
 		1, // SUBSTITUTE
 		0, // BOUNTY HUNTER
@@ -879,7 +879,7 @@ const DeckCode CONTROL_COMBO_DECK(
 		
 		0, // CHEERLEADER
 		0, // ARMS SMUGGLER
-		0, // MANIAC
+		1, // MANIAC
 		
 		1, // PEACEMAKER
 		0, // MATCHMAKER
@@ -887,7 +887,7 @@ const DeckCode CONTROL_COMBO_DECK(
 		1, // LOCKSMITH
 		1, // LOCK PICKER
 		1, // GATEKEEPER
-		1, // MILLER
+		0, // MILLER
 		0, // ARSONIST
 		
 		// Energy Cards
@@ -896,9 +896,9 @@ const DeckCode CONTROL_COMBO_DECK(
 		0, // WATER ENERGY
 		0, // EARTH ENERGY
 		
-		0, // UNIVERSAL ENERGY
+		2, // UNIVERSAL ENERGY
 		2, // ALPHA ENERGY
-		2, // OMEGA ENERGY
+		1, // OMEGA ENERGY
 		0  // BOND ENERGY
 	}
 );

@@ -1,4 +1,10 @@
 /* CHANGELOG:
+	 v1.9:
+	   The number of cards in the starting hand was increased from 6 to 7.
+	   Professor's draw was increased from 6 to 7.
+	   Lecturer's draw was increased from 5 to 6.
+	   Investor's draw was increased from 7 to 8.
+	   Changes to the decklists.
      v1.8:
 	   The number of copies of a single energy card was decreased from 4 to 2.
 	   Heat Wave's cost was decreased from 2000 to 0.

@@ -1331,9 +1331,27 @@ constexpr int OMEGA_ELEMENTAL_ATTACK_COST = 2000;
 constexpr const char* PROFESSOR_NAME = "Professor";
 constexpr const char* PROFESSOR_DESCRIPTION =
 	"Discard your hand.\n"
-	"Draw 6 cards.";
+	"Draw 7 cards.";
 const std::string PROFESSOR_EFFECTS(
 	std::string(DISCARD_EFFECT) // discard
+	+ EFFECT_SEPARATOR          //
+	+ UNIVERSAL_EFFECT          // all
+	+ EFFECT_TERMINATOR
+	+ DRAW_EFFECT               // draw
+	+ EFFECT_SEPARATOR          //
+	+ "7"                       // 7
+);
+//}
+
+// Lecturer
+//{
+constexpr const char* LECTURER_NAME = "Lecturer";
+constexpr const char* LECTURER_DESCRIPTION =
+	"Shuffle your hand into your deck.\n"
+	"Draw 6 cards."
+;
+const std::string LECTURER_EFFECTS(
+	std::string(SHUFFLE_EFFECT) // shuffle
 	+ EFFECT_SEPARATOR          //
 	+ UNIVERSAL_EFFECT          // all
 	+ EFFECT_TERMINATOR
@@ -1343,30 +1361,12 @@ const std::string PROFESSOR_EFFECTS(
 );
 //}
 
-// Lecturer
-//{
-constexpr const char* LECTURER_NAME = "Lecturer";
-constexpr const char* LECTURER_DESCRIPTION =
-	"Shuffle your hand into your deck.\n"
-	"Draw 5 cards."
-;
-const std::string LECTURER_EFFECTS(
-	std::string(SHUFFLE_EFFECT) // shuffle
-	+ EFFECT_SEPARATOR          //
-	+ UNIVERSAL_EFFECT          // all
-	+ EFFECT_TERMINATOR
-	+ DRAW_EFFECT               // draw
-	+ EFFECT_SEPARATOR          //
-	+ "5"                       // 5
-);
-//}
-
 // Investor
 //{
 constexpr const char* INVESTOR_NAME = "Investor";
 constexpr const char* INVESTOR_DESCRIPTION =
 	"Shuffle your hand into your deck.\n"
-	"At the start of your next turn, draw 7 cards."
+	"At the start of your next turn, draw 8 cards."
 ;
 const std::string INVESTOR_EFFECTS(
 	std::string(SHUFFLE_EFFECT) // shuffle
@@ -1375,7 +1375,7 @@ const std::string INVESTOR_EFFECTS(
 	+ EFFECT_TERMINATOR
 	+ END_DRAW_EFFECT           // end_draw
 	+ EFFECT_SEPARATOR          //
-	+ "7"                       // 7
+	+ "8"                       // 8
 );
 //}
 

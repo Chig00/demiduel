@@ -7,7 +7,7 @@
 // System Constants
 //{
 // The current version of the program.
-constexpr int VERSION[] = {1, 8, 0, 0};
+constexpr int VERSION[] = {1, 9, 0, 0};
 
 // The title of the game in string form.
 constexpr const char* TITLE_STRING = "Demi Duel";
@@ -100,7 +100,7 @@ constexpr bool TAILS = false;
 constexpr int DECK_SIZE = 30;
 constexpr int CARD_TYPES = 3;
 constexpr int BENCH_INDEX = 1;
-constexpr int HAND_SIZE = 6;
+constexpr int HAND_SIZE = 7;
 constexpr int LIFE_SIZE = 3;
 constexpr int TURN_DRAW = 1;
 constexpr int MAX_FIGHTER_COPIES = 1;
@@ -4393,9 +4393,27 @@ constexpr int OMEGA_ELEMENTAL_ATTACK_COST = 2000;
 constexpr const char* PROFESSOR_NAME = "Professor";
 constexpr const char* PROFESSOR_DESCRIPTION =
 	"Discard your hand.\n"
-	"Draw 6 cards.";
+	"Draw 7 cards.";
 const std::string PROFESSOR_EFFECTS(
 	std::string(DISCARD_EFFECT) // discard
+	+ EFFECT_SEPARATOR          //
+	+ UNIVERSAL_EFFECT          // all
+	+ EFFECT_TERMINATOR
+	+ DRAW_EFFECT               // draw
+	+ EFFECT_SEPARATOR          //
+	+ "7"                       // 7
+);
+//}
+
+// Lecturer
+//{
+constexpr const char* LECTURER_NAME = "Lecturer";
+constexpr const char* LECTURER_DESCRIPTION =
+	"Shuffle your hand into your deck.\n"
+	"Draw 6 cards."
+;
+const std::string LECTURER_EFFECTS(
+	std::string(SHUFFLE_EFFECT) // shuffle
 	+ EFFECT_SEPARATOR          //
 	+ UNIVERSAL_EFFECT          // all
 	+ EFFECT_TERMINATOR
@@ -4405,30 +4423,12 @@ const std::string PROFESSOR_EFFECTS(
 );
 //}
 
-// Lecturer
-//{
-constexpr const char* LECTURER_NAME = "Lecturer";
-constexpr const char* LECTURER_DESCRIPTION =
-	"Shuffle your hand into your deck.\n"
-	"Draw 5 cards."
-;
-const std::string LECTURER_EFFECTS(
-	std::string(SHUFFLE_EFFECT) // shuffle
-	+ EFFECT_SEPARATOR          //
-	+ UNIVERSAL_EFFECT          // all
-	+ EFFECT_TERMINATOR
-	+ DRAW_EFFECT               // draw
-	+ EFFECT_SEPARATOR          //
-	+ "5"                       // 5
-);
-//}
-
 // Investor
 //{
 constexpr const char* INVESTOR_NAME = "Investor";
 constexpr const char* INVESTOR_DESCRIPTION =
 	"Shuffle your hand into your deck.\n"
-	"At the start of your next turn, draw 7 cards."
+	"At the start of your next turn, draw 8 cards."
 ;
 const std::string INVESTOR_EFFECTS(
 	std::string(SHUFFLE_EFFECT) // shuffle
@@ -4437,7 +4437,7 @@ const std::string INVESTOR_EFFECTS(
 	+ EFFECT_TERMINATOR
 	+ END_DRAW_EFFECT           // end_draw
 	+ EFFECT_SEPARATOR          //
-	+ "7"                       // 7
+	+ "8"                       // 8
 );
 //}
 
@@ -17148,7 +17148,7 @@ const DeckCode AGGRO_DECK(
 		// Supporter Cards
 		1, // PROFESSOR
 		1, // LECTURER
-		0, // INVESTOR
+		1, // INVESTOR
 		0, // RESEARCHER
 		0, // GAMBLER
 		1, // RECRUITER
@@ -17171,7 +17171,7 @@ const DeckCode AGGRO_DECK(
 		
 		1, // NURSE
 		0, // INNKEEPER
-		1, // MIRACLE WORKER
+		0, // MIRACLE WORKER
 		0, // DOCTOR
 		0, // ESCAPE ARTIST
 		
@@ -17258,14 +17258,14 @@ const DeckCode TEMPO_DECK(
 		// Supporter Cards
 		1, // PROFESSOR
 		1, // LECTURER
-		0, // INVESTOR
+		1, // INVESTOR
 		0, // RESEARCHER
 		0, // GAMBLER
 		0, // RECRUITER
 		
 		1, // CHEF
-		0, // TRADER
-		0, // LIBRARIAN
+		1, // TRADER
+		1, // LIBRARIAN
 		0, // EXPERIMENTER
 		1, // PERSONAL TRAINER
 		0, // SCAPEGOAT
@@ -17288,7 +17288,7 @@ const DeckCode TEMPO_DECK(
 		1, // ASSASSIN
 		1, // SNIPER
 		
-		1, // CHEERLEADER
+		0, // CHEERLEADER
 		1, // ARMS SMUGGLER
 		0, // MANIAC
 		
@@ -17307,7 +17307,7 @@ const DeckCode TEMPO_DECK(
 		2, // WATER ENERGY
 		2, // EARTH ENERGY
 		
-		2, // UNIVERSAL ENERGY
+		0, // UNIVERSAL ENERGY
 		0, // ALPHA ENERGY
 		1, // OMEGA ENERGY
 		0  // BOND ENERGY
@@ -17376,7 +17376,7 @@ const DeckCode CONTROL_DECK(
 		1, // GAMBLER
 		0, // RECRUITER
 		
-		0, // CHEF
+		1, // CHEF
 		0, // TRADER
 		0, // LIBRARIAN
 		0, // EXPERIMENTER
@@ -17416,7 +17416,7 @@ const DeckCode CONTROL_DECK(
 		
 		// Energy Cards
 		0, // FIRE ENERGY
-		2, // AIR ENERGY
+		1, // AIR ENERGY
 		0, // WATER ENERGY
 		2, // EARTH ENERGY
 		
@@ -17713,13 +17713,13 @@ const DeckCode MIDRANGE_DECK(
 		// Supporter Cards
 		1, // PROFESSOR
 		1, // LECTURER
-		0, // INVESTOR
+		1, // INVESTOR
 		0, // RESEARCHER
 		0, // GAMBLER
 		1, // RECRUITER
 		
 		1, // CHEF
-		1, // TRADER
+		0, // TRADER
 		1, // LIBRARIAN
 		1, // EXPERIMENTER
 		0, // PERSONAL TRAINER
@@ -17958,7 +17958,7 @@ const DeckCode CONTROL_COMBO_DECK(
 		0, // ALCHEMIST
 		0, // TIME TRAVELLER
 		1, // BANKER
-		1, // GLUTTON
+		0, // GLUTTON
 		
 		1, // SUBSTITUTE
 		0, // BOUNTY HUNTER
@@ -17974,7 +17974,7 @@ const DeckCode CONTROL_COMBO_DECK(
 		
 		0, // CHEERLEADER
 		0, // ARMS SMUGGLER
-		0, // MANIAC
+		1, // MANIAC
 		
 		1, // PEACEMAKER
 		0, // MATCHMAKER
@@ -17982,7 +17982,7 @@ const DeckCode CONTROL_COMBO_DECK(
 		1, // LOCKSMITH
 		1, // LOCK PICKER
 		1, // GATEKEEPER
-		1, // MILLER
+		0, // MILLER
 		0, // ARSONIST
 		
 		// Energy Cards
@@ -17991,9 +17991,9 @@ const DeckCode CONTROL_COMBO_DECK(
 		0, // WATER ENERGY
 		0, // EARTH ENERGY
 		
-		0, // UNIVERSAL ENERGY
+		2, // UNIVERSAL ENERGY
 		2, // ALPHA ENERGY
-		2, // OMEGA ENERGY
+		1, // OMEGA ENERGY
 		0  // BOND ENERGY
 	}
 );
@@ -22085,6 +22085,12 @@ int main(int argc, char** argv) noexcept {
 //}
 
 /* CHANGELOG:
+	 v1.9:
+	   The number of cards in the starting hand was increased from 6 to 7.
+	   Professor's draw was increased from 6 to 7.
+	   Lecturer's draw was increased from 5 to 6.
+	   Investor's draw was increased from 7 to 8.
+	   Changes to the decklists.
      v1.8:
 	   The number of copies of a single energy card was decreased from 4 to 2.
 	   Heat Wave's cost was decreased from 2000 to 0.
