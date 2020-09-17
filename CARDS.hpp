@@ -42,24 +42,24 @@ constexpr const char* RACER_OLD_RANK = DRIVER_NAME;
 constexpr const char* RACER_ABILITY_NAME = "Acceleration";
 constexpr const char* RACER_ABILITY_DESCRIPTION =
 	"Once a turn, you may switch this fighter in from the bench.\n"
-	"If you do, this fighter deals 100 more damage this turn."
+	"If you do, this fighter deals 125 more damage this turn."
 ;
 const std::string RACER_ABILITY_EFFECTS(
 	std::string(SWITCH_IN_EFFECT) // switch_in
 	+ EFFECT_SEPARATOR            //
 	+ POWER_EFFECT                // power
 	+ EFFECT_SEPARATOR            //
-	+ "100"                       // 100
+	+ "125"                       // 125
 );
 constexpr bool RACER_ABILITY_PASSIVE = false;
 constexpr int RACER_ABILITY_USES = 1;
 constexpr const char* RACER_ATTACK_NAME = "Nitro Boost";
 constexpr const char* RACER_ATTACK_DESCRIPTION =
-	"Deal 400 damage to your opponent's active fighter."
+	"Deal 425 damage to your opponent's active fighter."
 ;
 constexpr const char* RACER_ATTACK_EFFECTS = NO_EFFECTS;
-constexpr int RACER_ATTACK_DAMAGE = 400;
-constexpr int RACER_ATTACK_COST = 1500;
+constexpr int RACER_ATTACK_DAMAGE = 425;
+constexpr int RACER_ATTACK_COST = 1000;
 //}
 
 // Hot Rodder
@@ -72,14 +72,14 @@ constexpr const char* HOT_RODDER_OLD_RANK = RACER_NAME;
 constexpr const char* HOT_RODDER_ABILITY_NAME = "Charged Thruster";
 constexpr const char* HOT_RODDER_ABILITY_DESCRIPTION =
 	"Once a turn, you may switch this fighter in from the bench.\n"
-	"If you do, this fighter deals 200 more damage this turn."
+	"If you do, this fighter deals 250 more damage this turn."
 ;
 const std::string HOT_RODDER_ABILITY_EFFECTS(
 	std::string(SWITCH_IN_EFFECT) // switch_in
 	+ EFFECT_SEPARATOR            //
 	+ POWER_EFFECT                // power
 	+ EFFECT_SEPARATOR            //
-	+ "200"                       // 200
+	+ "250"                       // 250
 );
 constexpr bool HOT_RODDER_ABILITY_PASSIVE = false;
 constexpr int HOT_RODDER_ABILITY_USES = 1;
@@ -100,7 +100,7 @@ constexpr int HOT_RODDER_ATTACK_COST = 2000;
 constexpr const char* SAILOR_NAME = "Sailor";
 constexpr const char* SAILOR_ELEMENT = WATER_ELEMENT;
 constexpr int SAILOR_HEALTH = 1200;
-constexpr int SAILOR_RETREAT_COST = 1500;
+constexpr int SAILOR_RETREAT_COST = 1000;
 constexpr const char* SAILOR_OLD_RANK = DRIVER_NAME;
 constexpr const char* SAILOR_ABILITY_NAME = "Sailor's Compass";
 constexpr const char* SAILOR_ABILITY_DESCRIPTION =
@@ -172,7 +172,7 @@ constexpr int PIRATE_ATTACK_COST = 1000;
 constexpr const char* DIRT_BIKER_NAME = "Dirt Biker";
 constexpr const char* DIRT_BIKER_ELEMENT = EARTH_ELEMENT;
 constexpr int DIRT_BIKER_HEALTH = 1250;
-constexpr int DIRT_BIKER_RETREAT_COST = 1500;
+constexpr int DIRT_BIKER_RETREAT_COST = 1000;
 constexpr const char* DIRT_BIKER_OLD_RANK = DRIVER_NAME;
 constexpr const char* DIRT_BIKER_ABILITY_NAME = "Quick Fix";
 constexpr const char* DIRT_BIKER_ABILITY_DESCRIPTION =
@@ -197,17 +197,17 @@ constexpr int DIRT_BIKER_ABILITY_USES = 1;
 constexpr const char* DIRT_BIKER_ATTACK_NAME = "Shred";
 constexpr const char* DIRT_BIKER_ATTACK_DESCRIPTION =
 	"Deal 400 damage to your opponent's active fighter.\n"
-	"Deal 7 more damage for each card in your trash."
+	"Deal 8 more damage for each card in your trash."
 ;
 const std::string DIRT_BIKER_ATTACK_EFFECTS(
 	std::string(POWER_EFFECT) // power
 	+ EFFECT_SEPARATOR        //
 	+ TRASH_EFFECT            // trash
 	+ EFFECT_SEPARATOR        //
-	+ "7"                     // 7
+	+ "8"                     // 8
 );
 constexpr int DIRT_BIKER_ATTACK_DAMAGE = 400;
-constexpr int DIRT_BIKER_ATTACK_COST = 1500;
+constexpr int DIRT_BIKER_ATTACK_COST = 1000;
 //}
 
 // Monster Trucker
@@ -276,7 +276,7 @@ constexpr bool PILOT_ABILITY_PASSIVE = true;
 constexpr int PILOT_ABILITY_USES = PASSIVE_USES;
 constexpr const char* PILOT_ATTACK_NAME = "Divebomb";
 constexpr const char* PILOT_ATTACK_DESCRIPTION =
-	"Deal 400 damage to the defending fighter.\n"
+	"Deal 375 damage to the defending fighter.\n"
 	"It needs 1000 more energy to retreat next turn."
 ;
 const std::string PILOT_ATTACK_EFFECTS(
@@ -284,7 +284,7 @@ const std::string PILOT_ATTACK_EFFECTS(
 	+ EFFECT_SEPARATOR          //
 	+ "-1000"                   // -1000
 );
-constexpr int PILOT_ATTACK_DAMAGE = 400;
+constexpr int PILOT_ATTACK_DAMAGE = 375;
 constexpr int PILOT_ATTACK_COST = 1000;
 //}
 
@@ -363,7 +363,7 @@ constexpr int MAGE_ATTACK_COST = 1000;
 //{
 constexpr const char* PYROMANCER_NAME = "Pyromancer";
 constexpr const char* PYROMANCER_ELEMENT = FIRE_ELEMENT;
-constexpr int PYROMANCER_HEALTH = 1200;
+constexpr int PYROMANCER_HEALTH = 1250;
 constexpr int PYROMANCER_RETREAT_COST = 2000;
 constexpr const char* PYROMANCER_OLD_RANK = MAGE_NAME;
 constexpr const char* PYROMANCER_ABILITY_NAME = "Incinerate";
@@ -411,7 +411,7 @@ constexpr int PYROMANCER_ATTACK_COST = 0;
 //{
 constexpr const char* WARLOCK_NAME = "Warlock";
 constexpr const char* WARLOCK_ELEMENT = EARTH_ELEMENT;
-constexpr int WARLOCK_HEALTH = 1100;
+constexpr int WARLOCK_HEALTH = 1150;
 constexpr int WARLOCK_RETREAT_COST = 2000;
 constexpr const char* WARLOCK_OLD_RANK = MAGE_NAME;
 constexpr const char* WARLOCK_ABILITY_NAME = "Dark Bargain";
@@ -450,17 +450,17 @@ constexpr int WARLOCK_ATTACK_COST = 2000;
 //{
 constexpr const char* CLERIC_NAME = "Cleric";
 constexpr const char* CLERIC_ELEMENT = AIR_ELEMENT;
-constexpr int CLERIC_HEALTH = 1300;
+constexpr int CLERIC_HEALTH = 1350;
 constexpr int CLERIC_RETREAT_COST = 2000;
 constexpr const char* CLERIC_OLD_RANK = MAGE_NAME;
 constexpr const char* CLERIC_ABILITY_NAME = "Healing Aura";
 constexpr const char* CLERIC_ABILITY_DESCRIPTION =
-	"At the end of your turn, heal 125 damage from each of your fighters."
+	"At the end of your turn, heal 150 damage from each of your fighters."
 ;
 const std::string CLERIC_ABILITY_EFFECTS(
 	std::string(HEAL_AURA_EFFECT) // heal_aura
 	+ EFFECT_SEPARATOR            //
-	+ "125"                       // 125
+	+ "150"                       // 150
 );
 constexpr bool CLERIC_ABILITY_PASSIVE = true;
 constexpr int CLERIC_ABILITY_USES = PASSIVE_USES;
@@ -484,7 +484,7 @@ constexpr int CLERIC_ATTACK_COST = 1000;
 //{
 constexpr const char* HYDROMANCER_NAME = "Hydromancer";
 constexpr const char* HYDROMANCER_ELEMENT = WATER_ELEMENT;
-constexpr int HYDROMANCER_HEALTH = 1000;
+constexpr int HYDROMANCER_HEALTH = 1050;
 constexpr int HYDROMANCER_RETREAT_COST = 1000;
 constexpr const char* HYDROMANCER_OLD_RANK = MAGE_NAME;
 constexpr const char* HYDROMANCER_ABILITY_NAME = "Whirlpool";
@@ -724,7 +724,7 @@ constexpr const char* PYROTECHNICIAN_ATTACK_NAME = "Primed Payload";
 constexpr const char* PYROTECHNICIAN_ATTACK_DESCRIPTION =
 	"Deal 0.25 damage to your opponent's active fighter "
 	"multiplied by this fighter's total energy value "
-	"for a maximum of 650 damage."
+	"for a maximum of 700 damage."
 ;
 const std::string PYROTECHNICIAN_ATTACK_EFFECTS(
 	std::string(POWER_EFFECT) // power
@@ -733,7 +733,7 @@ const std::string PYROTECHNICIAN_ATTACK_EFFECTS(
 	+ EFFECT_SEPARATOR        //
 	+ "0.25"                  // 0.25
 	+ EFFECT_SEPARATOR        //
-	+ "650"                   // 650
+	+ "700"                   // 700
 );
 constexpr int PYROTECHNICIAN_ATTACK_DAMAGE = 0;
 constexpr int PYROTECHNICIAN_ATTACK_COST = 2000;
@@ -1279,7 +1279,7 @@ constexpr int EARTH_ELEMENTAL_ATTACK_COST = ELEMENTAL_ATTACK_COST;
 //{
 constexpr const char* OMEGA_ELEMENTAL_NAME = "Omega Elemental";
 constexpr const char* OMEGA_ELEMENTAL_ELEMENT = NO_ELEMENT;
-constexpr int OMEGA_ELEMENTAL_HEALTH = 1500;
+constexpr int OMEGA_ELEMENTAL_HEALTH = 1750;
 constexpr int OMEGA_ELEMENTAL_RETREAT_COST = 0;
 constexpr const char* OMEGA_ELEMENTAL_OLD_RANK = ELEMENTAL_ABILITY_NAME;
 constexpr const char* OMEGA_ELEMENTAL_ABILITY_NAME = "Synthesise";

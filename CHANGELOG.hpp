@@ -1,4 +1,22 @@
 /* CHANGELOG:
+     v1.9.1:
+	   Accelerate's damage boost was increased from 100 to 125.
+	   Nitro Boost's damage was increased from 400 to 425.
+	   Nitro Boost's cost was decreased from 1500 to 1000.
+	   Charged Thruster's damage boost was increased from 200 to 250.
+	   Sailor's retreat cost was decreased from 1500 to 1000.
+	   Dirt Biker's retreat cost was decreased from 1500 to 1000.
+	   Shred's damage scaling was increased from 7 to 8.
+	   Shred's cost was decreased from 1500 to 1000.
+	   Divebomb's damage was decreased from 400 to 375.
+	   Pyromancer's health was increased from 1200 to 1250.
+	   Warlock's health was increased from 1100 to 1150.
+	   Cleric's health was inreased from 1300 to 1350.
+	   Healing Aura' healing was increased from 125 to 150.
+	   Hydromancer's health was increased from 1000 to 1050.
+	   Primed Payload's damage cap was increased from 650 to 700.
+	   Omega Elemental's health was increased from 1500 to 1750.
+	   The audio files were returned to the mobile version.
 	 v1.9:
 	   The number of cards in the starting hand was increased from 6 to 7.
 	   Professor's draw was increased from 6 to 7.
