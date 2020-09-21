@@ -9,7 +9,7 @@
 // System Constants
 //{
 // The current version of the program.
-constexpr int VERSION[] = {1, 9, 3, 0};
+constexpr int VERSION[] = {1, 9, 4, 0};
 
 // The title of the game in string form.
 constexpr const char* TITLE_STRING = "Demi Duel";
@@ -3789,7 +3789,7 @@ const std::string PYROTECHNICIAN_ATTACK_EFFECTS(
     + "700"                   // 700
 );
 constexpr int PYROTECHNICIAN_ATTACK_DAMAGE = 0;
-constexpr int PYROTECHNICIAN_ATTACK_COST = 2000;
+constexpr int PYROTECHNICIAN_ATTACK_COST = 0;
 //} 
 //}
 
@@ -22184,6 +22184,8 @@ int main(int argc, char** argv) noexcept {
 //}
 
 /* CHANGELOG:
+     v1.9.4:
+       Primed Payload's cost was decreased from 2000 to 0.
      v1.9.3:
        Miner's retreat cost was decreased from 1500 to 1000.
        Blowtorch's cost was increased from 1500 to 2000.

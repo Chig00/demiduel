@@ -1,4 +1,6 @@
 /* CHANGELOG:
+     v1.9.4:
+       Primed Payload's cost was decreased from 2000 to 0.
      v1.9.3:
        Miner's retreat cost was decreased from 1500 to 1000.
        Blowtorch's cost was increased from 1500 to 2000.

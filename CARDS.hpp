@@ -725,7 +725,7 @@ const std::string PYROTECHNICIAN_ATTACK_EFFECTS(
     + "700"                   // 700
 );
 constexpr int PYROTECHNICIAN_ATTACK_DAMAGE = 0;
-constexpr int PYROTECHNICIAN_ATTACK_COST = 2000;
+constexpr int PYROTECHNICIAN_ATTACK_COST = 0;
 //} 
 //}
 
