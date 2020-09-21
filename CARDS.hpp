@@ -529,7 +529,7 @@ constexpr int RANKER_ABILITY_USES = 1;
 constexpr const char* MINER_NAME = "Miner";
 constexpr const char* MINER_ELEMENT = EARTH_ELEMENT;
 constexpr int MINER_HEALTH = 1100;
-constexpr int MINER_RETREAT_COST = 1500;
+constexpr int MINER_RETREAT_COST = 1000;
 constexpr const char* MINER_OLD_RANK = NO_OLD_RANK;
 constexpr const char* MINER_ABILITY_NAME = RANKER_ABILITY_NAME;
 constexpr const char* MINER_ABILITY_DESCRIPTION = RANKER_ABILITY_DESCRIPTION;
@@ -683,11 +683,11 @@ constexpr bool WELDER_ABILITY_PASSIVE = RANKER_ABILITY_PASSIVE;
 constexpr int WELDER_ABILITY_USES = RANKER_ABILITY_USES;
 constexpr const char* WELDER_ATTACK_NAME = "Blowtorch";
 constexpr const char* WELDER_ATTACK_DESCRIPTION =
-    "Deal 350 damage to your opponent's active fighter."
+    "Deal 450 damage to your opponent's active fighter."
 ;
 constexpr const char* WELDER_ATTACK_EFFECTS = NO_EFFECTS;
-constexpr int WELDER_ATTACK_DAMAGE = 350;
-constexpr int WELDER_ATTACK_COST = 1500;
+constexpr int WELDER_ATTACK_DAMAGE = 450;
+constexpr int WELDER_ATTACK_COST = 2000;
 //}
 
 // Pyrotechnician

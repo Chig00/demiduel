@@ -2,12 +2,12 @@
 #include <type_traits>
 #include "sdlandnet.hpp"
 
-// Constants
+// Universal Constants
 //{
 // System Constants
 //{
 // The current version of the program.
-constexpr int VERSION[] = {1, 9, 2, 0};
+constexpr int VERSION[] = {1, 9, 3, 0};
 
 // The title of the game in string form.
 constexpr const char* TITLE_STRING = "Demi Duel";
@@ -3591,7 +3591,7 @@ constexpr int RANKER_ABILITY_USES = 1;
 constexpr const char* MINER_NAME = "Miner";
 constexpr const char* MINER_ELEMENT = EARTH_ELEMENT;
 constexpr int MINER_HEALTH = 1100;
-constexpr int MINER_RETREAT_COST = 1500;
+constexpr int MINER_RETREAT_COST = 1000;
 constexpr const char* MINER_OLD_RANK = NO_OLD_RANK;
 constexpr const char* MINER_ABILITY_NAME = RANKER_ABILITY_NAME;
 constexpr const char* MINER_ABILITY_DESCRIPTION = RANKER_ABILITY_DESCRIPTION;
@@ -3745,11 +3745,11 @@ constexpr bool WELDER_ABILITY_PASSIVE = RANKER_ABILITY_PASSIVE;
 constexpr int WELDER_ABILITY_USES = RANKER_ABILITY_USES;
 constexpr const char* WELDER_ATTACK_NAME = "Blowtorch";
 constexpr const char* WELDER_ATTACK_DESCRIPTION =
-    "Deal 350 damage to your opponent's active fighter."
+    "Deal 450 damage to your opponent's active fighter."
 ;
 constexpr const char* WELDER_ATTACK_EFFECTS = NO_EFFECTS;
-constexpr int WELDER_ATTACK_DAMAGE = 350;
-constexpr int WELDER_ATTACK_COST = 1500;
+constexpr int WELDER_ATTACK_DAMAGE = 450;
+constexpr int WELDER_ATTACK_COST = 2000;
 //}
 
 // Pyrotechnician
@@ -17190,7 +17190,7 @@ const DeckCode AGGRO_DECK(
 
 const DeckCode TEMPO_DECK(
     "Tempo",
-    "This is an offensive deck that also has some strong defensive options.\n\n"
+    "This is an offensive deck that also has some defensive options.\n\n"
     "Monster Trucker can heal itself and has an attack that gains power over time!\n\n"
     "Warlock deals a ton of damage and can return cards from the trash back to the hand!\n\n"
     "Scuba Diver can be used to stall, burst, or maintain tempo when played.",
@@ -17245,9 +17245,9 @@ const DeckCode TEMPO_DECK(
         1, // INVESTOR
         0, // RESEARCHER
         0, // GAMBLER
-        0, // RECRUITER
+        1, // RECRUITER
         
-        1, // CHEF
+        0, // CHEF
         1, // TRADER
         1, // LIBRARIAN
         0, // EXPERIMENTER
@@ -22069,6 +22069,13 @@ int main(int argc, char** argv) noexcept {
 //}
 
 /* CHANGELOG:
+     v1.9.3:
+       Miner's retreat cost was decreased from 1500 to 1000.
+       Blowtorch's cost was increased from 1500 to 2000.
+       Blowtorch's damage was increased from 350 to 450.
+       Tempo replaced Chef with Recruiter.
+       The mobile version only plays the Duel Song (throughout the entire app).
+       Mobile Constants have been separated from the Universal Constants.
      v1.9.2:
        Incinerate's opposing mill was decreased from 2 to 1.
        Incinerate no longer mills the player.

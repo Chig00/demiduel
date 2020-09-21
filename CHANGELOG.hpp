@@ -1,4 +1,11 @@
 /* CHANGELOG:
+     v1.9.3:
+       Miner's retreat cost was decreased from 1500 to 1000.
+       Blowtorch's cost was increased from 1500 to 2000.
+       Blowtorch's damage was increased from 350 to 450.
+       Tempo replaced Chef with Recruiter.
+       The mobile version only plays the Duel Song (throughout the entire app).
+       Mobile Constants have been separated from the Universal Constants.
      v1.9.2:
        Incinerate's opposing mill was decreased from 2 to 1.
        Incinerate no longer mills the player.

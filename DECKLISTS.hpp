@@ -111,7 +111,7 @@ const DeckCode AGGRO_DECK(
 
 const DeckCode TEMPO_DECK(
     "Tempo",
-    "This is an offensive deck that also has some strong defensive options.\n\n"
+    "This is an offensive deck that also has some defensive options.\n\n"
     "Monster Trucker can heal itself and has an attack that gains power over time!\n\n"
     "Warlock deals a ton of damage and can return cards from the trash back to the hand!\n\n"
     "Scuba Diver can be used to stall, burst, or maintain tempo when played.",
@@ -166,9 +166,9 @@ const DeckCode TEMPO_DECK(
         1, // INVESTOR
         0, // RESEARCHER
         0, // GAMBLER
-        0, // RECRUITER
+        1, // RECRUITER
         
-        1, // CHEF
+        0, // CHEF
         1, // TRADER
         1, // LIBRARIAN
         0, // EXPERIMENTER

@@ -4,12 +4,12 @@
 #include <SDL2/SDL_net.h>
 #include "sdlandnet.hpp"
 
-// Constants
+// Universal Constants
 //{
 // System Constants
 //{
 // The current version of the program.
-constexpr int VERSION[] = {1, 9, 2, 0};
+constexpr int VERSION[] = {1, 9, 3, 0};
 
 // The title of the game in string form.
 constexpr const char* TITLE_STRING = "Demi Duel";
@@ -3593,7 +3593,7 @@ constexpr int RANKER_ABILITY_USES = 1;
 constexpr const char* MINER_NAME = "Miner";
 constexpr const char* MINER_ELEMENT = EARTH_ELEMENT;
 constexpr int MINER_HEALTH = 1100;
-constexpr int MINER_RETREAT_COST = 1500;
+constexpr int MINER_RETREAT_COST = 1000;
 constexpr const char* MINER_OLD_RANK = NO_OLD_RANK;
 constexpr const char* MINER_ABILITY_NAME = RANKER_ABILITY_NAME;
 constexpr const char* MINER_ABILITY_DESCRIPTION = RANKER_ABILITY_DESCRIPTION;
@@ -3747,11 +3747,11 @@ constexpr bool WELDER_ABILITY_PASSIVE = RANKER_ABILITY_PASSIVE;
 constexpr int WELDER_ABILITY_USES = RANKER_ABILITY_USES;
 constexpr const char* WELDER_ATTACK_NAME = "Blowtorch";
 constexpr const char* WELDER_ATTACK_DESCRIPTION =
-    "Deal 350 damage to your opponent's active fighter."
+    "Deal 450 damage to your opponent's active fighter."
 ;
 constexpr const char* WELDER_ATTACK_EFFECTS = NO_EFFECTS;
-constexpr int WELDER_ATTACK_DAMAGE = 350;
-constexpr int WELDER_ATTACK_COST = 1500;
+constexpr int WELDER_ATTACK_DAMAGE = 450;
+constexpr int WELDER_ATTACK_COST = 2000;
 //}
 
 // Pyrotechnician
@@ -5258,6 +5258,7 @@ constexpr int BOND_ENERGY_VALUE = 750;
 //}
 //}
 //}
+//}
 
 // Mobile Constants
 //{
@@ -5299,7 +5300,6 @@ constexpr double DOT_WIDTH = NUMBER_WIDTH;
 constexpr double DOT_HEIGHT = NUMBER_HEIGHT;
 constexpr double DOT_X = NUMBER_X[0] - DOT_WIDTH;
 constexpr double DOT_Y = NUMBER_Y;
-//}
 //}
 //}
 
@@ -17235,7 +17235,7 @@ const DeckCode AGGRO_DECK(
 
 const DeckCode TEMPO_DECK(
     "Tempo",
-    "This is an offensive deck that also has some strong defensive options.\n\n"
+    "This is an offensive deck that also has some defensive options.\n\n"
     "Monster Trucker can heal itself and has an attack that gains power over time!\n\n"
     "Warlock deals a ton of damage and can return cards from the trash back to the hand!\n\n"
     "Scuba Diver can be used to stall, burst, or maintain tempo when played.",
@@ -17290,9 +17290,9 @@ const DeckCode TEMPO_DECK(
         1, // INVESTOR
         0, // RESEARCHER
         0, // GAMBLER
-        0, // RECRUITER
+        1, // RECRUITER
         
-        1, // CHEF
+        0, // CHEF
         1, // TRADER
         1, // LIBRARIAN
         0, // EXPERIMENTER
@@ -18609,10 +18609,6 @@ void game(
 	display_sprite.blit(wait_sprite, WAIT_X, WAIT_Y);
 	display.update();
 	
-	// The main game song is loaded and queued in another thread.
-	Audio duel_song(DUEL_SONG_SOURCE, DUEL_SONG_LENGTH);
-	Thread song_thread(Audio::thread_queue, &duel_song);
-	
 	// The message is extracted from the package.
 	std::string& message = messenger_package.get_string();
 	
@@ -18632,7 +18628,6 @@ void game(
 		
 		// If the other player quit, the game cannot begin.
 		if (message == TERMINATOR_STRING) {
-			duel_song.pause();
 			return;
 		}
 		
@@ -19808,9 +19803,6 @@ void game(
 	) {
 		Events::update();
 	}
-	
-	// The song is paused to terminate the thread.
-	duel_song.pause();
 	//}
 }
 //}
@@ -21250,10 +21242,6 @@ void build_deck(
 		QUIT_Y
 	);
 	
-	// The deck building song is loaded and queued in another thread.
-	Audio build_song(BUILD_SONG_SOURCE, BUILD_SONG_LENGTH);
-	Thread song_thread(Audio::thread_queue, &build_song);
-	
 	// The opponent's message is read and stored in another thread.
 	std::string message(EMPTY_MESSAGE);
 	MessengerPackage package(messenger, message);
@@ -21373,10 +21361,6 @@ void build_deck(
 			else if (done_button.get_rectangle().unclick()) {
 				// Separate if statement to get the break (for rendering this menu).
 				if (valid_deck(display, renderer, card_counts, card_count)) {
-					build_song.pause();
-					song_thread.wait();
-					build_song.play();
-					build_song.dequeue();
 					game(
 						display,
 						renderer,
@@ -21385,7 +21369,6 @@ void build_deck(
 						package,
 						message_thread
 					);
-					song_thread.new_thread(Audio::thread_queue, &build_song);
 				}
 				
 				break;
@@ -21398,9 +21381,6 @@ void build_deck(
 	
 	// The other player is notified that this player has disconnected.
 	messenger.send(TERMINATOR_STRING);
-	
-	// The build song is paused, which terminates the queuing thread.
-	build_song.pause();
 }
 //}
 
@@ -21413,8 +21393,6 @@ void build_deck(
 void set_server(
 	Display& display,
 	const Renderer& renderer,
-	Audio& menu_song,
-	Thread& song_thread,
 	Button& back_button,
 	int port
 ) noexcept {
@@ -21471,18 +21449,12 @@ void set_server(
 			//   when the main game function returns.
 			// This screen is not returned to.
 			else if (server) {
-				menu_song.pause();
-				song_thread.wait();
-				menu_song.play();
-				menu_song.dequeue();
-				
 				build_deck(
 					display,
 					renderer,
 					*server
 				);
-				
-				song_thread.new_thread(Audio::thread_queue, &menu_song);
+                
 				end = true;
 			}
 			
@@ -21499,18 +21471,10 @@ void set_server(
 void set_client(
 	Display& display,
 	const Renderer& renderer,
-	Audio& menu_song,
-	Thread& song_thread,
 	Button& back_button,
 	const std::string& address,
 	int port
 ) noexcept {
-	// The main menu music is stopped.
-	menu_song.pause();
-	song_thread.wait();
-	menu_song.play();
-	menu_song.dequeue();
-	
 	// An attempt is made to connect to the server.
 	try {
 		build_deck(
@@ -21555,9 +21519,6 @@ void set_client(
 			Events::update();
 		}
 	}
-	
-	// The main menu music recommences from the start.
-	song_thread.new_thread(Audio::thread_queue, &menu_song);
 }
 
 /**
@@ -21566,8 +21527,6 @@ void set_client(
 void set_port(
 	Display& display,
 	const Renderer& renderer,
-	Audio& menu_song,
-	Thread& song_thread,
 	Button& back_button,
 	Button& next_button,
 	const std::string& address
@@ -21663,8 +21622,6 @@ void set_port(
 						set_server(
 							display,
 							renderer,
-							menu_song,
-							song_thread,
 							back_button,
 							std::stoi(port)
 						);
@@ -21675,8 +21632,6 @@ void set_port(
 						set_client(
 							display,
 							renderer,
-							menu_song,
-							song_thread,
 							back_button,
 							address,
 							std::stoi(port)
@@ -21734,8 +21689,6 @@ void set_port(
 void set_address(
 	Display& display,
 	const Renderer& renderer,
-	Audio& menu_song,
-	Thread& song_thread,
 	Button& back_button,
 	Button& next_button
 ) noexcept {
@@ -21840,8 +21793,6 @@ void set_address(
 				set_port(
 					display,
 					renderer,
-					menu_song,
-					song_thread,
 					back_button,
 					next_button,
 					address
@@ -21906,9 +21857,7 @@ void set_address(
  */
 void connect(
 	Display& display,
-	const Renderer& renderer,
-	Audio& menu_song,
-	Thread& song_thread
+	const Renderer& renderer
 ) noexcept {
 	// The components of the display are extracted.
 	Sprite& display_sprite = display.get_sprite();
@@ -22005,8 +21954,6 @@ void connect(
 				set_port(
 					display,
 					renderer,
-					menu_song,
-					song_thread,
 					back_button,
 					next_button,
 					SERVER_STRING
@@ -22021,8 +21968,6 @@ void connect(
 				set_address(
 					display,
 					renderer,
-					menu_song,
-					song_thread,
 					back_button,
 					next_button
 				);
@@ -22187,9 +22132,9 @@ int main(int argc, char** argv) noexcept {
 			PLAY_Y
 		);
 		
-		// The menu song is loaded and queued in another thread.
-		Audio menu_song(MENU_SONG_SOURCE, MENU_SONG_LENGTH);
-		Thread thread(Audio::thread_queue, &menu_song);
+		// The duel song is loaded and queued in another thread.
+		Audio duel_song(DUEL_SONG_SOURCE, DUEL_SONG_LENGTH);
+		Thread thread(Audio::thread_queue, &duel_song);
 		
 		// True when the program should end.
 		bool end = false;
@@ -22218,7 +22163,7 @@ int main(int argc, char** argv) noexcept {
 				else if (
 					play_button.get_rectangle().unclick()
 				) {
-					connect(display, renderer, menu_song, thread);
+					connect(display, renderer);
 					break;
 				}
 				
@@ -22227,8 +22172,8 @@ int main(int argc, char** argv) noexcept {
 			}
 		}
 
-		// The menu song is paused, which terminates the queuing thread.
-		menu_song.pause();
+		// The duel song is paused, which terminates the queuing thread.
+		duel_song.pause();
 	}
 	
 	// The library is shut down.
@@ -22239,6 +22184,13 @@ int main(int argc, char** argv) noexcept {
 //}
 
 /* CHANGELOG:
+     v1.9.3:
+       Miner's retreat cost was decreased from 1500 to 1000.
+       Blowtorch's cost was increased from 1500 to 2000.
+       Blowtorch's damage was increased from 350 to 450.
+       Tempo replaced Chef with Recruiter.
+       The mobile version only plays the Duel Song (throughout the entire app).
+       Mobile Constants have been separated from the Universal Constants.
      v1.9.2:
        Incinerate's opposing mill was decreased from 2 to 1.
        Incinerate no longer mills the player.
