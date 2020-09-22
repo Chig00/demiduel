@@ -7,7 +7,7 @@
 // System Constants
 //{
 // The current version of the program.
-constexpr int VERSION[] = {1, 9, 4, 0};
+constexpr int VERSION[] = {1, 9, 5, 0};
 
 // The title of the game in string form.
 constexpr const char* TITLE_STRING = "Demi Duel";
@@ -532,6 +532,29 @@ constexpr const char* NEXT_CARD_PLAYS_REPRESENTATION = " Plays ";
 )
 //}
 
+// The constants for the friendly next card plays explanation.
+//{
+#define NEXT_TURN_CARD_PLAYS_CONDITION (turn == opposing)
+constexpr const char* NEXT_TURN_CARD_PLAYS_REPRESENTATION = "Next Plays";
+#define NEXT_TURN_CARD_PLAYS_VALUE std::to_string( \
+    (                                              \
+        value                                      \
+        = card_limit                               \
+        + CARD_LIMIT_INCREMENT                     \
+        - effect_count(OVERLOAD_EFFECT)            \
+    ) < 0                                          \
+    ? 0                                            \
+    : value                                        \
+)
+#define NEXT_TURN_CARD_PLAYS_EXPLANATION (      \
+    "This player can play "                     \
+    + effect_value                              \
+    + " card"                                   \
+    + (std::stoi(effect_value) == 1 ? "" : "s") \
+    + " during their next turn."                \
+)
+//}
+
 // The constants for the boost explanation.
 //{
 #define BOOST_CONDITION (value = get_boost())
@@ -720,7 +743,7 @@ constexpr int PLAYER_EXPLANATION_COUNT = 19;
     X == 0 ? static_cast<bool>(PREPARATION_CONDITION)                 \
     : X == 1 ? static_cast<bool>(CARD_PLAYS_CONDITION)                \
     : X == 2 ? static_cast<bool>(NEXT_CARD_PLAYS_CONDITION)           \
-    : X == 3 ? static_cast<bool>(OVERLOAD_CONDITION)                  \
+    : X == 3 ? static_cast<bool>(NEXT_TURN_CARD_PLAYS_CONDITION)      \
     : X == 4 ? static_cast<bool>(FATIGUE_CONDITION)                   \
     : X == 5 ? static_cast<bool>(ATTACKED_CONDITION)                  \
     : X == 6 ? static_cast<bool>(RETREATED_CONDITION)                 \
@@ -744,7 +767,7 @@ constexpr const char* PLAYER_EFFECT_REPRESENTATIONS[PLAYER_EXPLANATION_COUNT] = 
     PREPARATION_REPRESENTATION,
     CARD_PLAYS_REPRESENTATION,
     NEXT_CARD_PLAYS_REPRESENTATION,
-    OVERLOAD_REPRESENTATION,
+    NEXT_TURN_CARD_PLAYS_REPRESENTATION,
     FATIGUE_REPRESENTATION,
     ATTACKED_REPRESENTATION,
     RETREATED_REPRESENTATION,
@@ -768,7 +791,7 @@ constexpr const char* PLAYER_EFFECT_REPRESENTATIONS[PLAYER_EXPLANATION_COUNT] = 
     X == 0 ? PREPARATION_VALUE                 \
     : X == 1 ? CARD_PLAYS_VALUE                \
     : X == 2 ? NEXT_CARD_PLAYS_VALUE           \
-    : X == 3 ? OVERLOAD_VALUE                  \
+    : X == 3 ? NEXT_TURN_CARD_PLAYS_VALUE      \
     : X == 4 ? FATIGUE_VALUE                   \
     : X == 5 ? ATTACKED_VALUE                  \
     : X == 6 ? RETREATED_VALUE                 \
@@ -789,26 +812,26 @@ constexpr const char* PLAYER_EFFECT_REPRESENTATIONS[PLAYER_EXPLANATION_COUNT] = 
 
 // All of the player-specific explainable effect expanations.
 //{
-#define PLAYER_EFFECT_EXPLANATIONS(X) (    \
-    X == 0 ? PREPARATION_EXPLANATION       \
-    : X == 1 ? CARD_PLAYS_EXPLANATION      \
-    : X == 2 ? NEXT_CARD_PLAYS_EXPLANATION \
-    : X == 3 ? OVERLOAD_EXPLANATION        \
-    : X == 4 ? FATIGUE_EXPLANATION         \
-    : X == 5 ? ATTACKED_EXPLANATION        \
-    : X == 6 ? RETREATED_EXPLANATION       \
-    : X == 7 ? FORBIDDEN_FUEL_EXPLANATION  \
-    : X == 8 ? BOOST_EXPLANATION           \
-    : X == 9 ? BANISHMENT_EXPLANATION      \
-    : X == 10 ? FREEDOM_EXPLANATION        \
-    : X == 11 ? AGILITY_AURA_EXPLANATION   \
-    : X == 12 ? HEAL_AURA_EXPLANATION      \
-    : X == 13 ? PLAYER_POWER_EXPLANATION   \
-    : X == 14 ? END_DRAW_EXPLANATION       \
-    : X == 15 ? END_DISCARD_EXPLANATION    \
-    : X == 16 ? END_DISCARD_EXPLANATION    \
-    : X == 17 ? END_DISCARD_EXPLANATION    \
-    : END_DISCARD_EXPLANATION              \
+#define PLAYER_EFFECT_EXPLANATIONS(X) (         \
+    X == 0 ? PREPARATION_EXPLANATION            \
+    : X == 1 ? CARD_PLAYS_EXPLANATION           \
+    : X == 2 ? NEXT_CARD_PLAYS_EXPLANATION      \
+    : X == 3 ? NEXT_TURN_CARD_PLAYS_EXPLANATION \
+    : X == 4 ? FATIGUE_EXPLANATION              \
+    : X == 5 ? ATTACKED_EXPLANATION             \
+    : X == 6 ? RETREATED_EXPLANATION            \
+    : X == 7 ? FORBIDDEN_FUEL_EXPLANATION       \
+    : X == 8 ? BOOST_EXPLANATION                \
+    : X == 9 ? BANISHMENT_EXPLANATION           \
+    : X == 10 ? FREEDOM_EXPLANATION             \
+    : X == 11 ? AGILITY_AURA_EXPLANATION        \
+    : X == 12 ? HEAL_AURA_EXPLANATION           \
+    : X == 13 ? PLAYER_POWER_EXPLANATION        \
+    : X == 14 ? END_DRAW_EXPLANATION            \
+    : X == 15 ? END_DISCARD_EXPLANATION         \
+    : X == 16 ? END_DISCARD_EXPLANATION         \
+    : X == 17 ? END_DISCARD_EXPLANATION         \
+    : END_DISCARD_EXPLANATION                   \
 )
 //}
 //}
@@ -3208,8 +3231,8 @@ constexpr bool PIRATE_ABILITY_PASSIVE = false;
 constexpr int PIRATE_ABILITY_USES = 1;
 constexpr const char* PIRATE_ATTACK_NAME = "Plank Walk";
 constexpr const char* PIRATE_ATTACK_DESCRIPTION =
-    "Deal 300 damage to one of your opponent's fighters.\n"
-    "Deal 50 extra damage to non-water element fighters."
+    "Deal 350 damage to one of your opponent's fighters.\n"
+    "Deal 50 less damage to Water element fighters."
 ;
 const std::string PIRATE_ATTACK_EFFECTS(
     std::string(SNIPE_EFFECT) // snipe
@@ -3338,7 +3361,7 @@ constexpr bool PILOT_ABILITY_PASSIVE = true;
 constexpr int PILOT_ABILITY_USES = PASSIVE_USES;
 constexpr const char* PILOT_ATTACK_NAME = "Divebomb";
 constexpr const char* PILOT_ATTACK_DESCRIPTION =
-    "Deal 375 damage to the defending fighter.\n"
+    "Deal 375 damage to your opponent's active fighter.\n"
     "It needs 1000 more energy to retreat next turn."
 ;
 const std::string PILOT_ATTACK_EFFECTS(
@@ -3373,7 +3396,7 @@ constexpr bool ASTRONAUT_ABILITY_PASSIVE = true;
 constexpr int ASTRONAUT_ABILITY_USES = PASSIVE_USES;
 constexpr const char* ASTRONAUT_ATTACK_NAME = "Gravity Flip";
 constexpr const char* ASTRONAUT_ATTACK_DESCRIPTION =
-    "Deal 500 damage to the defending fighter.\n"
+    "Deal 500 damage to your opponent's active fighter.\n"
     "It needs 2000 more energy to retreat next turn."
 ;
 const std::string ASTRONAUT_ATTACK_EFFECTS(
@@ -3425,7 +3448,7 @@ constexpr int MAGE_ATTACK_COST = 1000;
 //{
 constexpr const char* PYROMANCER_NAME = "Pyromancer";
 constexpr const char* PYROMANCER_ELEMENT = FIRE_ELEMENT;
-constexpr int PYROMANCER_HEALTH = 1250;
+constexpr int PYROMANCER_HEALTH = 1150;
 constexpr int PYROMANCER_RETREAT_COST = 2000;
 constexpr const char* PYROMANCER_OLD_RANK = MAGE_NAME;
 constexpr const char* PYROMANCER_ABILITY_NAME = "Incinerate";
@@ -3462,7 +3485,7 @@ constexpr int PYROMANCER_ATTACK_COST = 0;
 //{
 constexpr const char* WARLOCK_NAME = "Warlock";
 constexpr const char* WARLOCK_ELEMENT = EARTH_ELEMENT;
-constexpr int WARLOCK_HEALTH = 1150;
+constexpr int WARLOCK_HEALTH = 1250;
 constexpr int WARLOCK_RETREAT_COST = 2000;
 constexpr const char* WARLOCK_OLD_RANK = MAGE_NAME;
 constexpr const char* WARLOCK_ABILITY_NAME = "Dark Bargain";
@@ -3486,12 +3509,12 @@ constexpr int WARLOCK_ABILITY_USES = 1;
 constexpr const char* WARLOCK_ATTACK_NAME = "Shadow Pulse";
 constexpr const char* WARLOCK_ATTACK_DESCRIPTION =
     "Deal 800 damage to your opponent's active fighter.\n"
-    "Deal 100 damage to this fighter."
+    "Deal 150 damage to this fighter."
 ;
 const std::string WARLOCK_ATTACK_EFFECTS(
     std::string(RECOIL_EFFECT) // recoil
     + EFFECT_SEPARATOR         //
-    + "100"                    // 100
+    + "150"                    // 150
 );
 constexpr int WARLOCK_ATTACK_DAMAGE = 800;
 constexpr int WARLOCK_ATTACK_COST = 2000;
@@ -3572,8 +3595,8 @@ constexpr int HYDROMANCER_ATTACK_COST = 1000;
 //{
 constexpr const char* RANKER_ABILITY_NAME = "Energy Acceleration";
 constexpr const char* RANKER_ABILITY_DESCRIPTION =
-    "Once a turn, you may attach a random energy card of "
-    "this fighter's element in your deck to this fighter."
+    "Once a turn, you may attach a random energy card, of "
+    "this fighter's element, in your deck, to this fighter."
 ;
 const std::string RANKER_ABILITY_EFFECTS(
     std::string(ACCELERATION_EFFECT) // accelerate
@@ -3712,7 +3735,7 @@ constexpr int SCUBA_DIVER_ABILITY_USES = PASSIVE_USES;
 constexpr const char* SCUBA_DIVER_ATTACK_NAME = "Undercurrent";
 constexpr const char* SCUBA_DIVER_ATTACK_DESCRIPTION =
     "Deal 650 damage to your opponent's active fighter.\n"
-    "If this fighter has the invinciblity effect, deal 150 more damage.\n"
+    "If this fighter has the invincibility effect, deal 150 more damage.\n"
     "Clear all effects from this fighter."
 ;
 const std::string SCUBA_DIVER_ATTACK_EFFECTS(
@@ -4035,7 +4058,8 @@ constexpr bool CULTIST_ABILITY_PASSIVE = false;
 constexpr int CULTIST_ABILITY_USES = 1;
 constexpr const char* CULTIST_ATTACK_NAME = "Shadow Bond";
 constexpr const char* CULTIST_ATTACK_DESCRIPTION =
-    "Choose a fighter in the void. Use its attack."
+    "Choose a fighter in the void.\n"
+    "Use its attack."
 ;
 const std::string CULTIST_ATTACK_EFFECTS(
     std::string(MIMIC_EFFECT) // mimic
@@ -4350,8 +4374,7 @@ constexpr bool OMEGA_ELEMENTAL_ABILITY_PASSIVE = false;
 constexpr int OMEGA_ELEMENTAL_ABILITY_USES = 1;
 constexpr const char* OMEGA_ELEMENTAL_ATTACK_NAME = "Assimilate";
 constexpr const char* OMEGA_ELEMENTAL_ATTACK_DESCRIPTION =
-    "Deal 700 damage in total to your opponent's fighters.\n"
-    "The damage is randomly distributed.\n"
+    "Randomly distribute 700 damage between your opponent's fighters.\n"
     "Heal 0.5 damage from this fighter multiplied by the damage dealt."
 ;
 const std::string OMEGA_ELEMENTAL_ATTACK_EFFECTS(
@@ -4529,7 +4552,7 @@ const std::string CHEF_EFFECTS(
 constexpr const char* TRADER_NAME = "Trader";
 constexpr const char* TRADER_DESCRIPTION =
     "Shuffle a card into your deck.\n"
-    "Search your deck for a card of the same type."
+    "Search your deck for a card of the same type and draw it."
 ;
 const std::string TRADER_EFFECTS(
     std::string(SHUFFLE_EFFECT) // shuffle
@@ -4566,7 +4589,7 @@ const std::string LIBRARIAN_EFFECTS(
 //{
 constexpr const char* EXPERIMENTER_NAME = "Experimenter";
 constexpr const char* EXPERIMENTER_DESCRIPTION =
-    "Search your deck for a card.\n"
+    "Search your deck for a card and draw it.\n"
     "Banish the top card of your deck.\n"
     "Return this card to your hand.\n"
     "At the end of your turn, discard this card."
@@ -4804,8 +4827,7 @@ const std::string INNKEEPER_EFFECTS(
 //{
 constexpr const char* MIRACLE_WORKER_NAME = "Miracle Worker";
 constexpr const char* MIRACLE_WORKER_DESCRIPTION =
-    "Heal 800 damage in total from your fighters.\n"
-    "The healing is randomly distributed."
+    "Randomly distribute 800 healing between your fighters."
 ;
 const std::string MIRACLE_WORKER_EFFECTS(
     std::string(HEAL_EFFECT) // heal
@@ -4982,7 +5004,7 @@ const std::string PEACEMAKER_EFFECTS(
 //{
 constexpr const char* MATCHMAKER_NAME = "Matchmaker";
 constexpr const char* MATCHMAKER_DESCRIPTION =
-    "Your opponent's active fighter can't retreat during their next turn."
+    "Your opponent's active fighter can't be switched out during their next turn."
 ;
 constexpr const char* MATCHMAKER_EFFECTS = ROOT_EFFECT;
 //}
@@ -5004,8 +5026,8 @@ const std::string PLUMBER_EFFECTS(
 //{
 constexpr const char* LOCKSMITH_NAME = "Locksmith";
 constexpr const char* LOCKSMITH_DESCRIPTION =
-    "Shuffle both player's hands into their decks.\n"
-    "Both players draw 3 cards."
+    "Shuffle both players' hands into their decks.\n"
+    "Both players draw 5 cards."
 ;
 const std::string LOCKSMITH_EFFECTS(
     std::string(SHUFFLE_EFFECT) // shuffle
@@ -5022,11 +5044,11 @@ const std::string LOCKSMITH_EFFECTS(
     + EFFECT_SEPARATOR          //
     + OPPONENT_EFFECT           // opponent
     + EFFECT_SEPARATOR          //
-    + "3"                       // 3
+    + "5"                       // 5
     + EFFECT_TERMINATOR
     + DRAW_EFFECT               // draw
     + EFFECT_SEPARATOR          //
-    + "3"                       // 3
+    + "5"                       // 5
 );
 //}
 
@@ -17818,7 +17840,7 @@ const DeckCode AGGRO_COMBO_DECK(
         0, // RECRUITER
         
         1, // CHEF
-        0, // TRADER
+        1, // TRADER
         0, // LIBRARIAN
         0, // EXPERIMENTER
         1, // PERSONAL TRAINER
@@ -17831,7 +17853,7 @@ const DeckCode AGGRO_COMBO_DECK(
         0, // GLUTTON
         
         0, // SUBSTITUTE
-        1, // BOUNTY HUNTER
+        0, // BOUNTY HUNTER
         
         1, // NURSE
         0, // INNKEEPER
@@ -22069,6 +22091,15 @@ int main(int argc, char** argv) noexcept {
 //}
 
 /* CHANGELOG:
+     v1.9.5:
+       The Overload effect explanation was replaced with the Next Turn effect explanation.
+       Pyromancer's health was decreased from 1250 to 1150.
+       Warlock's health was increased from 1150 to 1250.
+       Shadow Pulse's recoil damage was increased from 100 to 150.
+       Locksmith's draw count was increased from 3 to 5.
+       Aggro Combo replaced Bounty Hunter with Trader.
+       Updated Matchmaker's description to match its new effect.
+       Improvements to various cards' descriptions.
      v1.9.4:
        Primed Payload's cost was decreased from 2000 to 0.
      v1.9.3:

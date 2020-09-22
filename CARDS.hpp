@@ -146,8 +146,8 @@ constexpr bool PIRATE_ABILITY_PASSIVE = false;
 constexpr int PIRATE_ABILITY_USES = 1;
 constexpr const char* PIRATE_ATTACK_NAME = "Plank Walk";
 constexpr const char* PIRATE_ATTACK_DESCRIPTION =
-    "Deal 300 damage to one of your opponent's fighters.\n"
-    "Deal 50 extra damage to non-water element fighters."
+    "Deal 350 damage to one of your opponent's fighters.\n"
+    "Deal 50 less damage to Water element fighters."
 ;
 const std::string PIRATE_ATTACK_EFFECTS(
     std::string(SNIPE_EFFECT) // snipe
@@ -276,7 +276,7 @@ constexpr bool PILOT_ABILITY_PASSIVE = true;
 constexpr int PILOT_ABILITY_USES = PASSIVE_USES;
 constexpr const char* PILOT_ATTACK_NAME = "Divebomb";
 constexpr const char* PILOT_ATTACK_DESCRIPTION =
-    "Deal 375 damage to the defending fighter.\n"
+    "Deal 375 damage to your opponent's active fighter.\n"
     "It needs 1000 more energy to retreat next turn."
 ;
 const std::string PILOT_ATTACK_EFFECTS(
@@ -311,7 +311,7 @@ constexpr bool ASTRONAUT_ABILITY_PASSIVE = true;
 constexpr int ASTRONAUT_ABILITY_USES = PASSIVE_USES;
 constexpr const char* ASTRONAUT_ATTACK_NAME = "Gravity Flip";
 constexpr const char* ASTRONAUT_ATTACK_DESCRIPTION =
-    "Deal 500 damage to the defending fighter.\n"
+    "Deal 500 damage to your opponent's active fighter.\n"
     "It needs 2000 more energy to retreat next turn."
 ;
 const std::string ASTRONAUT_ATTACK_EFFECTS(
@@ -363,7 +363,7 @@ constexpr int MAGE_ATTACK_COST = 1000;
 //{
 constexpr const char* PYROMANCER_NAME = "Pyromancer";
 constexpr const char* PYROMANCER_ELEMENT = FIRE_ELEMENT;
-constexpr int PYROMANCER_HEALTH = 1250;
+constexpr int PYROMANCER_HEALTH = 1150;
 constexpr int PYROMANCER_RETREAT_COST = 2000;
 constexpr const char* PYROMANCER_OLD_RANK = MAGE_NAME;
 constexpr const char* PYROMANCER_ABILITY_NAME = "Incinerate";
@@ -400,7 +400,7 @@ constexpr int PYROMANCER_ATTACK_COST = 0;
 //{
 constexpr const char* WARLOCK_NAME = "Warlock";
 constexpr const char* WARLOCK_ELEMENT = EARTH_ELEMENT;
-constexpr int WARLOCK_HEALTH = 1150;
+constexpr int WARLOCK_HEALTH = 1250;
 constexpr int WARLOCK_RETREAT_COST = 2000;
 constexpr const char* WARLOCK_OLD_RANK = MAGE_NAME;
 constexpr const char* WARLOCK_ABILITY_NAME = "Dark Bargain";
@@ -424,12 +424,12 @@ constexpr int WARLOCK_ABILITY_USES = 1;
 constexpr const char* WARLOCK_ATTACK_NAME = "Shadow Pulse";
 constexpr const char* WARLOCK_ATTACK_DESCRIPTION =
     "Deal 800 damage to your opponent's active fighter.\n"
-    "Deal 100 damage to this fighter."
+    "Deal 150 damage to this fighter."
 ;
 const std::string WARLOCK_ATTACK_EFFECTS(
     std::string(RECOIL_EFFECT) // recoil
     + EFFECT_SEPARATOR         //
-    + "100"                    // 100
+    + "150"                    // 150
 );
 constexpr int WARLOCK_ATTACK_DAMAGE = 800;
 constexpr int WARLOCK_ATTACK_COST = 2000;
@@ -510,8 +510,8 @@ constexpr int HYDROMANCER_ATTACK_COST = 1000;
 //{
 constexpr const char* RANKER_ABILITY_NAME = "Energy Acceleration";
 constexpr const char* RANKER_ABILITY_DESCRIPTION =
-    "Once a turn, you may attach a random energy card of "
-    "this fighter's element in your deck to this fighter."
+    "Once a turn, you may attach a random energy card, of "
+    "this fighter's element, in your deck, to this fighter."
 ;
 const std::string RANKER_ABILITY_EFFECTS(
     std::string(ACCELERATION_EFFECT) // accelerate
@@ -650,7 +650,7 @@ constexpr int SCUBA_DIVER_ABILITY_USES = PASSIVE_USES;
 constexpr const char* SCUBA_DIVER_ATTACK_NAME = "Undercurrent";
 constexpr const char* SCUBA_DIVER_ATTACK_DESCRIPTION =
     "Deal 650 damage to your opponent's active fighter.\n"
-    "If this fighter has the invinciblity effect, deal 150 more damage.\n"
+    "If this fighter has the invincibility effect, deal 150 more damage.\n"
     "Clear all effects from this fighter."
 ;
 const std::string SCUBA_DIVER_ATTACK_EFFECTS(
@@ -973,7 +973,8 @@ constexpr bool CULTIST_ABILITY_PASSIVE = false;
 constexpr int CULTIST_ABILITY_USES = 1;
 constexpr const char* CULTIST_ATTACK_NAME = "Shadow Bond";
 constexpr const char* CULTIST_ATTACK_DESCRIPTION =
-    "Choose a fighter in the void. Use its attack."
+    "Choose a fighter in the void.\n"
+    "Use its attack."
 ;
 const std::string CULTIST_ATTACK_EFFECTS(
     std::string(MIMIC_EFFECT) // mimic
@@ -1288,8 +1289,7 @@ constexpr bool OMEGA_ELEMENTAL_ABILITY_PASSIVE = false;
 constexpr int OMEGA_ELEMENTAL_ABILITY_USES = 1;
 constexpr const char* OMEGA_ELEMENTAL_ATTACK_NAME = "Assimilate";
 constexpr const char* OMEGA_ELEMENTAL_ATTACK_DESCRIPTION =
-    "Deal 700 damage in total to your opponent's fighters.\n"
-    "The damage is randomly distributed.\n"
+    "Randomly distribute 700 damage between your opponent's fighters.\n"
     "Heal 0.5 damage from this fighter multiplied by the damage dealt."
 ;
 const std::string OMEGA_ELEMENTAL_ATTACK_EFFECTS(
@@ -1467,7 +1467,7 @@ const std::string CHEF_EFFECTS(
 constexpr const char* TRADER_NAME = "Trader";
 constexpr const char* TRADER_DESCRIPTION =
     "Shuffle a card into your deck.\n"
-    "Search your deck for a card of the same type."
+    "Search your deck for a card of the same type and draw it."
 ;
 const std::string TRADER_EFFECTS(
     std::string(SHUFFLE_EFFECT) // shuffle
@@ -1504,7 +1504,7 @@ const std::string LIBRARIAN_EFFECTS(
 //{
 constexpr const char* EXPERIMENTER_NAME = "Experimenter";
 constexpr const char* EXPERIMENTER_DESCRIPTION =
-    "Search your deck for a card.\n"
+    "Search your deck for a card and draw it.\n"
     "Banish the top card of your deck.\n"
     "Return this card to your hand.\n"
     "At the end of your turn, discard this card."
@@ -1742,8 +1742,7 @@ const std::string INNKEEPER_EFFECTS(
 //{
 constexpr const char* MIRACLE_WORKER_NAME = "Miracle Worker";
 constexpr const char* MIRACLE_WORKER_DESCRIPTION =
-    "Heal 800 damage in total from your fighters.\n"
-    "The healing is randomly distributed."
+    "Randomly distribute 800 healing between your fighters."
 ;
 const std::string MIRACLE_WORKER_EFFECTS(
     std::string(HEAL_EFFECT) // heal
@@ -1920,7 +1919,7 @@ const std::string PEACEMAKER_EFFECTS(
 //{
 constexpr const char* MATCHMAKER_NAME = "Matchmaker";
 constexpr const char* MATCHMAKER_DESCRIPTION =
-    "Your opponent's active fighter can't retreat during their next turn."
+    "Your opponent's active fighter can't be switched out during their next turn."
 ;
 constexpr const char* MATCHMAKER_EFFECTS = ROOT_EFFECT;
 //}
@@ -1942,8 +1941,8 @@ const std::string PLUMBER_EFFECTS(
 //{
 constexpr const char* LOCKSMITH_NAME = "Locksmith";
 constexpr const char* LOCKSMITH_DESCRIPTION =
-    "Shuffle both player's hands into their decks.\n"
-    "Both players draw 3 cards."
+    "Shuffle both players' hands into their decks.\n"
+    "Both players draw 5 cards."
 ;
 const std::string LOCKSMITH_EFFECTS(
     std::string(SHUFFLE_EFFECT) // shuffle
@@ -1960,11 +1959,11 @@ const std::string LOCKSMITH_EFFECTS(
     + EFFECT_SEPARATOR          //
     + OPPONENT_EFFECT           // opponent
     + EFFECT_SEPARATOR          //
-    + "3"                       // 3
+    + "5"                       // 5
     + EFFECT_TERMINATOR
     + DRAW_EFFECT               // draw
     + EFFECT_SEPARATOR          //
-    + "3"                       // 3
+    + "5"                       // 5
 );
 //}
 

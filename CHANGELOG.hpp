@@ -1,4 +1,13 @@
 /* CHANGELOG:
+     v1.9.5:
+       The Overload effect explanation was replaced with the Next Turn effect explanation.
+       Pyromancer's health was decreased from 1250 to 1150.
+       Warlock's health was increased from 1150 to 1250.
+       Shadow Pulse's recoil damage was increased from 100 to 150.
+       Locksmith's draw count was increased from 3 to 5.
+       Aggro Combo replaced Bounty Hunter with Trader.
+       Updated Matchmaker's description to match its new effect.
+       Improvements to various cards' descriptions.
      v1.9.4:
        Primed Payload's cost was decreased from 2000 to 0.
      v1.9.3:

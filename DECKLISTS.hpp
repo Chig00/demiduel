@@ -739,7 +739,7 @@ const DeckCode AGGRO_COMBO_DECK(
         0, // RECRUITER
         
         1, // CHEF
-        0, // TRADER
+        1, // TRADER
         0, // LIBRARIAN
         0, // EXPERIMENTER
         1, // PERSONAL TRAINER
@@ -752,7 +752,7 @@ const DeckCode AGGRO_COMBO_DECK(
         0, // GLUTTON
         
         0, // SUBSTITUTE
-        1, // BOUNTY HUNTER
+        0, // BOUNTY HUNTER
         
         1, // NURSE
         0, // INNKEEPER
