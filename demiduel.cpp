@@ -7,7 +7,7 @@
 // System Constants
 //{
 // The current version of the program.
-constexpr int VERSION[] = {1, 9, 5, 0};
+constexpr int VERSION[] = {1, 10, 0, 0};
 
 // The title of the game in string form.
 constexpr const char* TITLE_STRING = "Demi Duel";
@@ -237,6 +237,7 @@ constexpr const char* EXTRA_PLAY_EFFECT = "extra_play";
 constexpr const char* OVERLOAD_EFFECT = "overload";
 constexpr const char* DOUBLE_ROOT_EFFECT = "double_root";
 constexpr const char* UNRANKED_EFFECT = "unranked";
+constexpr const char* ASSASSINATE_EFFECT = "assassinate";
 //}
 
 // The constants for effect explanations.
@@ -3734,8 +3735,8 @@ constexpr bool SCUBA_DIVER_ABILITY_PASSIVE = true;
 constexpr int SCUBA_DIVER_ABILITY_USES = PASSIVE_USES;
 constexpr const char* SCUBA_DIVER_ATTACK_NAME = "Undercurrent";
 constexpr const char* SCUBA_DIVER_ATTACK_DESCRIPTION =
-    "Deal 650 damage to your opponent's active fighter.\n"
-    "If this fighter has the invincibility effect, deal 150 more damage.\n"
+    "Deal 600 damage to your opponent's active fighter.\n"
+    "If this fighter has the invincibility effect, deal 200 more damage.\n"
     "Clear all effects from this fighter."
 ;
 const std::string SCUBA_DIVER_ATTACK_EFFECTS(
@@ -3743,11 +3744,11 @@ const std::string SCUBA_DIVER_ATTACK_EFFECTS(
     + EFFECT_SEPARATOR        //
     + INVINCIBILITY_EFFECT    // invincibility
     + EFFECT_SEPARATOR        //
-    + "150"                   // 150
+    + "200"                   // 200
     + EFFECT_TERMINATOR
     + CLEAR_EFFECT            // clear
 );
-constexpr int SCUBA_DIVER_ATTACK_DAMAGE = 650;
+constexpr int SCUBA_DIVER_ATTACK_DAMAGE = 600;
 constexpr int SCUBA_DIVER_ATTACK_COST = 2000;
 //} 
 //}
@@ -4067,7 +4068,7 @@ const std::string CULTIST_ATTACK_EFFECTS(
     + VOID_EFFECT             // void
 );
 constexpr int CULTIST_ATTACK_DAMAGE = 0;
-constexpr int CULTIST_ATTACK_COST = 2000;
+constexpr int CULTIST_ATTACK_COST = 3000;
 //}
 //}
 
@@ -4891,12 +4892,13 @@ const std::string ESCAPE_ARTIST_EFFECTS(
 //{
 constexpr const char* ASSASSIN_NAME = "Assassin";
 constexpr const char* ASSASSIN_DESCRIPTION =
-    "Deal 200 damage to your opponent's active fighter."
+    "If your opponent's active fighter's current health is less than "
+    "or equal to 0.2 multiplied by its maximum health, defeat it."
 ;
 const std::string ASSASSIN_EFFECTS(
-    std::string(DAMAGE_EFFECT) // damage
-    + EFFECT_SEPARATOR         //
-    + "200"                    // 200
+    std::string(ASSASSINATE_EFFECT) // assassinate
+    + EFFECT_SEPARATOR              //
+    + "0.2"                         // 0.2
 );
 //}
 
@@ -5113,14 +5115,14 @@ const std::string MILLER_EFFECTS(
 //{
 constexpr const char* ARSONIST_NAME = "Arsonist";
 constexpr const char* ARSONIST_DESCRIPTION =
-    "Banish the top 3 cards of both players' decks."
+    "Banish the top 2 cards of both players' decks."
 ;
 const std::string ARSONIST_EFFECTS(
     std::string(MILL_EFFECT) // mill
     + EFFECT_SEPARATOR       //
     + BANISH_EFFECT          // banish
     + EFFECT_SEPARATOR       //
-    + "3"                    // 3
+    + "2"                    // 2
     + EFFECT_TERMINATOR
     + MILL_EFFECT            // mill
     + EFFECT_SEPARATOR       //
@@ -5128,7 +5130,7 @@ const std::string ARSONIST_EFFECTS(
     + EFFECT_SEPARATOR       //
     + BANISH_EFFECT          // banish
     + EFFECT_SEPARATOR       //
-    + "3"                    // 3
+    + "2"                    // 2
 );
 //}
 //}
@@ -11955,6 +11957,19 @@ class Player: public Affectable {
                     opponent->fighters[0].affect(DOUBLE_ROOT_EFFECT);
                     announce(ROOT_OPPONENT_ANNOUNCEMENT);
                 }
+            
+                // Defeats the opponent's active fighter if its health is low enough.
+                else if (effects[i][0] == ASSASSINATE_EFFECT) {
+                    if (
+                        opponent->fighters[0].get_health()
+                        <= round(
+                            std::stod(effects[i][1])
+                            * opponent->fighters[0].get_max_health()
+                        )
+                    ) {
+                        opponent->fighters[0].defeat();
+                    }
+                }
             }
             
             // The supporter card is moved to the trash (usually).
@@ -17212,6 +17227,117 @@ const DeckCode AGGRO_DECK(
 
 const DeckCode TEMPO_DECK(
     "Tempo",
+    "This is an offensive deck that focuses on being efficient with card plays.\n\n"
+    "Swimmer, Welder, and Wind Runner can attach energy to themselves "
+    "directly from the deck with their ability, Energy Acceleration!\n\n"
+    "This makes it easier to play important Fighter and Supporter cards, "
+    "as you don't need to focus on drawing and playing Energy cards!",
+    {
+        // Fighter Cards
+        0, // DRIVER
+        0, // RACER
+        0, // HOT RODDER
+        0, // SAILOR
+        0, // PIRATE
+        0, // DIRT BIKER
+        0, // MONSTER TRUCKER
+        0, // PILOT
+        0, // ASTRONAUT
+        
+        0, // MAGE
+        0, // PYROMANCER
+        0, // WARLOCK
+        0, // CLERIC
+        0, // HYDROMANCER
+        
+        0, // MINER
+        0, // EXCAVATOR
+        1, // SWIMMER
+        1, // SCUBA DIVER
+        1, // WELDER
+        1, // PYROTECHNICIAN
+        1, // WIND RUNNER
+        1, // CLOUD SURFER
+        
+        0, // BOXER
+        0, // LOST SOUL
+        
+        0, // BANISHER
+        0, // BANSHEE
+        0, // CULTIST
+        
+        0, // APPRENTICE
+        0, // SENSEI'S CHOSEN
+        0, // NINJA
+        0, // SAMURAI
+        
+        0, // FIRE ELEMENTAL
+        0, // AIR ELEMENTAL
+        0, // WATER ELEMENTAL
+        0, // EARTH ELEMENTAL
+        0, // OMEGA ELEMENTAL
+        
+        // Supporter Cards
+        0, // PROFESSOR
+        1, // LECTURER
+        1, // INVESTOR
+        0, // RESEARCHER
+        0, // GAMBLER
+        1, // RECRUITER
+        
+        0, // CHEF
+        1, // TRADER
+        1, // LIBRARIAN
+        0, // EXPERIMENTER
+        0, // PERSONAL TRAINER
+        0, // SCAPEGOAT
+        
+        1, // ELECTRICIAN
+        1, // ALCHEMIST
+        1, // TIME TRAVELLER
+        0, // BANKER
+        0, // GLUTTON
+        
+        0, // SUBSTITUTE
+        1, // BOUNTY HUNTER
+        
+        1, // NURSE
+        0, // INNKEEPER
+        1, // MIRACLE WORKER
+        0, // DOCTOR
+        0, // ESCAPE ARTIST
+        
+        1, // ASSASSIN
+        1, // SNIPER
+        
+        1, // CHEERLEADER
+        1, // ARMS SMUGGLER
+        0, // MANIAC
+        
+        0, // PEACEMAKER
+        1, // MATCHMAKER
+        0, // PLUMBER
+        0, // LOCKSMITH
+        0, // LOCK PICKER
+        1, // GATEKEEPER
+        0, // MILLER
+        0, // ARSONIST
+        
+        // Energy Cards
+        2, // FIRE ENERGY
+        2, // AIR ENERGY
+        2, // WATER ENERGY
+        0, // EARTH ENERGY
+        
+        1, // UNIVERSAL ENERGY
+        0, // ALPHA ENERGY
+        0, // OMEGA ENERGY
+        0  // BOND ENERGY
+    }
+);
+
+const DeckCode BLEND_DECK(
+    "Blend",
     "This is an offensive deck that also has some defensive options.\n\n"
     "Monster Trucker can heal itself and has an attack that gains power over time!\n\n"
     "Warlock deals a ton of damage and can return cards from the trash back to the hand!\n\n"
@@ -17286,7 +17412,7 @@ const DeckCode TEMPO_DECK(
         1, // BOUNTY HUNTER
         
         1, // NURSE
-        0, // INNKEEPER
+        1, // INNKEEPER
         1, // MIRACLE WORKER
         0, // DOCTOR
         0, // ESCAPE ARTIST
@@ -17295,7 +17421,7 @@ const DeckCode TEMPO_DECK(
         1, // SNIPER
         
         0, // CHEERLEADER
-        1, // ARMS SMUGGLER
+        0, // ARMS SMUGGLER
         0, // MANIAC
         
         0, // PEACEMAKER
@@ -17430,121 +17556,6 @@ const DeckCode CONTROL_DECK(
         2, // ALPHA ENERGY
         0, // OMEGA ENERGY
         2  // BOND ENERGY
-    }
-);
-
-const DeckCode OTK_COMBO_DECK(
-    "OTK Combo",
-    "This is a one-turn kill combo deck that aims to defeat "
-    "all of the opponent's fighters in a single turn!\n\n"
-    "Maniac boosts damage to the sky, if the player's deck, hand, and bench are empty!\n\n"
-    "Cloud Surfer attacks all opposing fighters simultaneously, so Maniac "
-    "allows it to defeat all of the opposing fighters in one fell swoop!\n\n"
-    "Emptying the deck, playing Banker to shuffle Maniac into the "
-    "deck, and playing Professor is one way to pull off the combo.\n\n"
-    "Pirate can help to find combo pieces.\n\n"
-    "Boxer can protect Cloud Surfer from being forced into the active position.",
-    {
-        // Fighter Cards
-        1, // DRIVER
-        0, // RACER
-        0, // HOT RODDER
-        1, // SAILOR
-        1, // PIRATE
-        0, // DIRT BIKER
-        0, // MONSTER TRUCKER
-        0, // PILOT
-        0, // ASTRONAUT
-        
-        0, // MAGE
-        0, // PYROMANCER
-        0, // WARLOCK
-        0, // CLERIC
-        0, // HYDROMANCER
-        
-        0, // MINER
-        0, // EXCAVATOR
-        0, // SWIMMER
-        0, // SCUBA DIVER
-        0, // WELDER
-        0, // PYROTECHNICIAN
-        1, // WIND RUNNER
-        1, // CLOUD SURFER
-        
-        1, // BOXER
-        0, // LOST SOUL
-        
-        0, // BANISHER
-        0, // BANSHEE
-        0, // CULTIST
-        
-        0, // APPRENTICE
-        0, // SENSEI'S CHOSEN
-        0, // NINJA
-        0, // SAMURAI
-        
-        0, // FIRE ELEMENTAL
-        0, // AIR ELEMENTAL
-        0, // WATER ELEMENTAL
-        0, // EARTH ELEMENTAL
-        0, // OMEGA ELEMENTAL
-        
-        // Supporter Cards
-        1, // PROFESSOR
-        0, // LECTURER
-        0, // INVESTOR
-        1, // RESEARCHER
-        1, // GAMBLER
-        1, // RECRUITER
-        
-        1, // CHEF
-        0, // TRADER
-        1, // LIBRARIAN
-        1, // EXPERIMENTER
-        0, // PERSONAL TRAINER
-        1, // SCAPEGOAT
-        
-        0, // ELECTRICIAN
-        1, // ALCHEMIST
-        1, // TIME TRAVELLER
-        1, // BANKER
-        0, // GLUTTON
-        
-        1, // SUBSTITUTE
-        0, // BOUNTY HUNTER
-        
-        1, // NURSE
-        0, // INNKEEPER
-        1, // MIRACLE WORKER
-        0, // DOCTOR
-        1, // ESCAPE ARTIST
-        
-        0, // ASSASSIN
-        0, // SNIPER
-        
-        0, // CHEERLEADER
-        0, // ARMS SMUGGLER
-        1, // MANIAC
-        
-        1, // PEACEMAKER
-        0, // MATCHMAKER
-        1, // PLUMBER
-        0, // LOCKSMITH
-        1, // LOCK PICKER
-        0, // GATEKEEPER
-        0, // MILLER
-        0, // ARSONIST
-        
-        // Energy Cards
-        0, // FIRE ENERGY
-        2, // AIR ENERGY
-        1, // WATER ENERGY
-        0, // EARTH ENERGY
-        
-        0, // UNIVERSAL ENERGY
-        2, // ALPHA ENERGY
-        0, // OMEGA ENERGY
-        0  // BOND ENERGY
     }
 );
 
@@ -17731,7 +17742,7 @@ const DeckCode MIDRANGE_DECK(
         0, // PERSONAL TRAINER
         0, // SCAPEGOAT
         
-        0, // ELECTRICIAN
+        1, // ELECTRICIAN
         0, // ALCHEMIST
         1, // TIME TRAVELLER
         0, // BANKER
@@ -17758,7 +17769,7 @@ const DeckCode MIDRANGE_DECK(
         1, // PLUMBER
         1, // LOCKSMITH
         1, // LOCK PICKER
-        1, // GATEKEEPER
+        0, // GATEKEEPER
         0, // MILLER
         1, // ARSONIST
         
@@ -18004,6 +18015,120 @@ const DeckCode CONTROL_COMBO_DECK(
     }
 );
 
+const DeckCode OTK_COMBO_DECK(
+    "OTK Combo",
+    "This is a one-turn kill combo deck that aims to defeat "
+    "all of the opponent's fighters in a single turn!\n\n"
+    "Maniac boosts damage to the sky, if the player's deck, hand, and bench are empty!\n\n"
+    "Cloud Surfer attacks all opposing fighters simultaneously, so Maniac "
+    "allows it to defeat all of the opposing fighters in one fell swoop!\n\n"
+    "Emptying the deck, playing Banker to shuffle Maniac into the "
+    "deck, and playing Professor is one way to pull off the combo.\n\n"
+    "Pirate and Excavator can help to find combo pieces.",
+    {
+        // Fighter Cards
+        1, // DRIVER
+        0, // RACER
+        0, // HOT RODDER
+        1, // SAILOR
+        1, // PIRATE
+        0, // DIRT BIKER
+        0, // MONSTER TRUCKER
+        0, // PILOT
+        0, // ASTRONAUT
+        
+        0, // MAGE
+        0, // PYROMANCER
+        0, // WARLOCK
+        0, // CLERIC
+        0, // HYDROMANCER
+        
+        1, // MINER
+        1, // EXCAVATOR
+        0, // SWIMMER
+        0, // SCUBA DIVER
+        0, // WELDER
+        0, // PYROTECHNICIAN
+        1, // WIND RUNNER
+        1, // CLOUD SURFER
+        
+        0, // BOXER
+        0, // LOST SOUL
+        
+        0, // BANISHER
+        0, // BANSHEE
+        0, // CULTIST
+        
+        0, // APPRENTICE
+        0, // SENSEI'S CHOSEN
+        0, // NINJA
+        0, // SAMURAI
+        
+        0, // FIRE ELEMENTAL
+        0, // AIR ELEMENTAL
+        0, // WATER ELEMENTAL
+        0, // EARTH ELEMENTAL
+        0, // OMEGA ELEMENTAL
+        
+        // Supporter Cards
+        1, // PROFESSOR
+        0, // LECTURER
+        0, // INVESTOR
+        1, // RESEARCHER
+        1, // GAMBLER
+        0, // RECRUITER
+        
+        1, // CHEF
+        0, // TRADER
+        0, // LIBRARIAN
+        1, // EXPERIMENTER
+        0, // PERSONAL TRAINER
+        1, // SCAPEGOAT
+        
+        0, // ELECTRICIAN
+        1, // ALCHEMIST
+        1, // TIME TRAVELLER
+        1, // BANKER
+        0, // GLUTTON
+        
+        1, // SUBSTITUTE
+        0, // BOUNTY HUNTER
+        
+        1, // NURSE
+        0, // INNKEEPER
+        1, // MIRACLE WORKER
+        0, // DOCTOR
+        1, // ESCAPE ARTIST
+        
+        0, // ASSASSIN
+        0, // SNIPER
+        
+        0, // CHEERLEADER
+        0, // ARMS SMUGGLER
+        1, // MANIAC
+        
+        1, // PEACEMAKER
+        0, // MATCHMAKER
+        0, // PLUMBER
+        0, // LOCKSMITH
+        1, // LOCK PICKER
+        0, // GATEKEEPER
+        0, // MILLER
+        0, // ARSONIST
+        
+        // Energy Cards
+        0, // FIRE ENERGY
+        2, // AIR ENERGY
+        1, // WATER ENERGY
+        2, // EARTH ENERGY
+        
+        0, // UNIVERSAL ENERGY
+        2, // ALPHA ENERGY
+        0, // OMEGA ENERGY
+        0  // BOND ENERGY
+    }
+);
+
 const DeckCode RANDOM_DECK(
     "Random",
     "Generates a deck, randomly chosen from the available decklists.",
@@ -18113,18 +18238,19 @@ const DeckCode RANDOM_DECK(
 //}
 
 // All of the deck codes.
-constexpr int DECK_CODE_COUNT = 10;
+constexpr int DECK_CODE_COUNT = 11;
 const DeckCode* const ALL_DECK_CODES[DECK_CODE_COUNT] = {
 //  &TEST_DECK,
     &CLEAR_DECK,
     &AGGRO_DECK,
     &TEMPO_DECK,
+    &BLEND_DECK,
     &CONTROL_DECK,
-    &OTK_COMBO_DECK,
     &MILL_DECK,
     &MIDRANGE_DECK,
     &AGGRO_COMBO_DECK,
     &CONTROL_COMBO_DECK,
+    &OTK_COMBO_DECK,
     &RANDOM_DECK
 };
 //}
@@ -22091,6 +22217,16 @@ int main(int argc, char** argv) noexcept {
 //}
 
 /* CHANGELOG:
+     v1.10:
+       Undercurrent's damage was decreased from 650 to 600.
+       Undercurrent's bonus damage was increased from 150 to 200.
+       Shadow Bond's cost was increassed from 2000 to 3000.
+       Assassin's effect was changed to defeat fighters below a specific health threshold.
+       Arsonist's mill was decreased from 3 to 2.
+       Tempo was renamed to Blend.
+       A new Tempo deck featuring Pyrotechnician, Scuba Diver, and Cloud Surfer was added.
+       Changes to some of the decklists.
+       Changes to the ordering of the decklists.
      v1.9.5:
        The Overload effect explanation was replaced with the Next Turn effect explanation.
        Pyromancer's health was decreased from 1250 to 1150.

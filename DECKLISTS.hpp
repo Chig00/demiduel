@@ -111,6 +111,117 @@ const DeckCode AGGRO_DECK(
 
 const DeckCode TEMPO_DECK(
     "Tempo",
+    "This is an offensive deck that focuses on being efficient with card plays.\n\n"
+    "Swimmer, Welder, and Wind Runner can attach energy to themselves "
+    "directly from the deck with their ability, Energy Acceleration!\n\n"
+    "This makes it easier to play important Fighter and Supporter cards, "
+    "as you don't need to focus on drawing and playing Energy cards!",
+    {
+        // Fighter Cards
+        0, // DRIVER
+        0, // RACER
+        0, // HOT RODDER
+        0, // SAILOR
+        0, // PIRATE
+        0, // DIRT BIKER
+        0, // MONSTER TRUCKER
+        0, // PILOT
+        0, // ASTRONAUT
+        
+        0, // MAGE
+        0, // PYROMANCER
+        0, // WARLOCK
+        0, // CLERIC
+        0, // HYDROMANCER
+        
+        0, // MINER
+        0, // EXCAVATOR
+        1, // SWIMMER
+        1, // SCUBA DIVER
+        1, // WELDER
+        1, // PYROTECHNICIAN
+        1, // WIND RUNNER
+        1, // CLOUD SURFER
+        
+        0, // BOXER
+        0, // LOST SOUL
+        
+        0, // BANISHER
+        0, // BANSHEE
+        0, // CULTIST
+        
+        0, // APPRENTICE
+        0, // SENSEI'S CHOSEN
+        0, // NINJA
+        0, // SAMURAI
+        
+        0, // FIRE ELEMENTAL
+        0, // AIR ELEMENTAL
+        0, // WATER ELEMENTAL
+        0, // EARTH ELEMENTAL
+        0, // OMEGA ELEMENTAL
+        
+        // Supporter Cards
+        0, // PROFESSOR
+        1, // LECTURER
+        1, // INVESTOR
+        0, // RESEARCHER
+        0, // GAMBLER
+        1, // RECRUITER
+        
+        0, // CHEF
+        1, // TRADER
+        1, // LIBRARIAN
+        0, // EXPERIMENTER
+        0, // PERSONAL TRAINER
+        0, // SCAPEGOAT
+        
+        1, // ELECTRICIAN
+        1, // ALCHEMIST
+        1, // TIME TRAVELLER
+        0, // BANKER
+        0, // GLUTTON
+        
+        0, // SUBSTITUTE
+        1, // BOUNTY HUNTER
+        
+        1, // NURSE
+        0, // INNKEEPER
+        1, // MIRACLE WORKER
+        0, // DOCTOR
+        0, // ESCAPE ARTIST
+        
+        1, // ASSASSIN
+        1, // SNIPER
+        
+        1, // CHEERLEADER
+        1, // ARMS SMUGGLER
+        0, // MANIAC
+        
+        0, // PEACEMAKER
+        1, // MATCHMAKER
+        0, // PLUMBER
+        0, // LOCKSMITH
+        0, // LOCK PICKER
+        1, // GATEKEEPER
+        0, // MILLER
+        0, // ARSONIST
+        
+        // Energy Cards
+        2, // FIRE ENERGY
+        2, // AIR ENERGY
+        2, // WATER ENERGY
+        0, // EARTH ENERGY
+        
+        1, // UNIVERSAL ENERGY
+        0, // ALPHA ENERGY
+        0, // OMEGA ENERGY
+        0  // BOND ENERGY
+    }
+);
+
+const DeckCode BLEND_DECK(
+    "Blend",
     "This is an offensive deck that also has some defensive options.\n\n"
     "Monster Trucker can heal itself and has an attack that gains power over time!\n\n"
     "Warlock deals a ton of damage and can return cards from the trash back to the hand!\n\n"
@@ -185,7 +296,7 @@ const DeckCode TEMPO_DECK(
         1, // BOUNTY HUNTER
         
         1, // NURSE
-        0, // INNKEEPER
+        1, // INNKEEPER
         1, // MIRACLE WORKER
         0, // DOCTOR
         0, // ESCAPE ARTIST
@@ -194,7 +305,7 @@ const DeckCode TEMPO_DECK(
         1, // SNIPER
         
         0, // CHEERLEADER
-        1, // ARMS SMUGGLER
+        0, // ARMS SMUGGLER
         0, // MANIAC
         
         0, // PEACEMAKER
@@ -329,121 +440,6 @@ const DeckCode CONTROL_DECK(
         2, // ALPHA ENERGY
         0, // OMEGA ENERGY
         2  // BOND ENERGY
-    }
-);
-
-const DeckCode OTK_COMBO_DECK(
-    "OTK Combo",
-    "This is a one-turn kill combo deck that aims to defeat "
-    "all of the opponent's fighters in a single turn!\n\n"
-    "Maniac boosts damage to the sky, if the player's deck, hand, and bench are empty!\n\n"
-    "Cloud Surfer attacks all opposing fighters simultaneously, so Maniac "
-    "allows it to defeat all of the opposing fighters in one fell swoop!\n\n"
-    "Emptying the deck, playing Banker to shuffle Maniac into the "
-    "deck, and playing Professor is one way to pull off the combo.\n\n"
-    "Pirate can help to find combo pieces.\n\n"
-    "Boxer can protect Cloud Surfer from being forced into the active position.",
-    {
-        // Fighter Cards
-        1, // DRIVER
-        0, // RACER
-        0, // HOT RODDER
-        1, // SAILOR
-        1, // PIRATE
-        0, // DIRT BIKER
-        0, // MONSTER TRUCKER
-        0, // PILOT
-        0, // ASTRONAUT
-        
-        0, // MAGE
-        0, // PYROMANCER
-        0, // WARLOCK
-        0, // CLERIC
-        0, // HYDROMANCER
-        
-        0, // MINER
-        0, // EXCAVATOR
-        0, // SWIMMER
-        0, // SCUBA DIVER
-        0, // WELDER
-        0, // PYROTECHNICIAN
-        1, // WIND RUNNER
-        1, // CLOUD SURFER
-        
-        1, // BOXER
-        0, // LOST SOUL
-        
-        0, // BANISHER
-        0, // BANSHEE
-        0, // CULTIST
-        
-        0, // APPRENTICE
-        0, // SENSEI'S CHOSEN
-        0, // NINJA
-        0, // SAMURAI
-        
-        0, // FIRE ELEMENTAL
-        0, // AIR ELEMENTAL
-        0, // WATER ELEMENTAL
-        0, // EARTH ELEMENTAL
-        0, // OMEGA ELEMENTAL
-        
-        // Supporter Cards
-        1, // PROFESSOR
-        0, // LECTURER
-        0, // INVESTOR
-        1, // RESEARCHER
-        1, // GAMBLER
-        1, // RECRUITER
-        
-        1, // CHEF
-        0, // TRADER
-        1, // LIBRARIAN
-        1, // EXPERIMENTER
-        0, // PERSONAL TRAINER
-        1, // SCAPEGOAT
-        
-        0, // ELECTRICIAN
-        1, // ALCHEMIST
-        1, // TIME TRAVELLER
-        1, // BANKER
-        0, // GLUTTON
-        
-        1, // SUBSTITUTE
-        0, // BOUNTY HUNTER
-        
-        1, // NURSE
-        0, // INNKEEPER
-        1, // MIRACLE WORKER
-        0, // DOCTOR
-        1, // ESCAPE ARTIST
-        
-        0, // ASSASSIN
-        0, // SNIPER
-        
-        0, // CHEERLEADER
-        0, // ARMS SMUGGLER
-        1, // MANIAC
-        
-        1, // PEACEMAKER
-        0, // MATCHMAKER
-        1, // PLUMBER
-        0, // LOCKSMITH
-        1, // LOCK PICKER
-        0, // GATEKEEPER
-        0, // MILLER
-        0, // ARSONIST
-        
-        // Energy Cards
-        0, // FIRE ENERGY
-        2, // AIR ENERGY
-        1, // WATER ENERGY
-        0, // EARTH ENERGY
-        
-        0, // UNIVERSAL ENERGY
-        2, // ALPHA ENERGY
-        0, // OMEGA ENERGY
-        0  // BOND ENERGY
     }
 );
 
@@ -630,7 +626,7 @@ const DeckCode MIDRANGE_DECK(
         0, // PERSONAL TRAINER
         0, // SCAPEGOAT
         
-        0, // ELECTRICIAN
+        1, // ELECTRICIAN
         0, // ALCHEMIST
         1, // TIME TRAVELLER
         0, // BANKER
@@ -657,7 +653,7 @@ const DeckCode MIDRANGE_DECK(
         1, // PLUMBER
         1, // LOCKSMITH
         1, // LOCK PICKER
-        1, // GATEKEEPER
+        0, // GATEKEEPER
         0, // MILLER
         1, // ARSONIST
         
@@ -899,6 +895,120 @@ const DeckCode CONTROL_COMBO_DECK(
         2, // UNIVERSAL ENERGY
         2, // ALPHA ENERGY
         1, // OMEGA ENERGY
+        0  // BOND ENERGY
+    }
+);
+
+const DeckCode OTK_COMBO_DECK(
+    "OTK Combo",
+    "This is a one-turn kill combo deck that aims to defeat "
+    "all of the opponent's fighters in a single turn!\n\n"
+    "Maniac boosts damage to the sky, if the player's deck, hand, and bench are empty!\n\n"
+    "Cloud Surfer attacks all opposing fighters simultaneously, so Maniac "
+    "allows it to defeat all of the opposing fighters in one fell swoop!\n\n"
+    "Emptying the deck, playing Banker to shuffle Maniac into the "
+    "deck, and playing Professor is one way to pull off the combo.\n\n"
+    "Pirate and Excavator can help to find combo pieces.",
+    {
+        // Fighter Cards
+        1, // DRIVER
+        0, // RACER
+        0, // HOT RODDER
+        1, // SAILOR
+        1, // PIRATE
+        0, // DIRT BIKER
+        0, // MONSTER TRUCKER
+        0, // PILOT
+        0, // ASTRONAUT
+        
+        0, // MAGE
+        0, // PYROMANCER
+        0, // WARLOCK
+        0, // CLERIC
+        0, // HYDROMANCER
+        
+        1, // MINER
+        1, // EXCAVATOR
+        0, // SWIMMER
+        0, // SCUBA DIVER
+        0, // WELDER
+        0, // PYROTECHNICIAN
+        1, // WIND RUNNER
+        1, // CLOUD SURFER
+        
+        0, // BOXER
+        0, // LOST SOUL
+        
+        0, // BANISHER
+        0, // BANSHEE
+        0, // CULTIST
+        
+        0, // APPRENTICE
+        0, // SENSEI'S CHOSEN
+        0, // NINJA
+        0, // SAMURAI
+        
+        0, // FIRE ELEMENTAL
+        0, // AIR ELEMENTAL
+        0, // WATER ELEMENTAL
+        0, // EARTH ELEMENTAL
+        0, // OMEGA ELEMENTAL
+        
+        // Supporter Cards
+        1, // PROFESSOR
+        0, // LECTURER
+        0, // INVESTOR
+        1, // RESEARCHER
+        1, // GAMBLER
+        0, // RECRUITER
+        
+        1, // CHEF
+        0, // TRADER
+        0, // LIBRARIAN
+        1, // EXPERIMENTER
+        0, // PERSONAL TRAINER
+        1, // SCAPEGOAT
+        
+        0, // ELECTRICIAN
+        1, // ALCHEMIST
+        1, // TIME TRAVELLER
+        1, // BANKER
+        0, // GLUTTON
+        
+        1, // SUBSTITUTE
+        0, // BOUNTY HUNTER
+        
+        1, // NURSE
+        0, // INNKEEPER
+        1, // MIRACLE WORKER
+        0, // DOCTOR
+        1, // ESCAPE ARTIST
+        
+        0, // ASSASSIN
+        0, // SNIPER
+        
+        0, // CHEERLEADER
+        0, // ARMS SMUGGLER
+        1, // MANIAC
+        
+        1, // PEACEMAKER
+        0, // MATCHMAKER
+        0, // PLUMBER
+        0, // LOCKSMITH
+        1, // LOCK PICKER
+        0, // GATEKEEPER
+        0, // MILLER
+        0, // ARSONIST
+        
+        // Energy Cards
+        0, // FIRE ENERGY
+        2, // AIR ENERGY
+        1, // WATER ENERGY
+        2, // EARTH ENERGY
+        
+        0, // UNIVERSAL ENERGY
+        2, // ALPHA ENERGY
+        0, // OMEGA ENERGY
         0  // BOND ENERGY
     }
 );

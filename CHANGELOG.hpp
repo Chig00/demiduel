@@ -1,4 +1,14 @@
 /* CHANGELOG:
+     v1.10:
+       Undercurrent's damage was decreased from 650 to 600.
+       Undercurrent's bonus damage was increased from 150 to 200.
+       Shadow Bond's cost was increassed from 2000 to 3000.
+       Assassin's effect was changed to defeat fighters below a specific health threshold.
+       Arsonist's mill was decreased from 3 to 2.
+       Tempo was renamed to Blend.
+       A new Tempo deck featuring Pyrotechnician, Scuba Diver, and Cloud Surfer was added.
+       Changes to some of the decklists.
+       Changes to the ordering of the decklists.
      v1.9.5:
        The Overload effect explanation was replaced with the Next Turn effect explanation.
        Pyromancer's health was decreased from 1250 to 1150.

@@ -649,8 +649,8 @@ constexpr bool SCUBA_DIVER_ABILITY_PASSIVE = true;
 constexpr int SCUBA_DIVER_ABILITY_USES = PASSIVE_USES;
 constexpr const char* SCUBA_DIVER_ATTACK_NAME = "Undercurrent";
 constexpr const char* SCUBA_DIVER_ATTACK_DESCRIPTION =
-    "Deal 650 damage to your opponent's active fighter.\n"
-    "If this fighter has the invincibility effect, deal 150 more damage.\n"
+    "Deal 600 damage to your opponent's active fighter.\n"
+    "If this fighter has the invincibility effect, deal 200 more damage.\n"
     "Clear all effects from this fighter."
 ;
 const std::string SCUBA_DIVER_ATTACK_EFFECTS(
@@ -658,11 +658,11 @@ const std::string SCUBA_DIVER_ATTACK_EFFECTS(
     + EFFECT_SEPARATOR        //
     + INVINCIBILITY_EFFECT    // invincibility
     + EFFECT_SEPARATOR        //
-    + "150"                   // 150
+    + "200"                   // 200
     + EFFECT_TERMINATOR
     + CLEAR_EFFECT            // clear
 );
-constexpr int SCUBA_DIVER_ATTACK_DAMAGE = 650;
+constexpr int SCUBA_DIVER_ATTACK_DAMAGE = 600;
 constexpr int SCUBA_DIVER_ATTACK_COST = 2000;
 //} 
 //}
@@ -982,7 +982,7 @@ const std::string CULTIST_ATTACK_EFFECTS(
     + VOID_EFFECT             // void
 );
 constexpr int CULTIST_ATTACK_DAMAGE = 0;
-constexpr int CULTIST_ATTACK_COST = 2000;
+constexpr int CULTIST_ATTACK_COST = 3000;
 //}
 //}
 
@@ -1806,12 +1806,13 @@ const std::string ESCAPE_ARTIST_EFFECTS(
 //{
 constexpr const char* ASSASSIN_NAME = "Assassin";
 constexpr const char* ASSASSIN_DESCRIPTION =
-    "Deal 200 damage to your opponent's active fighter."
+    "If your opponent's active fighter's current health is less than "
+    "or equal to 0.2 multiplied by its maximum health, defeat it."
 ;
 const std::string ASSASSIN_EFFECTS(
-    std::string(DAMAGE_EFFECT) // damage
-    + EFFECT_SEPARATOR         //
-    + "200"                    // 200
+    std::string(ASSASSINATE_EFFECT) // assassinate
+    + EFFECT_SEPARATOR              //
+    + "0.2"                         // 0.2
 );
 //}
 
@@ -2028,14 +2029,14 @@ const std::string MILLER_EFFECTS(
 //{
 constexpr const char* ARSONIST_NAME = "Arsonist";
 constexpr const char* ARSONIST_DESCRIPTION =
-    "Banish the top 3 cards of both players' decks."
+    "Banish the top 2 cards of both players' decks."
 ;
 const std::string ARSONIST_EFFECTS(
     std::string(MILL_EFFECT) // mill
     + EFFECT_SEPARATOR       //
     + BANISH_EFFECT          // banish
     + EFFECT_SEPARATOR       //
-    + "3"                    // 3
+    + "2"                    // 2
     + EFFECT_TERMINATOR
     + MILL_EFFECT            // mill
     + EFFECT_SEPARATOR       //
@@ -2043,7 +2044,7 @@ const std::string ARSONIST_EFFECTS(
     + EFFECT_SEPARATOR       //
     + BANISH_EFFECT          // banish
     + EFFECT_SEPARATOR       //
-    + "3"                    // 3
+    + "2"                    // 2
 );
 //}
 //}
