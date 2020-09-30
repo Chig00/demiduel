@@ -42,23 +42,23 @@ constexpr const char* RACER_OLD_RANK = DRIVER_NAME;
 constexpr const char* RACER_ABILITY_NAME = "Acceleration";
 constexpr const char* RACER_ABILITY_DESCRIPTION =
     "Once a turn, you may switch this fighter in from the bench.\n"
-    "If you do, this fighter deals 125 more damage this turn."
+    "If you do, this fighter deals 50 more damage this turn."
 ;
 const std::string RACER_ABILITY_EFFECTS(
     std::string(SWITCH_IN_EFFECT) // switch_in
     + EFFECT_SEPARATOR            //
     + POWER_EFFECT                // power
     + EFFECT_SEPARATOR            //
-    + "125"                       // 125
+    + "50"                       // 50
 );
 constexpr bool RACER_ABILITY_PASSIVE = false;
 constexpr int RACER_ABILITY_USES = 1;
 constexpr const char* RACER_ATTACK_NAME = "Nitro Boost";
 constexpr const char* RACER_ATTACK_DESCRIPTION =
-    "Deal 425 damage to your opponent's active fighter."
+    "Deal 450 damage to your opponent's active fighter."
 ;
 constexpr const char* RACER_ATTACK_EFFECTS = NO_EFFECTS;
-constexpr int RACER_ATTACK_DAMAGE = 425;
+constexpr int RACER_ATTACK_DAMAGE = 450;
 constexpr int RACER_ATTACK_COST = 1000;
 //}
 
@@ -72,23 +72,23 @@ constexpr const char* HOT_RODDER_OLD_RANK = RACER_NAME;
 constexpr const char* HOT_RODDER_ABILITY_NAME = "Charged Thruster";
 constexpr const char* HOT_RODDER_ABILITY_DESCRIPTION =
     "Once a turn, you may switch this fighter in from the bench.\n"
-    "If you do, this fighter deals 250 more damage this turn."
+    "If you do, this fighter deals 100 more damage this turn."
 ;
 const std::string HOT_RODDER_ABILITY_EFFECTS(
     std::string(SWITCH_IN_EFFECT) // switch_in
     + EFFECT_SEPARATOR            //
     + POWER_EFFECT                // power
     + EFFECT_SEPARATOR            //
-    + "250"                       // 250
+    + "100"                       // 100
 );
 constexpr bool HOT_RODDER_ABILITY_PASSIVE = false;
 constexpr int HOT_RODDER_ABILITY_USES = 1;
 constexpr const char* HOT_RODDER_ATTACK_NAME = "Super Nitro";
 constexpr const char* HOT_RODDER_ATTACK_DESCRIPTION =
-    "Deal 500 damage to your opponent's active fighter."
+    "Deal 650 damage to your opponent's active fighter."
 ;
 constexpr const char* HOT_RODDER_ATTACK_EFFECTS = NO_EFFECTS;
-constexpr int HOT_RODDER_ATTACK_DAMAGE = 500;
+constexpr int HOT_RODDER_ATTACK_DAMAGE = 650;
 constexpr int HOT_RODDER_ATTACK_COST = 2000;
 //}
 //}

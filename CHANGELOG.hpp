@@ -1,4 +1,9 @@
 /* CHANGELOG:
+     v1.10.1:
+       Nitro Boost's damage was increased from 425 to 450.
+       Acceleration's damage boost was decreased from 125 to 50.
+       Super Nitro's damage was increased from 500 to 650.
+       Charged Thruster's damage boost was decreased from 250 to 100.
      v1.10:
        Undercurrent's damage was decreased from 650 to 600.
        Undercurrent's bonus damage was increased from 150 to 200.
