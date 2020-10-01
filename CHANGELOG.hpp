@@ -1,4 +1,7 @@
 /* CHANGELOG:
+     v1.10.1.1:
+       The mobile version's Duel Song was changed to the Record Keeper remix.
+       Audio Constants were separated from the Universal Constants.
      v1.10.1:
        Nitro Boost's damage was increased from 425 to 450.
        Acceleration's damage boost was decreased from 125 to 50.

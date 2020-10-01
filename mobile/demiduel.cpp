@@ -9,7 +9,7 @@
 // System Constants
 //{
 // The current version of the program.
-constexpr int VERSION[] = {1, 10, 1, 0};
+constexpr int VERSION[] = {1, 10, 1, 1};
 
 // The title of the game in string form.
 constexpr const char* TITLE_STRING = "Demi Duel";
@@ -3069,21 +3069,6 @@ constexpr const char* EMPTY_EXPLANATION = "";
 //}
 //}
 
-// Audio Constants
-//{
-// Menu song details.
-constexpr const char* MENU_SONG_SOURCE = "data/menusong.wav";
-constexpr double MENU_SONG_LENGTH = Timer::to_seconds(0, 1, 8);
-
-// Build song details.
-constexpr const char* BUILD_SONG_SOURCE = "data/buildsong.wav";
-constexpr double BUILD_SONG_LENGTH = Timer::to_seconds(0, 0, 57);
-
-// Game song details.
-constexpr const char* DUEL_SONG_SOURCE = "data/duelsong.wav";
-constexpr double DUEL_SONG_LENGTH = Timer::to_seconds(0, 1, 55);
-//}
-
 // Card Instance Constants
 //{
 // Fighter Cards
@@ -5286,6 +5271,13 @@ constexpr int BOND_ENERGY_VALUE = 750;
 
 // Mobile Constants
 //{
+// Audio Constants
+//{
+// Duel song details.
+constexpr const char* DUEL_SONG_SOURCE = "data/duelsong.wav";
+constexpr double DUEL_SONG_LENGTH = Timer::to_seconds(0, 2, 2);
+//}
+
 // Sources, positions, and dimensions of the numbers (for number entry).
 //{
 constexpr const char* NUMBER_SOURCES[NUMBERS] = {
@@ -22332,6 +22324,9 @@ int main(int argc, char** argv) noexcept {
 //}
 
 /* CHANGELOG:
+     v1.10.1.1:
+       The mobile version's Duel Song was changed to the Record Keeper remix.
+       Audio Constants were separated from the Universal Constants.
      v1.10.1:
        Nitro Boost's damage was increased from 425 to 450.
        Acceleration's damage boost was decreased from 125 to 50.
