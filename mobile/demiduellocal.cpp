@@ -22356,8 +22356,8 @@ int main(int argc, char** argv) noexcept {
 		);
 		
 		// The duel song is loaded and queued in another thread.
-		Audio duel_song(DUEL_SONG_SOURCE, DUEL_SONG_LENGTH);
-		Thread thread(Audio::thread_queue, &duel_song);
+		// Audio duel_song(DUEL_SONG_SOURCE, DUEL_SONG_LENGTH);
+		// Thread thread(Audio::thread_queue, &duel_song);
 		
 		// True when the program should end.
 		bool end = false;
@@ -22396,7 +22396,7 @@ int main(int argc, char** argv) noexcept {
 		}
 
 		// The duel song is paused, which terminates the queuing thread.
-		duel_song.pause();
+		// duel_song.pause();
 	}
 	
 	// The library is shut down.

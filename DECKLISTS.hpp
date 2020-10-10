@@ -3,8 +3,8 @@ const DeckCode AGGRO_DECK(
     "This is an aggressive deck that uses Hot Rodder and "
     "Pyrotechnician to deal high amounts of damage every turn!\n\n"
     "Hydromancer helps to force out key targets and lock them in the active position!\n\n"
-    "Assassin, Sniper, Cheerleader, Bounty Hunter, and Matchmaker can be used "
-    "to make quick work of the opponent's important or unranked fighters.",
+    "Various supporter cards in the deck can be used to make quick "
+    "work of the opponent's important or unranked fighters.",
     {
         // Fighter Cards
         1, // DRIVER
@@ -448,8 +448,7 @@ const DeckCode MILL_DECK(
     "This is a mill deck that focuses on emptying the opponent's "
     "deck, in order to make them draw life cards.\n\n"
     "Lost Soul is a tutor card that is used to draw Mage and Pyromancer.\n\n"
-    "Pyromancer can discard random cards from both "
-    "decks, so both decks can be emptied quickly.\n\n"
+    "Pyromancer can discard random cards from your opponent's deck.\n\n"
     "Glutton shuffles discarded energy cards back into the deck, "
     "so you don't draw life cards while your opponent does!\n\n"
     "Lost Soul, Miller, and Arsonist also help to mill the opponent.\n\n"
@@ -680,7 +679,8 @@ const DeckCode AGGRO_COMBO_DECK(
     "Ninja and Samurai both rank up from the same "
     "fighter, so Bond Energy can help to get them "
     "both in play without dicarding their old ranks.\n\n"
-    "Lost Soul and Personal Trainer can help to get the fighters in play quickly.",
+    "Lost Soul, Personal Trainer, and Ascension can "
+    "help to get the combo attackers in play quickly.",
     {
         // Fighter Cards
         0, // DRIVER
@@ -787,14 +787,13 @@ const DeckCode AGGRO_COMBO_DECK(
 
 const DeckCode CONTROL_COMBO_DECK(
     "Control Combo",
-    "This is a combo-oriented defensive deck that uses elementals.\n\n"
-    "The 4 basic elementals, Fire, Air, Water, and "
-    "Earth elemental, are weak unranked fighters.\n\n"
-    "However, if 3 are in play simultaneously, "
-    "they can fuse into Omega Elemental!\n\n"
-    "Omega Elemental is an exceptionally powerful fighter "
-    "that can deal a lot of damage and heal itself!\n\n"
-    "Its ability allows one to draw a copy of a card chosen from the opponent's hand!",
+    "This is a combo-oriented, defensive deck that uses elementals.\n\n"
+    "The 4 basic elementals are weak unranked fighters.\n\n"
+    "However, if all of them are in play simultaneously, "
+    "they can fuse into the Omega Elemental!\n\n"
+    "The Omega Elemental is an exceptionally powerful fighter that can "
+    "heal itself and generate copies of your opponent's cards!\n\n"
+    "Omega Elemental is also capable of using the OTK Combo!",
     {
         // Fighter Cards
         0, // DRIVER

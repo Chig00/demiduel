@@ -1,7 +1,5 @@
 #include <iostream>
 #include <type_traits>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_net.h>
 #include "sdlandnet.hpp"
 
 // Universal Constants
@@ -5299,53 +5297,21 @@ constexpr int BOND_ENERGY_VALUE = 750;
 //}
 //}
 
-// Mobile Constants
+// PC Constants
 //{
 // Audio Constants
 //{
+// Menu song details.
+constexpr const char* MENU_SONG_SOURCE = "data/menusong.wav";
+constexpr double MENU_SONG_LENGTH = Timer::to_seconds(0, 1, 8);
+
+// Build song details.
+constexpr const char* BUILD_SONG_SOURCE = "data/buildsong.wav";
+constexpr double BUILD_SONG_LENGTH = Timer::to_seconds(0, 0, 57);
+
 // Duel song details.
 constexpr const char* DUEL_SONG_SOURCE = "data/duelsong.wav";
-constexpr double DUEL_SONG_LENGTH = Timer::to_seconds(0, 2, 2);
-//}
-
-// Sources, positions, and dimensions of the numbers (for number entry).
-//{
-constexpr const char* NUMBER_SOURCES[NUMBERS] = {
-	"data/0.bmp",
-	"data/1.bmp",
-	"data/2.bmp",
-	"data/3.bmp",
-	"data/4.bmp",
-	"data/5.bmp",
-	"data/6.bmp",
-	"data/7.bmp",
-	"data/8.bmp",
-	"data/9.bmp"
-};
-constexpr double NUMBER_WIDTH = 0.05;
-constexpr double NUMBER_HEIGHT = 0.1;
-constexpr double NUMBER_X[] = {
-	0.2,
-	0.275,
-	0.35,
-	0.425,
-	0.5,
-	0.575,
-	0.65,
-	0.725,
-	0.8,
-	0.875
-};
-constexpr double NUMBER_Y = 0.75;
-//}
-
-// Source, position, and dimensions of the dot (for address entry).
-//{
-constexpr const char* DOT_SOURCE = "data/fullstop.bmp";
-constexpr double DOT_WIDTH = NUMBER_WIDTH;
-constexpr double DOT_HEIGHT = NUMBER_HEIGHT;
-constexpr double DOT_X = NUMBER_X[0] - DOT_WIDTH;
-constexpr double DOT_Y = NUMBER_Y;
+constexpr double DUEL_SONG_LENGTH = Timer::to_seconds(0, 1, 55);
 //}
 //}
 
@@ -18378,18 +18344,18 @@ const DeckCode* const ALL_DECK_CODES[DECK_CODE_COUNT] = {
 // Main Functions
 //{
 // Main Game Functions
-//{	
+//{ 
 /**
  * Converts a deck code from an array to a string.
  */
 std::string to_deck_code(const std::array<int, CARD_COUNT>& card_counts) noexcept {
-	std::stringstream stream;
-	
-	for (int i = 0; i < CARD_COUNT; i++) {
-		stream << card_counts[i] << ' ';
-	}
-	
-	return stream.str();
+    std::stringstream stream;
+    
+    for (int i = 0; i < CARD_COUNT; i++) {
+        stream << card_counts[i] << ' ';
+    }
+    
+    return stream.str();
 }
 
 /**
@@ -18397,188 +18363,141 @@ std::string to_deck_code(const std::array<int, CARD_COUNT>& card_counts) noexcep
  * Returns the number of extra cards drawn in string form.
  */
 std::string bonus_draw(
-	Display& display,
-	const Renderer& renderer,
-	Player& player,
-	std::mt19937& generator,
-	const Button& next_button,
-	int difference
+    Display& display,
+    const Renderer& renderer,
+    Player& player,
+    std::mt19937& generator,
+    const Button& next_button,
+    int difference
 ) {
-	// The components of the display are extracted.
-	Sprite& display_sprite = display.get_sprite();
-	int display_width = display_sprite.get_width();
-	int display_height = display_sprite.get_height();
-	
-	// The bonus sprite is initialised.
-	Sprite bonus_sprite(
-		renderer.render(
-			BONUS_STRING,
-			BONUS_WIDTH * display_width,
-			BONUS_HEIGHT * display_height,
-			BONUS_SEPARATION * display_width
-		)
-	);
-	
-	// The number of cards to be drawn.
-	std::string bonus;
-	
-	// The back button is initialised.
-	Button back_button(
-		renderer.render(
-			BACK_STRING,
-			BACK_WIDTH * display.width(),
-			BACK_HEIGHT * display.height(),
-			BACK_SEPARATION * display.width()
-		),
-		display,
-		BACK_X,
-		BACK_Y
-	);
-	
-	// A vector of number buttons for use on mobile devices.
-	std::vector<Button> number_buttons;
-	
-	for (int i = 0; i < NUMBERS; ++i) {
-		number_buttons.push_back(
-			Button(
-				Sprite(
-					NUMBER_SOURCES[i],
-					NUMBER_WIDTH * display.width(),
-					NUMBER_HEIGHT * display.height()
-				),
-				display,
-				NUMBER_X[i],
-				NUMBER_Y
-			)
-		);
-	}
-	
-	// True if the function should return.
-	bool end = false;
-	
-	// Loop to display the bonus draw menu.
-	while (!end) {
-		// The display is blitted to.
-		display_sprite.fill();
-		display_sprite.blit(bonus_sprite, BONUS_X, BONUS_Y);
-		next_button.blit_to(display_sprite);
-		
-		if (bonus.length()) {
-			back_button.blit_to(display_sprite);
-		}
-		
-		for (int i = 0; i < NUMBERS; ++i) {
-			number_buttons[i].blit_to(display);
-		}
-		
-		// The host port is rendered.
-		display_sprite.blit(
-			renderer.render(
-				bonus,
-				BONUS_WIDTH * display_width,
-				BONUS_HEIGHT * display_height,
-				BONUS_SEPARATION * display_width
-			),
-			BONUS_X,
-			BONUS_Y + BONUS_SHIFT
-		);
-		
-		// The display is updated.
-		display.update();
-		
-		// Loop to get user input.
-		while (true) {
-			// If the user clicks the next button or presses
-			//   the submit key, the cards are drawn.
-			if (
-				Events::unpress(SUBMIT_KEY)
-				|| next_button.get_rectangle().unclick()
-			) {
-				int draws;
-				
-				// An attempt to get an integral number of draws is tried.
-				try {
-					draws = std::stoi(bonus);
-				}
-				
-				// If it fails, the number of draws is set to -1.
-				catch (const std::exception&) {
-					draws = -1;
-				}
-				
-				// If the number of cards to be drawn is valid, the cards are drawn.
-				// Drawing terminates this functions.
-				if (0 <= draws && draws <= difference) {
-					player.draw(draws);
-					end = true;
-				}
-				
-				break;
-			}
-			
-			// If the user presses the delete button,
-			//   the last character entered is removed.
-			else if (
-				(
-					Events::unpress(DELETE_KEY)
-					|| back_button.get_rectangle().unclick()
-				) && bonus.length()
-			) {
-				bonus.pop_back();
-				break;
-			}
-			
-			// Else the number buttons are checked to form the bonus string.
-			else {
-				// True when the key being pressed is found.
-				bool found = false;
-				
-				// The numbers are checked.
-				for (int i = 0; !found && i < NUMBERS; i++) {
-					if (
-						Events::unpress(Events::NUMBERS[i])
-						|| number_buttons[i].get_rectangle().unclick()
-					) {
-						bonus += '0' + i;
-						found = true;
-					}
-				}
-				
-				// If a valid key was pressed, the display is updated.
-				if (found) {
-					break;
-				}
-			}
+    // The components of the display are extracted.
+    Sprite& display_sprite = display.get_sprite();
+    int display_width = display_sprite.get_width();
+    int display_height = display_sprite.get_height();
+    
+    // The bonus sprite is initialised.
+    Sprite bonus_sprite(
+        renderer.render(
+            BONUS_STRING,
+            BONUS_WIDTH * display_width,
+            BONUS_HEIGHT * display_height,
+            BONUS_SEPARATION * display_width
+        )
+    );
+    
+    // The number of cards to be drawn.
+    std::string bonus;
+    
+    // True if the function should return.
+    bool end = false;
+    
+    // Loop to display the bonus draw menu.
+    while (!end) {
+        // The display is blitted to.
+        display_sprite.fill();
+        display_sprite.blit(bonus_sprite, BONUS_X, BONUS_Y);
+        next_button.blit_to(display_sprite);
+        
+        // The host port is rendered.
+        display_sprite.blit(
+            renderer.render(
+                bonus,
+                BONUS_WIDTH * display_width,
+                BONUS_HEIGHT * display_height,
+                BONUS_SEPARATION * display_width
+            ),
+            BONUS_X,
+            BONUS_Y + BONUS_SHIFT
+        );
+        
+        // The display is updated.
+        display.update();
+        
+        // Loop to get user input.
+        while (true) {
+            // If the user clicks the next button or presses
+            //   the submit key, the cards are drawn.
+            if (
+                Events::unpress(SUBMIT_KEY)
+                || next_button.get_rectangle().unclick()
+            ) {
+                int draws;
+                
+                // An attempt to get an integral number of draws is tried.
+                try {
+                    draws = std::stoi(bonus);
+                }
+                
+                // If it fails, the number of draws is set to -1.
+                catch (const std::exception&) {
+                    draws = -1;
+                }
+                
+                // If the number of cards to be drawn is valid, the cards are drawn.
+                // Drawing terminates this functions.
+                if (0 <= draws && draws <= difference) {
+                    player.draw(draws);
+                    end = true;
+                }
+                
+                break;
+            }
+            
+            // If the user presses the delete button,
+            //   the last character entered is removed.
+            else if (Events::unpress(DELETE_KEY) && bonus.length()) {
+                bonus.pop_back();
+                break;
+            }
+            
+            // Else the number buttons are checked to form the bonus string.
+            else {
+                // True when the key being pressed is found.
+                bool found = false;
+                
+                // The numbers are checked.
+                for (int i = 0; !found && i < NUMBERS; i++) {
+                    if (Events::unpress(Events::NUMBERS[i])) {
+                        bonus += '0' + i;
+                        found = true;
+                    }
+                }
+                
+                // If a valid key was pressed, the display is updated.
+                if (found) {
+                    break;
+                }
+            }
 
-			Events::update();
-		}
-	}
-	
-	return bonus;
+            Events::update();
+        }
+    }
+    
+    return bonus;
 }
 
 /**
  * Displays how many cards the opponent drew.
  */
 void display_draw_count(
-	Display& display,
-	const Renderer& renderer,
-	int draws
+    Display& display,
+    const Renderer& renderer,
+    int draws
 ) noexcept {
-	display.fill();
-	display.blit(
-		renderer.lined_render(
-			OPPONENT_DRAW_STRING,
-			OPPONENT_DRAW_WIDTH * display.width(),
-			OPPONENT_DRAW_HEIGHT * display.height(),
-			OPPONENT_DRAW_SEPARATION_X * display.width(),
-			OPPONENT_DRAW_MAX_WIDTH * display.width(),
-			OPPONENT_DRAW_SEPARATION_Y * display.height(),
-			OPPONENT_DRAW_JUSTIFICATION
-		),
-		OPPONENT_DRAW_X,
-		OPPONENT_DRAW_Y
-	);
+    display.fill();
+    display.blit(
+        renderer.lined_render(
+            OPPONENT_DRAW_STRING,
+            OPPONENT_DRAW_WIDTH * display.width(),
+            OPPONENT_DRAW_HEIGHT * display.height(),
+            OPPONENT_DRAW_SEPARATION_X * display.width(),
+            OPPONENT_DRAW_MAX_WIDTH * display.width(),
+            OPPONENT_DRAW_SEPARATION_Y * display.height(),
+            OPPONENT_DRAW_JUSTIFICATION
+        ),
+        OPPONENT_DRAW_X,
+        OPPONENT_DRAW_Y
+    );
 }
 
 /**
@@ -18589,1444 +18508,1452 @@ void display_draw_count(
  *   extra card for each extra redraw that the opponent performed.
  */
 void mulligan(
-	Display& display,
-	const Renderer& renderer,
-	const Messenger& messenger,
-	std::vector<Player>& players,
-	bool turn,
-	std::mt19937& generator,
-	const Button& next_button
+    Display& display,
+    const Renderer& renderer,
+    const Messenger& messenger,
+    std::vector<Player>& players,
+    bool turn,
+    std::mt19937& generator,
+    const Button& next_button
 ) noexcept {
-	// The components of the display are extracted.
-	Sprite& display_sprite = display.get_sprite();
-	int display_width = display_sprite.get_width();
-	int display_height = display_sprite.get_height();
-	
-	display_sprite.fill();
-	display_sprite.blit(
-		renderer.lined_render(
-			MULLIGAN_STRING,
-			MULLIGAN_WIDTH * display_width,
-			MULLIGAN_HEIGHT * display_height,
-			MULLIGAN_SEPARATION_X * display_width,
-			MULLIGAN_MAX_WIDTH * display_width,
-			MULLIGAN_SEPARATION_Y * display_height,
-			MULLIGAN_JUSTIFICATION
-		),
-		MULLIGAN_X,
-		MULLIGAN_Y
-	);
-	next_button.blit_to(display_sprite);
-	display.update();
-	
-	// The user proceeds at their discretion.
-	while (
-		!Events::unpress(SUBMIT_KEY)
-		&& !next_button.get_rectangle().unclick()
-	) {
-		Events::update();
-	}
-	
-	// While both players do not have a valid hand, the mulligan continues.
-	while (!players[0].valid_hand() || !players[1].valid_hand()) {
-		// The first player performs the mulligan if they don't have a valid hand.
-		if (!players[turn].valid_hand()) {
-			players[turn].mulligan();
-		}
-		
-		// The second player performs the mulligan if they don't have a valid hand.
-		if (!players[!turn].valid_hand()) {
-			players[!turn].mulligan();
-		}
-	}
-	
-	// The difference in the number of mulligans determines the bonus draws.
-	int difference = players[1].count_mulligans() - players[0].count_mulligans();
-	
-	// The number of extra card draws is limited to allow for the life cards to be played.
-	if (difference > MAX_BONUS) {
-		difference = MAX_BONUS;
-	}
-	
-	else if (difference < -MAX_BONUS) {
-		difference = -MAX_BONUS;
-	}
-	
-	// If the player performed fewer mulligans, they may draw extra cards.
-	if (difference > 0) {
-		display_sprite.fill();
-		display_sprite.blit(
-			renderer.lined_render(
-				BONUS_DRAW_STRING,
-				BONUS_DRAW_WIDTH * display_width,
-				BONUS_DRAW_HEIGHT * display_height,
-				BONUS_DRAW_SEPARATION_X * display_width,
-				BONUS_DRAW_MAX_WIDTH * display_width,
-				BONUS_DRAW_SEPARATION_Y * display_height,
-				BONUS_DRAW_JUSTIFICATION
-			),
-			BONUS_DRAW_X,
-			BONUS_DRAW_Y
-		);
-		next_button.blit_to(display_sprite);
-		display.update();
-		
-		// The user proceeds at their discretion.
-		while (
-			!Events::unpress(SUBMIT_KEY)
-			&& !next_button.get_rectangle().unclick()
-		) {
-			Events::update();
-		}
-		
-		players[PLAYER].view_hand();
-		
-		messenger.send(bonus_draw(
-			display,
-			renderer,
-			players[0],
-			generator,
-			next_button,
-			difference
-		));
-	}
-	
-	// If the opponent performed fewer mulligans, they may draw extra cards.
-	else if (difference < 0) {
-		// The opponent's draw potential is revealed.
-		display_sprite.fill();
-		display_sprite.blit(
-			renderer.lined_render(
-				NO_BONUS_DRAW_STRING,
-				NO_BONUS_DRAW_WIDTH * display_width,
-				NO_BONUS_DRAW_HEIGHT * display_height,
-				NO_BONUS_DRAW_SEPARATION_X * display_width,
-				NO_BONUS_DRAW_MAX_WIDTH * display_width,
-				NO_BONUS_DRAW_SEPARATION_Y * display_height,
-				NO_BONUS_DRAW_JUSTIFICATION
-			),
-			NO_BONUS_DRAW_X,
-			NO_BONUS_DRAW_Y
-		);
-		display.update();
-		
-		// The draw count is received from the opponent.
-		std::string draw_string(EMPTY_MESSAGE);
-		MessengerPackage draw_package(messenger, draw_string);
-		Thread draw_thread(MessengerPackage::get_message, &draw_package);
-		
-		// Events are updated to prevent closure due to app inactivity.
-		while (draw_string == EMPTY_MESSAGE) {
-			Events::update();
-		}
-		
-		int draws = std::stoi(draw_string);
-		
-		// The user can advance when the opponent has sent their message.
-		next_button.blit_to(display_sprite);
-		display.update();
-		
-		// The user proceeds at their discretion.
-		while (
-			!Events::unpress(SUBMIT_KEY)
-			&& !next_button.get_rectangle().unclick()
-		) {
-			Events::update();
-		}
-		
-		// The opponent draws.
-		players[1].draw(draws);
-		
-		// The opponent's bonus draw is revealed.
-		display_draw_count(display, renderer, draws);
-		next_button.blit_to(display_sprite);
-		display.update();
-		
-		// The user proceeds at their discretion.
-		while (
-			!Events::unpress(SUBMIT_KEY)
-			&& !next_button.get_rectangle().unclick()
-		) {
-			Events::update();
-		}
-	}
+    // The components of the display are extracted.
+    Sprite& display_sprite = display.get_sprite();
+    int display_width = display_sprite.get_width();
+    int display_height = display_sprite.get_height();
+    
+    display_sprite.fill();
+    display_sprite.blit(
+        renderer.lined_render(
+            MULLIGAN_STRING,
+            MULLIGAN_WIDTH * display_width,
+            MULLIGAN_HEIGHT * display_height,
+            MULLIGAN_SEPARATION_X * display_width,
+            MULLIGAN_MAX_WIDTH * display_width,
+            MULLIGAN_SEPARATION_Y * display_height,
+            MULLIGAN_JUSTIFICATION
+        ),
+        MULLIGAN_X,
+        MULLIGAN_Y
+    );
+    next_button.blit_to(display_sprite);
+    display.update();
+    
+    // The user proceeds at their discretion.
+    while (
+        !Events::unpress(SUBMIT_KEY)
+        && !next_button.get_rectangle().unclick()
+    ) {
+        Events::update();
+    }
+    
+    // While both players do not have a valid hand, the mulligan continues.
+    while (!players[0].valid_hand() || !players[1].valid_hand()) {
+        // The first player performs the mulligan if they don't have a valid hand.
+        if (!players[turn].valid_hand()) {
+            players[turn].mulligan();
+        }
+        
+        // The second player performs the mulligan if they don't have a valid hand.
+        if (!players[!turn].valid_hand()) {
+            players[!turn].mulligan();
+        }
+    }
+    
+    // The difference in the number of mulligans determines the bonus draws.
+    int difference = players[1].count_mulligans() - players[0].count_mulligans();
+    
+    // The number of extra card draws is limited to allow for the life cards to be played.
+    if (difference > MAX_BONUS) {
+        difference = MAX_BONUS;
+    }
+    
+    else if (difference < -MAX_BONUS) {
+        difference = -MAX_BONUS;
+    }
+    
+    // If the player performed fewer mulligans, they may draw extra cards.
+    if (difference > 0) {
+        display_sprite.fill();
+        display_sprite.blit(
+            renderer.lined_render(
+                BONUS_DRAW_STRING,
+                BONUS_DRAW_WIDTH * display_width,
+                BONUS_DRAW_HEIGHT * display_height,
+                BONUS_DRAW_SEPARATION_X * display_width,
+                BONUS_DRAW_MAX_WIDTH * display_width,
+                BONUS_DRAW_SEPARATION_Y * display_height,
+                BONUS_DRAW_JUSTIFICATION
+            ),
+            BONUS_DRAW_X,
+            BONUS_DRAW_Y
+        );
+        next_button.blit_to(display_sprite);
+        display.update();
+        
+        // The user proceeds at their discretion.
+        while (
+            !Events::unpress(SUBMIT_KEY)
+            && !next_button.get_rectangle().unclick()
+        ) {
+            Events::update();
+        }
+        
+        players[PLAYER].view_hand();
+        
+        messenger.send(bonus_draw(
+            display,
+            renderer,
+            players[0],
+            generator,
+            next_button,
+            difference
+        ));
+    }
+    
+    // If the opponent performed fewer mulligans, the may draw extra cards.
+    else if (difference < 0) {
+        // The opponent's draw potential is revealed.
+        display_sprite.fill();
+        display_sprite.blit(
+            renderer.lined_render(
+                NO_BONUS_DRAW_STRING,
+                NO_BONUS_DRAW_WIDTH * display_width,
+                NO_BONUS_DRAW_HEIGHT * display_height,
+                NO_BONUS_DRAW_SEPARATION_X * display_width,
+                NO_BONUS_DRAW_MAX_WIDTH * display_width,
+                NO_BONUS_DRAW_SEPARATION_Y * display_height,
+                NO_BONUS_DRAW_JUSTIFICATION
+            ),
+            NO_BONUS_DRAW_X,
+            NO_BONUS_DRAW_Y
+        );
+        display.update();
+        
+        // The draw count is received from the opponent.
+        std::string draw_string(EMPTY_MESSAGE);
+        MessengerPackage draw_package(messenger, draw_string);
+        Thread draw_thread(MessengerPackage::get_message, &draw_package);
+        
+        // Events are updated to prevent closure due to app inactivity.
+        while (draw_string == EMPTY_MESSAGE) {
+            Events::update();
+        }
+        
+        int draws = std::stoi(draw_string);
+        
+        // The user can advance when the opponent has sent their message.
+        next_button.blit_to(display_sprite);
+        display.update();
+        
+        // The user proceeds at their discretion.
+        while (
+            !Events::unpress(SUBMIT_KEY)
+            && !next_button.get_rectangle().unclick()
+        ) {
+            Events::update();
+        }
+        
+        // The opponent draws.
+        players[1].draw(draws);
+        
+        // The opponent's bonus draw is revealed.
+        display_draw_count(display, renderer, draws);
+        next_button.blit_to(display_sprite);
+        display.update();
+        
+        // The user proceeds at their discretion.
+        while (
+            !Events::unpress(SUBMIT_KEY)
+            && !next_button.get_rectangle().unclick()
+        ) {
+            Events::update();
+        }
+    }
 }
 
 /**
  * Checks the player for defeated fighters.
  */
 int defeat_check(
-	Display& display,
-	const Renderer& renderer,
-	const Messenger& messenger,
-	MessengerPackage& messenger_package,
-	Thread& messenger_thread,
-	const Button& back_button,
-	const Button& next_button,
-	std::vector<Player>& players,
-	CardStore& the_void,
-	std::mt19937& generator,
-	bool turn
+    Display& display,
+    const Renderer& renderer,
+    const Messenger& messenger,
+    MessengerPackage& messenger_package,
+    Thread& messenger_thread,
+    const Button& back_button,
+    const Button& next_button,
+    std::vector<Player>& players,
+    CardStore& the_void,
+    std::mt19937& generator,
+    bool turn
 ) noexcept {
-	// The player, whose turn it is, is checked first.
-	players[turn].defeat_check();
-	
-	// The other player is then checked.
-	players[!turn].defeat_check();
-	
-	// The number of win conditions is calculated.
-	std::array<int, PLAYERS> win_conditions{};
-	
-	win_conditions[turn] = players[!turn].loss_conditions();
-	win_conditions[!turn] = players[turn].loss_conditions();
-	
-	// No player has reached a win condition yet.
-	if (!win_conditions[turn] && !win_conditions[!turn]) {
-		return NO_END;
-	}
-	
-	// Tie game.
-	else if (win_conditions[turn] == win_conditions[!turn]) {
-		return TIE;
-	}
-	
-	// The winner is returned.
-	else {
-		return win_conditions[OPPONENT] > win_conditions[PLAYER];
-	}
+    // The player, whose turn it is, is checked first.
+    players[turn].defeat_check();
+    
+    // The other player is then checked.
+    players[!turn].defeat_check();
+    
+    // The number of win conditions is calculated.
+    std::array<int, PLAYERS> win_conditions{};
+    
+    win_conditions[turn] = players[!turn].loss_conditions();
+    win_conditions[!turn] = players[turn].loss_conditions();
+    
+    // No player has reached a win condition yet.
+    if (!win_conditions[turn] && !win_conditions[!turn]) {
+        return NO_END;
+    }
+    
+    // Tie game.
+    else if (win_conditions[turn] == win_conditions[!turn]) {
+        return TIE;
+    }
+    
+    // The winner is returned.
+    else {
+        return win_conditions[OPPONENT] > win_conditions[PLAYER];
+    }
 }
 
 /**
  * Hosts the main game.
  */
 void game(
-	Display& display,
-	const Renderer& renderer,
-	const Messenger& messenger,
-	const std::array<int, CARD_COUNT>& card_counts,
-	MessengerPackage& messenger_package,
-	Thread& messenger_thread
+    Display& display,
+    const Renderer& renderer,
+    const Messenger& messenger,
+    const std::array<int, CARD_COUNT>& card_counts,
+    MessengerPackage& messenger_package,
+    Thread& messenger_thread
 ) noexcept {
-	// Game set up.
-	//{
-	// The components of the display are extracted.
-	Sprite& display_sprite = display.get_sprite();
-	int display_width = display_sprite.get_width();
-	int display_height = display_sprite.get_height();
-	
-	// The wait screen sprite is intialised.
-	Sprite wait_sprite(
-		renderer.lined_render(
-			WAIT_STRING,
-			WAIT_WIDTH * display_width,
-			WAIT_HEIGHT * display_height,
-			WAIT_SEPARATION_X * display_width,
-			WAIT_MAX_WIDTH * display_width,
-			WAIT_SEPARATION_Y * display_height,
-			WAIT_JUSTIFICATION
-		)
-	);
-	
-	// The wait screen is rendered.
-	display_sprite.fill();
-	display_sprite.blit(wait_sprite, WAIT_X, WAIT_Y);
-	display.update();
-	
-	// The message is extracted from the package.
-	std::string& message = messenger_package.get_string();
-	
-	// The seeder is determined.
-	// The player with the smaller value seeds the RNG.
-	std::array<double, PLAYERS> speeds = {0, 0};
-	
-	while (speeds[0] == speeds[1]) {
-		speeds[0] = Timer::time();
-		messenger.send(std::to_string(speeds[0]));
-		
-		// The opponent's message is waited for.
-		// Event updating is used to prevent "app inactivity".
-		while (message == EMPTY_MESSAGE) {
-			Events::update();
-		}
-		
-		// If the other player quit, the game cannot begin.
-		if (message == TERMINATOR_STRING) {
-			return;
-		}
-		
-		speeds[1] = std::stod(message);
-	}
-	
-	int seed;
-	
-	// The smaller value player determines the seed and sends it to the other.
-	if (speeds[0] < speeds[1]) {
-		seed = Timer::current();
-		messenger.send(std::to_string(seed));
-	}
-	
-	// The greater value player receives the seed.
-	else {
-		// The seed is received.
-		seed = std::stoi(messenger.read());
-	}
-	
-	// The RNG is seeded.
-	std::mt19937 generator(seed);
-	
-	// The player to go first is determined.
-	// Player's turn when turn is false.
-	// Opponent's turn when turn is true.
-	bool turn;
-	
-	// A coin is flipped to determine who goes first.
-	if (speeds[0] < speeds[1]) {
-		turn = Player::coin_flip(generator);
-	}
-	
-	// The coin flip to go first is mirrored.
-	else {
-		turn = !Player::coin_flip(generator);
-	}
-	
-	// The deck code is converted to string form and exchanged.
-	std::array<std::string, PLAYERS> deck_codes;
-	deck_codes[0] = to_deck_code(card_counts);
-	messenger.send(deck_codes[0]);
-	deck_codes[1] = messenger.read();
-	
-	// The back button is initialised.
-	Button back_button(
-		renderer.render(
-			BACK_STRING,
-			BACK_WIDTH * display.width(),
-			BACK_HEIGHT * display.height(),
-			BACK_SEPARATION * display.width()
-		),
-		display,
-		BACK_X,
-		BACK_Y
-	);
-	
-	// The next button is initialised.
-	Button next_button(
-		renderer.render(
-			NEXT_STRING,
-			NEXT_WIDTH * display_width,
-			NEXT_HEIGHT * display_height,
-			NEXT_SEPARATION * display_width
-		),
-		display_sprite,
-		NEXT_X,
-		NEXT_Y
-	);
-	
-	// The void is initialised.
-	// The void is shared by the players.
-	CardStore the_void;
-	
-	// Counts the number of rounds that have passed.
-	// Fighters may not attack on the first turn.
-	int turn_count = 0;
-	
-	// The players are initialised.
-	std::vector<Player> players;
-	
-	for (int i = 0; i < PLAYERS; ++i) {
-		players.push_back(
-			Player(
-				deck_codes[i],
-				display,
-				renderer,
-				messenger,
-				messenger_package,
-				messenger_thread,
-				back_button,
-				next_button,
-				the_void,
-				generator,
-				i,
-				turn,
-				turn_count
-			)
-		);
-	}
-	
-	for (int i = 0; i < PLAYERS; ++i) {
-		players[i].set_opponent(players[!i]);
-	}
-	
-	// The player ordering is revealed.
-	display_sprite.fill();
-	display_sprite.blit(
-		renderer.lined_render(
-			ORDER_STRING,
-			ORDER_WIDTH * display_width,
-			ORDER_HEIGHT * display_height,
-			ORDER_SEPARATION_X * display_width,
-			ORDER_MAX_WIDTH * display_width,
-			ORDER_SEPARATION_Y * display_height,
-			ORDER_JUSTIFICATION
-		),
-		ORDER_X,
-		ORDER_Y
-	);
-	next_button.blit_to(display_sprite);
-	display.update();
-	
-	// The user may proceed at their discretion.
-	while (
-		!Events::unpress(SUBMIT_KEY)
-		&& !next_button.get_rectangle().unclick()
-	) {
-		Events::update();
-	}
-	
-	// The players perform the mulligan.
-	mulligan(display, renderer, messenger, players, turn, generator, next_button);
-	
-	// The life cards are set up.
-	players[turn].set_life_cards();
-	players[!turn].set_life_cards();
-	
-	// The player sets up and sends their board.
-	messenger.send(players[0].set_active());
-	
-	// The opponent's choice is waited for.
-	message = "";
-	messenger_thread.new_thread(MessengerPackage::get_message, &messenger_package);
-	
-	display.fill();
-	display.blit(
-		renderer.lined_render(
-			WAIT_STRING,
-			WAIT_WIDTH * display.width(),
-			WAIT_HEIGHT * display.height(),
-			WAIT_SEPARATION_X * display.width(),
-			WAIT_MAX_WIDTH * display.width(),
-			WAIT_SEPARATION_Y * display.height()
-		),
-		WAIT_X,
-		WAIT_Y
-	);
-	display.update();
-	
-	while (message == "") {
-		Events::update();
-	}
-	
-	// The opponent's board is set up.
-	players[1].set_active(message);
-	
-	// Non-negative when the game should end.
-	int winner = -1;
-	
-	// The message from the opponent is awaited.
-	message = EMPTY_MESSAGE;
-	messenger_thread.new_thread(
-		MessengerPackage::get_message,
-		&messenger_package
-	);
-	
-	// The player taking the first turn can't attack on their first turn.
-	players[turn].affect(PREPARATION_EFFECT);
-	
-	// The player taking the second turn can play an extra card on their first turn.
-	players[!turn].extra_plays();
-	//}
-	
-	// Board buttons initialised.
-	//{
-	// The player's buttons are initialised.
-	//{
-	// Button for the player's deck.
-	Button your_deck_button(
-		renderer.lined_render(
-			YOUR_DECK_STRING,
-			YOUR_DECK_WIDTH * display.width(),
-			YOUR_DECK_HEIGHT * display.height(),
-			YOUR_DECK_SEPARATION_X * display.width(),
-			YOUR_DECK_MAX_WIDTH * display.width(),
-			YOUR_DECK_SEPARATION_Y * display.height(),
-			YOUR_DECK_JUSTIFICATION
-		),
-		display,
-		YOUR_DECK_X,
-		YOUR_DECK_Y
-	);
-	
-	// Button for the player's trash.
-	Button your_trash_button(
-		renderer.lined_render(
-			YOUR_TRASH_STRING,
-			YOUR_TRASH_WIDTH * display.width(),
-			YOUR_TRASH_HEIGHT * display.height(),
-			YOUR_TRASH_SEPARATION_X * display.width(),
-			YOUR_TRASH_MAX_WIDTH * display.width(),
-			YOUR_TRASH_SEPARATION_Y * display.height(),
-			YOUR_TRASH_JUSTIFICATION
-		),
-		display,
-		YOUR_TRASH_X,
-		YOUR_TRASH_Y
-	);
-	
-	// Button for the player's hand.
-	Button your_hand_button(
-		renderer.lined_render(
-			YOUR_HAND_STRING,
-			YOUR_HAND_WIDTH * display.width(),
-			YOUR_HAND_HEIGHT * display.height(),
-			YOUR_HAND_SEPARATION_X * display.width(),
-			YOUR_HAND_MAX_WIDTH * display.width(),
-			YOUR_HAND_SEPARATION_Y * display.height(),
-			YOUR_HAND_JUSTIFICATION
-		),
-		display,
-		YOUR_HAND_X,
-		YOUR_HAND_Y
-	);
-	
-	// Button for the player's life cards.
-	Button your_life_button(
-		renderer.lined_render(
-			YOUR_LIFE_STRING,
-			YOUR_LIFE_WIDTH * display.width(),
-			YOUR_LIFE_HEIGHT * display.height(),
-			YOUR_LIFE_SEPARATION_X * display.width(),
-			YOUR_LIFE_MAX_WIDTH * display.width(),
-			YOUR_LIFE_SEPARATION_Y * display.height(),
-			YOUR_LIFE_JUSTIFICATION
-		),
-		display,
-		YOUR_LIFE_X,
-		YOUR_LIFE_Y
-	);
-	
-	// Button for the player's active fighter.
-	Button your_active_button(
-		renderer.lined_render(
-			YOUR_ACTIVE_STRING,
-			YOUR_ACTIVE_WIDTH * display.width(),
-			YOUR_ACTIVE_HEIGHT * display.height(),
-			YOUR_ACTIVE_SEPARATION_X * display.width(),
-			YOUR_ACTIVE_MAX_WIDTH * display.width(),
-			YOUR_ACTIVE_SEPARATION_Y * display.height(),
-			YOUR_ACTIVE_JUSTIFICATION
-		),
-		display,
-		YOUR_ACTIVE_X,
-		YOUR_ACTIVE_Y
-	);
-	
-	// Button for the player's benched fighters.
-	Button your_bench_button(
-		renderer.lined_render(
-			YOUR_BENCH_STRING,
-			YOUR_BENCH_WIDTH * display.width(),
-			YOUR_BENCH_HEIGHT * display.height(),
-			YOUR_BENCH_SEPARATION_X * display.width(),
-			YOUR_BENCH_MAX_WIDTH * display.width(),
-			YOUR_BENCH_SEPARATION_Y * display.height(),
-			YOUR_BENCH_JUSTIFICATION
-		),
-		display,
-		YOUR_BENCH_X,
-		YOUR_BENCH_Y
-	);
-	
-	// Button for the player's effects fighters.
-	Button your_effects_button(
-		renderer.lined_render(
-			YOUR_EFFECTS_STRING,
-			YOUR_EFFECTS_WIDTH * display.width(),
-			YOUR_EFFECTS_HEIGHT * display.height(),
-			YOUR_EFFECTS_SEPARATION_X * display.width(),
-			YOUR_EFFECTS_MAX_WIDTH * display.width(),
-			YOUR_EFFECTS_SEPARATION_Y * display.height(),
-			YOUR_EFFECTS_JUSTIFICATION
-		),
-		display,
-		YOUR_EFFECTS_X,
-		YOUR_EFFECTS_Y
-	);
-	//}
-	
-	// The opponent's buttons are initialised.
-	//{
-	// Button for the opponent's deck.
-	Button opponent_deck_button(
-		renderer.lined_render(
-			OPPONENT_DECK_STRING,
-			OPPONENT_DECK_WIDTH * display.width(),
-			OPPONENT_DECK_HEIGHT * display.height(),
-			OPPONENT_DECK_SEPARATION_X * display.width(),
-			OPPONENT_DECK_MAX_WIDTH * display.width(),
-			OPPONENT_DECK_SEPARATION_Y * display.height(),
-			OPPONENT_DECK_JUSTIFICATION
-		),
-		display,
-		OPPONENT_DECK_X,
-		OPPONENT_DECK_Y
-	);
-	
-	// Button for the opponent's trash.
-	Button opponent_trash_button(
-		renderer.lined_render(
-			OPPONENT_TRASH_STRING,
-			OPPONENT_TRASH_WIDTH * display.width(),
-			OPPONENT_TRASH_HEIGHT * display.height(),
-			OPPONENT_TRASH_SEPARATION_X * display.width(),
-			OPPONENT_TRASH_MAX_WIDTH * display.width(),
-			OPPONENT_TRASH_SEPARATION_Y * display.height(),
-			OPPONENT_TRASH_JUSTIFICATION
-		),
-		display,
-		OPPONENT_TRASH_X,
-		OPPONENT_TRASH_Y
-	);
-	
-	// Button for the opponent's hand.
-	Button opponent_hand_button(
-		renderer.lined_render(
-			OPPONENT_HAND_STRING,
-			OPPONENT_HAND_WIDTH * display.width(),
-			OPPONENT_HAND_HEIGHT * display.height(),
-			OPPONENT_HAND_SEPARATION_X * display.width(),
-			OPPONENT_HAND_MAX_WIDTH * display.width(),
-			OPPONENT_HAND_SEPARATION_Y * display.height(),
-			OPPONENT_HAND_JUSTIFICATION
-		),
-		display,
-		OPPONENT_HAND_X,
-		OPPONENT_HAND_Y
-	);
-	
-	// Button for the opponent's life cards.
-	Button opponent_life_button(
-		renderer.lined_render(
-			OPPONENT_LIFE_STRING,
-			OPPONENT_LIFE_WIDTH * display.width(),
-			OPPONENT_LIFE_HEIGHT * display.height(),
-			OPPONENT_LIFE_SEPARATION_X * display.width(),
-			OPPONENT_LIFE_MAX_WIDTH * display.width(),
-			OPPONENT_LIFE_SEPARATION_Y * display.height(),
-			OPPONENT_LIFE_JUSTIFICATION
-		),
-		display,
-		OPPONENT_LIFE_X,
-		OPPONENT_LIFE_Y
-	);
-	
-	// Button for the opponent's active fighter.
-	Button opponent_active_button(
-		renderer.lined_render(
-			OPPONENT_ACTIVE_STRING,
-			OPPONENT_ACTIVE_WIDTH * display.width(),
-			OPPONENT_ACTIVE_HEIGHT * display.height(),
-			OPPONENT_ACTIVE_SEPARATION_X * display.width(),
-			OPPONENT_ACTIVE_MAX_WIDTH * display.width(),
-			OPPONENT_ACTIVE_SEPARATION_Y * display.height(),
-			OPPONENT_ACTIVE_JUSTIFICATION
-		),
-		display,
-		OPPONENT_ACTIVE_X,
-		OPPONENT_ACTIVE_Y
-	);
-	
-	// Button for the opponent's benched fighters.
-	Button opponent_bench_button(
-		renderer.lined_render(
-			OPPONENT_BENCH_STRING,
-			OPPONENT_BENCH_WIDTH * display.width(),
-			OPPONENT_BENCH_HEIGHT * display.height(),
-			OPPONENT_BENCH_SEPARATION_X * display.width(),
-			OPPONENT_BENCH_MAX_WIDTH * display.width(),
-			OPPONENT_BENCH_SEPARATION_Y * display.height(),
-			OPPONENT_BENCH_JUSTIFICATION
-		),
-		display,
-		OPPONENT_BENCH_X,
-		OPPONENT_BENCH_Y
-	);
-	
-	// Button for the opponent's effects fighters.
-	Button opponent_effects_button(
-		renderer.lined_render(
-			OPPONENT_EFFECTS_STRING,
-			OPPONENT_EFFECTS_WIDTH * display.width(),
-			OPPONENT_EFFECTS_HEIGHT * display.height(),
-			OPPONENT_EFFECTS_SEPARATION_X * display.width(),
-			OPPONENT_EFFECTS_MAX_WIDTH * display.width(),
-			OPPONENT_EFFECTS_SEPARATION_Y * display.height(),
-			OPPONENT_EFFECTS_JUSTIFICATION
-		),
-		display,
-		OPPONENT_EFFECTS_X,
-		OPPONENT_EFFECTS_Y
-	);
-	//}
-	
-	// The other buttons are initialised.
-	//{
-	// Button for the void.
-	Button the_void_button(
-		renderer.render(
-			THE_VOID_STRING,
-			THE_VOID_WIDTH * display.width(),
-			THE_VOID_HEIGHT * display.height(),
-			THE_VOID_SEPARATION * display.width()
-		),
-		display,
-		THE_VOID_X,
-		THE_VOID_Y
-	);
-	
-	// Button to end one's turn.
-	Button end_turn_button(
-		renderer.render(
-			END_TURN_STRING,
-			END_TURN_WIDTH * display.width(),
-			END_TURN_HEIGHT * display.height(),
-			END_TURN_SEPARATION * display.width()
-		),
-		display,
-		END_TURN_X,
-		END_TURN_Y
-	);
-	
-	// Button to concede.
-	Button concede_button(
-		renderer.render(
-			CONCEDE_STRING,
-			CONCEDE_WIDTH * display.width(),
-			CONCEDE_HEIGHT * display.height(),
-			CONCEDE_SEPARATION * display.width()
-		),
-		display,
-		CONCEDE_X,
-		CONCEDE_Y
-	);
-	//}
-	//}
-	
-	// The main game loop.
-	while (winner < 0) {
-		// If the player can draw at the start of their turn, they do so.
-		if (players[turn].can_draw()) {
-			int draws = TURN_DRAW;
-			players[turn].draw(draws);
-			
-			// The player sees the drawn card.
-			if (!turn) {
-				// The drawn card is displayed.
-				players[PLAYER].display_last_drawn();
-				next_button.blit_to(display);
-				display.update();
-				
-				// The player proceeds at their own discretion
-				//   or if the opponent conceded.
-				while (
-					!Events::unpress(SUBMIT_KEY)
-					&& !next_button.get_rectangle().unclick()
-					&& message == EMPTY_MESSAGE
-				) {
-					Events::update();
-				}
-			}
-			
-			// The opponent sees the quantity of drawn cards.
-			else {
-				// The number of cards that the opponent drew is displayed.
-				display_draw_count(display, renderer, draws);
-				next_button.blit_to(display);
-				display.update();
-				
-				// The player proceeds at their own discretion
-				//   or when the opponent makes a move.
-				while (
-					!Events::unpress(SUBMIT_KEY)
-					&& !next_button.get_rectangle().unclick()
-					&& message == EMPTY_MESSAGE
-				) {
-					Events::update();
-				}
-			}
-		}
-		
-		// Else, they draw a life card.
-		else {
-			// The player is informed that the draw failed.
-			players[0].announce(DRAW_FAIL_STRING);
-			
-			// The player draws a life card.
-			players[turn].draw_life(TURN_DRAW);
-		}
-		
-		// Defeat is checked for at the start of the battle.
-		winner = defeat_check(
-			display,
-			renderer,
-			messenger,
-			messenger_package,
-			messenger_thread,
-			back_button,
-			next_button,
-			players,
-			the_void,
-			generator,
-			turn
-		);
-		
-		// True when the turn should end.
-		bool end = false;
-		
-		// Player's turn.
-		while (!turn && !end && winner < 0) {
-			// The board is renderered.
-			//{
-			// The display is cleared.
-			display.fill();
-			
-			// The player's buttons are blitted.
-			your_deck_button.blit_to(display);
-			your_trash_button.blit_to(display);
-			your_hand_button.blit_to(display);
-			your_life_button.blit_to(display);
-			your_active_button.blit_to(display);
-			your_bench_button.blit_to(display);
-			your_effects_button.blit_to(display);
-			
-			// The opponent's buttons are blitted.
-			opponent_deck_button.blit_to(display);
-			opponent_trash_button.blit_to(display);
-			opponent_hand_button.blit_to(display);
-			opponent_life_button.blit_to(display);
-			opponent_active_button.blit_to(display);
-			opponent_bench_button.blit_to(display);
-			opponent_effects_button.blit_to(display);
-			
-			// The other buttons are blitted.
-			the_void_button.blit_to(display);
-			end_turn_button.blit_to(display);
-			concede_button.blit_to(display);
-			
-			// The display is updated.
-			display.update();
-			//}
-		
-			// True when the board should be rerendered.
-			bool rerender = false;
-		
-			// Loop to get user input.
-			while (!rerender) {
-				// End turn and concede.
-				//{
-				// The player can end their turn by
-				//   clicking the end turn button.
-				if (end_turn_button.get_rectangle().unclick()) {
-					messenger.send(END_TURN_STRING);
-					end = true;
-					break;
-				}
-				
-				// The player can concede by clicking the concede button.
-				else if (concede_button.get_rectangle().unclick()) {
-					messenger.send(CONCEDE_STRING);
-					
-					// The player is informed that they conceded.
-					display.fill();
-					display.blit(
-						renderer.lined_render(
-							PLAYER_CONCEDE_STRING,
-							PLAYER_CONCEDE_WIDTH * display.width(),
-							PLAYER_CONCEDE_HEIGHT * display.height(),
-							PLAYER_CONCEDE_SEPARATION_X * display.width(),
-							PLAYER_CONCEDE_MAX_WIDTH * display.width(),
-							PLAYER_CONCEDE_SEPARATION_Y * display.height(),
-							PLAYER_CONCEDE_JUSTIFICATION
-						),
-						PLAYER_CONCEDE_X,
-						PLAYER_CONCEDE_Y
-					);
-					next_button.blit_to(display);
-					display.update();
-					
-					// The player proceeds at their own discretion.
-					while (
-						!Events::unpress(SUBMIT_KEY)
-						&& !next_button.get_rectangle().unclick()
-					) {
-						Events::update();
-					}
-					
-					winner = OPPONENT;
-					end = true;
-					break;
-				}
-				//}
-				
-				// Game state checks.
-				//{
-				// The player can view their deck by clicking on it.
-				else if (your_deck_button.get_rectangle().unclick()) {
-					players[PLAYER].view_deck();
-					rerender = true;
-				}
-				
-				// The player can view their trash by clicking on it.
-				else if (your_trash_button.get_rectangle().unclick()) {
-					players[PLAYER].view_trash();
-					rerender = true;
-				}
-				
-				// The plyer can view their life cards by clicking on them.
-				else if (your_life_button.get_rectangle().unclick()) {
-					players[PLAYER].view_life_cards();
-					rerender = true;
-				}
-				
-				// The player can view the void by clicking on it.
-				else if (the_void_button.get_rectangle().unclick()) {
-					the_void.view(display, renderer, message);
-					rerender = true;
-				}
-				
-				// The player can view the opponent's hand's size.
-				else if (opponent_hand_button.get_rectangle().unclick()) {
-					players[OPPONENT].view_hand_size();
-					rerender = true;
-				}
-				
-				// The player can view the opponent's deck's size.
-				else if (opponent_deck_button.get_rectangle().unclick()) {
-					players[OPPONENT].view_deck_size();
-					rerender = true;
-				}
-				
-				// The player can view the opponent's trash's size.
-				else if (opponent_trash_button.get_rectangle().unclick()) {
-					players[OPPONENT].view_trash();
-					rerender = true;
-				}
-				
-				// The player can view the opponent's life cards' size.
-				else if (opponent_life_button.get_rectangle().unclick()) {
-					players[OPPONENT].view_life_cards_size();
-					rerender = true;
-				}
-				
-				// The player can view their opponent's active fighter.
-				else if (opponent_active_button.get_rectangle().unclick()) {
-					players[OPPONENT].view_active();
-					rerender = true;
-				}
-				
-				// The player can view their opponent's benched fighters.
-				else if (opponent_bench_button.get_rectangle().unclick()) {
-					players[OPPONENT].view_bench();
-					rerender = true;
-				}
-				
-				// The player can view their effects.
-				else if (your_effects_button.get_rectangle().unclick()) {
-					players[PLAYER].view_effects();
-					rerender = true;
-				}
-				
-				// The player can view their opponent's effects.
-				else if (opponent_effects_button.get_rectangle().unclick()) {
-					players[OPPONENT].view_effects();
-					rerender = true;
-				}
-				//}
-				
-				// Potential moves.
-				//{
-				// The player may play a card from their hand during their turn.
-				else if (your_hand_button.get_rectangle().unclick()) {
-					players[turn].play();
-					rerender = true;
-				}
-				
-				// The player may use their active fighter during their turn.
-				else if (your_active_button.get_rectangle().unclick()) {
-					players[turn].use_active();
-					rerender = true;
-				}
-				
-				// The player may use their benched fighters during their turn.
-				else if (your_bench_button.get_rectangle().unclick()) {
-					players[turn].use_bench();
-					rerender = true;
-				}
-				//}
-				
-				// Opponent's actions.
-				//{
-				// The opponent conceded.
-				if (message == CONCEDE_STRING) {
-					// The message from the opponent is awaited.
-					message = EMPTY_MESSAGE;
-					messenger_thread.new_thread(
-						MessengerPackage::get_message,
-						&messenger_package
-					);
-				
-					// The player is informed that the opponent conceded.
-					display.fill();
-					display.blit(
-						renderer.lined_render(
-							OPPONENT_CONCEDE_STRING,
-							OPPONENT_CONCEDE_WIDTH * display.width(),
-							OPPONENT_CONCEDE_HEIGHT * display.height(),
-							OPPONENT_CONCEDE_SEPARATION_X * display.width(),
-							OPPONENT_CONCEDE_MAX_WIDTH * display.width(),
-							OPPONENT_CONCEDE_SEPARATION_Y * display.height(),
-							OPPONENT_CONCEDE_JUSTIFICATION
-						),
-						OPPONENT_CONCEDE_X,
-						OPPONENT_CONCEDE_Y
-					);
-					next_button.blit_to(display);
-					display.update();
-					
-					// The player proceeds at their own discretion.
-					// The opponent quitting forces a procession.
-					while (
-						!Events::unpress(SUBMIT_KEY)
-						&& !next_button.get_rectangle().unclick()
-						&& message != TERMINATOR_STRING
-					) {
-						Events::update();
-					}
-					
-					winner = PLAYER;
-					end = true;
-					break;
-				}
-				
-				// A message was sent and was not dealt with.
-				// This can cause a player desync, so the error is logged.
-				else if (message != EMPTY_MESSAGE) {
-					std::cerr
-						<< "\nUnhandled message:\n"
-						<< message
-						<< std::endl
-					;
-				}
-				//}
-				
-				// The events are updated.
-				Events::update();
-			}
-		
-			// A concede doesn't require a check.
-			if (winner == NO_END) {
-				// The players are checked for any defeated fighters.
-				winner = defeat_check(
-					display,
-					renderer,
-					messenger,
-					messenger_package,
-					messenger_thread,
-					back_button,
-					next_button,
-					players,
-					the_void,
-					generator,
-					turn
-				);
-			}
-		}
-		
-		// Opponent's turn.
-		while (turn && !end && winner < 0) {
-			// The board is renderered.
-			//{
-			// The display is cleared.
-			display.fill();
-			
-			// The player's buttons are blitted.
-			your_deck_button.blit_to(display);
-			your_trash_button.blit_to(display);
-			your_hand_button.blit_to(display);
-			your_life_button.blit_to(display);
-			your_active_button.blit_to(display);
-			your_bench_button.blit_to(display);
-			your_effects_button.blit_to(display);
-			
-			// The opponent's buttons are blitted.
-			opponent_deck_button.blit_to(display);
-			opponent_trash_button.blit_to(display);
-			opponent_hand_button.blit_to(display);
-			opponent_life_button.blit_to(display);
-			opponent_active_button.blit_to(display);
-			opponent_bench_button.blit_to(display);
-			opponent_effects_button.blit_to(display);
-			
-			// The void' button is blitted.
-			the_void_button.blit_to(display);
-			concede_button.blit_to(display);
-			
-			// The display is updated.
-			display.update();
-			//}
-		
-			// True when the board should be rerendered.
-			bool rerender = false;
-		
-			// Loop for user input.
-			while (!rerender) {
-				// The player's actions.
-				//{
-				// The player can concede by clicking the concede button.
-				if (concede_button.get_rectangle().unclick()) {
-					messenger.send(CONCEDE_STRING);
-					
-					// The player is informed that they conceded.
-					display.fill();
-					display.blit(
-						renderer.lined_render(
-							PLAYER_CONCEDE_STRING,
-							PLAYER_CONCEDE_WIDTH * display.width(),
-							PLAYER_CONCEDE_HEIGHT * display.height(),
-							PLAYER_CONCEDE_SEPARATION_X * display.width(),
-							PLAYER_CONCEDE_MAX_WIDTH * display.width(),
-							PLAYER_CONCEDE_SEPARATION_Y * display.height(),
-							PLAYER_CONCEDE_JUSTIFICATION
-						),
-						PLAYER_CONCEDE_X,
-						PLAYER_CONCEDE_Y
-					);
-					next_button.blit_to(display);
-					display.update();
-					
-					// The player proceeds at their own discretion.
-					while (
-						!Events::unpress(SUBMIT_KEY)
-						&& !next_button.get_rectangle().unclick()
-					) {
-						Events::update();
-					}
-					
-					winner = OPPONENT;
-					end = true;
-					break;
-				}
-				
-				// The player can view their hand by clicking on it.
-				else if (your_hand_button.get_rectangle().unclick()) {
-					players[PLAYER].view_hand();
-					rerender = true;
-				}
-				
-				// The player can view their deck by clicking on it.
-				else if (your_deck_button.get_rectangle().unclick()) {
-					players[PLAYER].view_deck();
-					rerender = true;
-				}
-				
-				// The player can view their trash by clicking on it.
-				else if (your_trash_button.get_rectangle().unclick()) {
-					players[PLAYER].view_trash();
-					rerender = true;
-				}
-				
-				// The plyer can view their life cards by clicking on them.
-				else if (your_life_button.get_rectangle().unclick()) {
-					players[PLAYER].view_life_cards();
-					rerender = true;
-				}
-				
-				// The player can view the void by clicking on it.
-				else if (the_void_button.get_rectangle().unclick()) {
-					the_void.view(display, renderer, message);
-					rerender = true;
-				}
-				
-				// The player can view the opponent's hand's size.
-				else if (opponent_hand_button.get_rectangle().unclick()) {
-					players[OPPONENT].view_hand_size();
-					rerender = true;
-				}
-				
-				// The player can view the opponent's deck's size.
-				else if (opponent_deck_button.get_rectangle().unclick()) {
-					players[OPPONENT].view_deck_size();
-					rerender = true;
-				}
-				
-				// The player can view the opponent's trash's size.
-				else if (opponent_trash_button.get_rectangle().unclick()) {
-					players[OPPONENT].view_trash();
-					rerender = true;
-				}
-				
-				// The player can view the opponent's life cards' size.
-				else if (opponent_life_button.get_rectangle().unclick()) {
-					players[OPPONENT].view_life_cards_size();
-					rerender = true;
-				}
-				
-				// The player can view their active fighter.
-				else if (your_active_button.get_rectangle().unclick()) {
-					players[PLAYER].view_active();
-					rerender = true;
-				}
-				
-				// The player can view their benched fighters.
-				else if (your_bench_button.get_rectangle().unclick()) {
-					players[PLAYER].view_bench();
-					rerender = true;
-				}
-				
-				// The player can view their opponent's active fighter.
-				else if (opponent_active_button.get_rectangle().unclick()) {
-					players[OPPONENT].view_active();
-					rerender = true;
-				}
-				
-				// The player can view their opponent's benched fighters.
-				else if (opponent_bench_button.get_rectangle().unclick()) {
-					players[OPPONENT].view_bench();
-					rerender = true;
-				}
-				
-				// The player can view their effects.
-				else if (your_effects_button.get_rectangle().unclick()) {
-					players[PLAYER].view_effects();
-					rerender = true;
-				}
-				
-				// The player can view their opponent's effects.
-				else if (opponent_effects_button.get_rectangle().unclick()) {
-					players[OPPONENT].view_effects();
-					rerender = true;
-				}
-				//}
-				
-				// The opponent's actions.
-				//{
-				// The opponent ended their turn.
-				if (message == END_TURN_STRING) {
-					// The message from the opponent is awaited.
-					message = EMPTY_MESSAGE;
-					messenger_thread.new_thread(
-						MessengerPackage::get_message,
-						&messenger_package
-					);
-					
-					end = true;
-					break;
-				}
-				
-				// The opponent conceded.
-				else if (message == CONCEDE_STRING) {
-					// The message from the opponent is awaited.
-					message = EMPTY_MESSAGE;
-					messenger_thread.new_thread(
-						MessengerPackage::get_message,
-						&messenger_package
-					);
-					
-					// The player is informed that the opponent conceded.
-					display.fill();
-					display.blit(
-						renderer.lined_render(
-							OPPONENT_CONCEDE_STRING,
-							OPPONENT_CONCEDE_WIDTH * display.width(),
-							OPPONENT_CONCEDE_HEIGHT * display.height(),
-							OPPONENT_CONCEDE_SEPARATION_X * display.width(),
-							OPPONENT_CONCEDE_MAX_WIDTH * display.width(),
-							OPPONENT_CONCEDE_SEPARATION_Y * display.height(),
-							OPPONENT_CONCEDE_JUSTIFICATION
-						),
-						OPPONENT_CONCEDE_X,
-						OPPONENT_CONCEDE_Y
-					);
-					next_button.blit_to(display);
-					display.update();
-					
-					// The player proceeds at their own discretion.
-					// The opponent quitting forces a procession.
-					while (
-						!Events::unpress(SUBMIT_KEY)
-						&& !next_button.get_rectangle().unclick()
-						&& message != TERMINATOR_STRING
-					) {
-						Events::update();
-					}
-					
-					winner = PLAYER;
-					end = true;
-					break;
-				}
-				
-				// The opponent played a card.
-				else if (message == PLAY_MESSAGE) {
-					// The message from the opponent is awaited.
-					message = EMPTY_MESSAGE;
-					messenger_thread.new_thread(
-						MessengerPackage::get_message,
-						&messenger_package
-					);
-					
-					// The message is waited for.
-					while (message == EMPTY_MESSAGE) {
-						Events::update();
-					}
-					
-					// The index of the card is taken.
-					int index = std::stoi(message);
-					
-					// The message from the opponent is awaited.
-					message = EMPTY_MESSAGE;
-					messenger_thread.new_thread(
-						MessengerPackage::get_message,
-						&messenger_package
-					);
-				
-					players[turn].play(index);
-					
-					rerender = true;
-				}
-				
-				// The opponent used an ability.
-				else if (message == ABILITY_MESSAGE) {
-					// The message from the opponent is awaited.
-					message = EMPTY_MESSAGE;
-					messenger_thread.new_thread(
-						MessengerPackage::get_message,
-						&messenger_package
-					);
-					
-					// The ability is used.
-					players[turn].use_ability();
-					
-					rerender = true;
-				}
-				
-				// The opponent retreated their active fighter.
-				else if (message == RETREAT_MESSAGE) {
-					// The message from the opponent is awaited.
-					message = EMPTY_MESSAGE;
-					messenger_thread.new_thread(
-						MessengerPackage::get_message,
-						&messenger_package
-					);
-					
-					// The message is waited for.
-					while (message == EMPTY_MESSAGE) {
-						Events::update();
-					}
-					
-					// The index of the fighter to switch is extracted.
-					int index = std::stoi(message);
-					
-					// The message from the opponent is awaited.
-					message = EMPTY_MESSAGE;
-					messenger_thread.new_thread(
-						MessengerPackage::get_message,
-						&messenger_package
-					);
-				
-					players[turn].retreat(index);
-					
-					rerender = true;
-				}
-				
-				// The opponent attacked with their active fighter.
-				else if (message == ATTACK_MESSAGE) {
-					// The message from the opponent is awaited.
-					message = EMPTY_MESSAGE;
-					messenger_thread.new_thread(
-						MessengerPackage::get_message,
-						&messenger_package
-					);
-					
-					players[turn].attack();
-					
-					rerender = true;
-				}
-				
-				// A message was sent and was not dealt with.
-				// This can cause a player desync, so the error is logged.
-				else if (message != EMPTY_MESSAGE) {
-					std::cerr
-						<< "\nUnhandled message:\n"
-						<< message
-						<< std::endl
-					;
-				}
-				//}
-				
-				// The events are updated.
-				Events::update();
-			}
-		
-			// A concede doesn't require a check.
-			if (winner == NO_END) {
-				// The players are checked for any defeated fighters.
-				winner = defeat_check(
-					display,
-					renderer,
-					messenger,
-					messenger_package,
-					messenger_thread,
-					back_button,
-					next_button,
-					players,
-					the_void,
-					generator,
-					turn
-				);
-			}
-		}
-		
-		// End of turn effects.
-		if (winner < 0) {
-			// The players perform their end of turn effects.
-			players[turn].reset();
-			players[!turn].reset();
-			
-			// The other player takes their turn.
-			turn = !turn;
-			
-			// The number of turns taken is incremented.
-			++turn_count;
-		}
-		
-		
-	}
-	
-	// Post game.
-	//{
-	// The play is notified if they won or lost.
-	display.fill();
-	display.blit(
-		renderer.render(
-			GAME_STRING,
-			GAME_WIDTH * display.width(),
-			GAME_HEIGHT * display.height(),
-			GAME_SEPARATION * display.width()
-		),
-		GAME_X,
-		GAME_Y
-	);
-	next_button.blit_to(display);
-	display.update();
-	
-	// The player may advance at their discretion.
-	// The opponent quitting forces a procession.
-	while (
-		!Events::unpress(SUBMIT_KEY)
-		&& !next_button.get_rectangle().unclick()
-		&& message != TERMINATOR_STRING
-	) {
-		Events::update();
-	}
-	//}
+    // Game set up.
+    //{
+    // The components of the display are extracted.
+    Sprite& display_sprite = display.get_sprite();
+    int display_width = display_sprite.get_width();
+    int display_height = display_sprite.get_height();
+    
+    // The wait screen sprite is intialised.
+    Sprite wait_sprite(
+        renderer.lined_render(
+            WAIT_STRING,
+            WAIT_WIDTH * display_width,
+            WAIT_HEIGHT * display_height,
+            WAIT_SEPARATION_X * display_width,
+            WAIT_MAX_WIDTH * display_width,
+            WAIT_SEPARATION_Y * display_height,
+            WAIT_JUSTIFICATION
+        )
+    );
+    
+    // The wait screen is rendered.
+    display_sprite.fill();
+    display_sprite.blit(wait_sprite, WAIT_X, WAIT_Y);
+    display.update();
+    
+    // The main game song is loaded and queued in another thread.
+    Audio duel_song(DUEL_SONG_SOURCE, DUEL_SONG_LENGTH);
+    Thread song_thread(Audio::thread_queue, &duel_song);
+    
+    // The message is extracted from the package.
+    std::string& message = messenger_package.get_string();
+    
+    // The seeder is determined.
+    // The player with the smaller value seeds the RNG.
+    std::array<double, PLAYERS> speeds = {0, 0};
+    
+    while (speeds[0] == speeds[1]) {
+        speeds[0] = Timer::time();
+        messenger.send(std::to_string(speeds[0]));
+        
+        // The opponent's message is waited for.
+        // Event updating is used to prevent "app inactivity".
+        while (message == EMPTY_MESSAGE) {
+            Events::update();
+        }
+        
+        // If the other player quit, the game cannot begin.
+        if (message == TERMINATOR_STRING) {
+            duel_song.pause();
+            return;
+        }
+        
+        speeds[1] = std::stod(message);
+    }
+    
+    int seed;
+    
+    // The smaller value player determines the seed and sends it to the other.
+    if (speeds[0] < speeds[1]) {
+        seed = Timer::current();
+        messenger.send(std::to_string(seed));
+    }
+    
+    // The greater value player receives the seed.
+    else {
+        // The seed is received.
+        seed = std::stoi(messenger.read());
+    }
+    
+    // The RNG is seeded.
+    std::mt19937 generator(seed);
+    
+    // The player to go first is determined.
+    // Player's turn when turn is false.
+    // Opponent's turn when turn is true.
+    bool turn;
+    
+    // A coin is flipped to determine who goes first.
+    if (speeds[0] < speeds[1]) {
+        turn = Player::coin_flip(generator);
+    }
+    
+    // The coin flip to go first is mirrored.
+    else {
+        turn = !Player::coin_flip(generator);
+    }
+    
+    // The deck code is converted to string form and exchanged.
+    std::array<std::string, PLAYERS> deck_codes;
+    deck_codes[0] = to_deck_code(card_counts);
+    messenger.send(deck_codes[0]);
+    deck_codes[1] = messenger.read();
+    
+    // The back button is initialised.
+    Button back_button(
+        renderer.render(
+            BACK_STRING,
+            BACK_WIDTH * display.width(),
+            BACK_HEIGHT * display.height(),
+            BACK_SEPARATION * display.width()
+        ),
+        display,
+        BACK_X,
+        BACK_Y
+    );
+    
+    // The next button is initialised.
+    Button next_button(
+        renderer.render(
+            NEXT_STRING,
+            NEXT_WIDTH * display_width,
+            NEXT_HEIGHT * display_height,
+            NEXT_SEPARATION * display_width
+        ),
+        display_sprite,
+        NEXT_X,
+        NEXT_Y
+    );
+    
+    // The void is initialised.
+    // The void is shared by the players.
+    CardStore the_void;
+    
+    // Counts the number of rounds that have passed.
+    // Fighters may not attack on the first turn.
+    int turn_count = 0;
+    
+    // The players are initialised.
+    std::vector<Player> players;
+    
+    for (int i = 0; i < PLAYERS; ++i) {
+        players.push_back(
+            Player(
+                deck_codes[i],
+                display,
+                renderer,
+                messenger,
+                messenger_package,
+                messenger_thread,
+                back_button,
+                next_button,
+                the_void,
+                generator,
+                i,
+                turn,
+                turn_count
+            )
+        );
+    }
+    
+    for (int i = 0; i < PLAYERS; ++i) {
+        players[i].set_opponent(players[!i]);
+    }
+    
+    // The player ordering is revealed.
+    display_sprite.fill();
+    display_sprite.blit(
+        renderer.lined_render(
+            ORDER_STRING,
+            ORDER_WIDTH * display_width,
+            ORDER_HEIGHT * display_height,
+            ORDER_SEPARATION_X * display_width,
+            ORDER_MAX_WIDTH * display_width,
+            ORDER_SEPARATION_Y * display_height,
+            ORDER_JUSTIFICATION
+        ),
+        ORDER_X,
+        ORDER_Y
+    );
+    next_button.blit_to(display_sprite);
+    display.update();
+    
+    // The user may proceed at their discretion.
+    while (
+        !Events::unpress(SUBMIT_KEY)
+        && !next_button.get_rectangle().unclick()
+    ) {
+        Events::update();
+    }
+    
+    // The players perform the mulligan.
+    mulligan(display, renderer, messenger, players, turn, generator, next_button);
+    
+    // The life cards are set up.
+    players[turn].set_life_cards();
+    players[!turn].set_life_cards();
+    
+    // The player sets up and sends their board.
+    messenger.send(players[0].set_active());
+    
+    // The opponent's choice is waited for.
+    message = "";
+    messenger_thread.new_thread(MessengerPackage::get_message, &messenger_package);
+    
+    display.fill();
+    display.blit(
+        renderer.lined_render(
+            WAIT_STRING,
+            WAIT_WIDTH * display.width(),
+            WAIT_HEIGHT * display.height(),
+            WAIT_SEPARATION_X * display.width(),
+            WAIT_MAX_WIDTH * display.width(),
+            WAIT_SEPARATION_Y * display.height()
+        ),
+        WAIT_X,
+        WAIT_Y
+    );
+    display.update();
+    
+    while (message == "") {
+        Events::update();
+    }
+    
+    // The opponent's board is set up.
+    players[1].set_active(message);
+    
+    // Non-negative when the game should end.
+    int winner = -1;
+    
+    // The message from the opponent is awaited.
+    message = EMPTY_MESSAGE;
+    messenger_thread.new_thread(
+        MessengerPackage::get_message,
+        &messenger_package
+    );
+    
+    // The player taking the first turn can't attack on their first turn.
+    players[turn].affect(PREPARATION_EFFECT);
+    
+    // The player taking the second turn can play an extra card on their first turn.
+    players[!turn].extra_plays();
+    //}
+    
+    // Board buttons initialised.
+    //{
+    // The player's buttons are initialised.
+    //{
+    // Button for the player's deck.
+    Button your_deck_button(
+        renderer.lined_render(
+            YOUR_DECK_STRING,
+            YOUR_DECK_WIDTH * display.width(),
+            YOUR_DECK_HEIGHT * display.height(),
+            YOUR_DECK_SEPARATION_X * display.width(),
+            YOUR_DECK_MAX_WIDTH * display.width(),
+            YOUR_DECK_SEPARATION_Y * display.height(),
+            YOUR_DECK_JUSTIFICATION
+        ),
+        display,
+        YOUR_DECK_X,
+        YOUR_DECK_Y
+    );
+    
+    // Button for the player's trash.
+    Button your_trash_button(
+        renderer.lined_render(
+            YOUR_TRASH_STRING,
+            YOUR_TRASH_WIDTH * display.width(),
+            YOUR_TRASH_HEIGHT * display.height(),
+            YOUR_TRASH_SEPARATION_X * display.width(),
+            YOUR_TRASH_MAX_WIDTH * display.width(),
+            YOUR_TRASH_SEPARATION_Y * display.height(),
+            YOUR_TRASH_JUSTIFICATION
+        ),
+        display,
+        YOUR_TRASH_X,
+        YOUR_TRASH_Y
+    );
+    
+    // Button for the player's hand.
+    Button your_hand_button(
+        renderer.lined_render(
+            YOUR_HAND_STRING,
+            YOUR_HAND_WIDTH * display.width(),
+            YOUR_HAND_HEIGHT * display.height(),
+            YOUR_HAND_SEPARATION_X * display.width(),
+            YOUR_HAND_MAX_WIDTH * display.width(),
+            YOUR_HAND_SEPARATION_Y * display.height(),
+            YOUR_HAND_JUSTIFICATION
+        ),
+        display,
+        YOUR_HAND_X,
+        YOUR_HAND_Y
+    );
+    
+    // Button for the player's life cards.
+    Button your_life_button(
+        renderer.lined_render(
+            YOUR_LIFE_STRING,
+            YOUR_LIFE_WIDTH * display.width(),
+            YOUR_LIFE_HEIGHT * display.height(),
+            YOUR_LIFE_SEPARATION_X * display.width(),
+            YOUR_LIFE_MAX_WIDTH * display.width(),
+            YOUR_LIFE_SEPARATION_Y * display.height(),
+            YOUR_LIFE_JUSTIFICATION
+        ),
+        display,
+        YOUR_LIFE_X,
+        YOUR_LIFE_Y
+    );
+    
+    // Button for the player's active fighter.
+    Button your_active_button(
+        renderer.lined_render(
+            YOUR_ACTIVE_STRING,
+            YOUR_ACTIVE_WIDTH * display.width(),
+            YOUR_ACTIVE_HEIGHT * display.height(),
+            YOUR_ACTIVE_SEPARATION_X * display.width(),
+            YOUR_ACTIVE_MAX_WIDTH * display.width(),
+            YOUR_ACTIVE_SEPARATION_Y * display.height(),
+            YOUR_ACTIVE_JUSTIFICATION
+        ),
+        display,
+        YOUR_ACTIVE_X,
+        YOUR_ACTIVE_Y
+    );
+    
+    // Button for the player's benched fighters.
+    Button your_bench_button(
+        renderer.lined_render(
+            YOUR_BENCH_STRING,
+            YOUR_BENCH_WIDTH * display.width(),
+            YOUR_BENCH_HEIGHT * display.height(),
+            YOUR_BENCH_SEPARATION_X * display.width(),
+            YOUR_BENCH_MAX_WIDTH * display.width(),
+            YOUR_BENCH_SEPARATION_Y * display.height(),
+            YOUR_BENCH_JUSTIFICATION
+        ),
+        display,
+        YOUR_BENCH_X,
+        YOUR_BENCH_Y
+    );
+    
+    // Button for the player's effects fighters.
+    Button your_effects_button(
+        renderer.lined_render(
+            YOUR_EFFECTS_STRING,
+            YOUR_EFFECTS_WIDTH * display.width(),
+            YOUR_EFFECTS_HEIGHT * display.height(),
+            YOUR_EFFECTS_SEPARATION_X * display.width(),
+            YOUR_EFFECTS_MAX_WIDTH * display.width(),
+            YOUR_EFFECTS_SEPARATION_Y * display.height(),
+            YOUR_EFFECTS_JUSTIFICATION
+        ),
+        display,
+        YOUR_EFFECTS_X,
+        YOUR_EFFECTS_Y
+    );
+    //}
+    
+    // The opponent's buttons are initialised.
+    //{
+    // Button for the opponent's deck.
+    Button opponent_deck_button(
+        renderer.lined_render(
+            OPPONENT_DECK_STRING,
+            OPPONENT_DECK_WIDTH * display.width(),
+            OPPONENT_DECK_HEIGHT * display.height(),
+            OPPONENT_DECK_SEPARATION_X * display.width(),
+            OPPONENT_DECK_MAX_WIDTH * display.width(),
+            OPPONENT_DECK_SEPARATION_Y * display.height(),
+            OPPONENT_DECK_JUSTIFICATION
+        ),
+        display,
+        OPPONENT_DECK_X,
+        OPPONENT_DECK_Y
+    );
+    
+    // Button for the opponent's trash.
+    Button opponent_trash_button(
+        renderer.lined_render(
+            OPPONENT_TRASH_STRING,
+            OPPONENT_TRASH_WIDTH * display.width(),
+            OPPONENT_TRASH_HEIGHT * display.height(),
+            OPPONENT_TRASH_SEPARATION_X * display.width(),
+            OPPONENT_TRASH_MAX_WIDTH * display.width(),
+            OPPONENT_TRASH_SEPARATION_Y * display.height(),
+            OPPONENT_TRASH_JUSTIFICATION
+        ),
+        display,
+        OPPONENT_TRASH_X,
+        OPPONENT_TRASH_Y
+    );
+    
+    // Button for the opponent's hand.
+    Button opponent_hand_button(
+        renderer.lined_render(
+            OPPONENT_HAND_STRING,
+            OPPONENT_HAND_WIDTH * display.width(),
+            OPPONENT_HAND_HEIGHT * display.height(),
+            OPPONENT_HAND_SEPARATION_X * display.width(),
+            OPPONENT_HAND_MAX_WIDTH * display.width(),
+            OPPONENT_HAND_SEPARATION_Y * display.height(),
+            OPPONENT_HAND_JUSTIFICATION
+        ),
+        display,
+        OPPONENT_HAND_X,
+        OPPONENT_HAND_Y
+    );
+    
+    // Button for the opponent's life cards.
+    Button opponent_life_button(
+        renderer.lined_render(
+            OPPONENT_LIFE_STRING,
+            OPPONENT_LIFE_WIDTH * display.width(),
+            OPPONENT_LIFE_HEIGHT * display.height(),
+            OPPONENT_LIFE_SEPARATION_X * display.width(),
+            OPPONENT_LIFE_MAX_WIDTH * display.width(),
+            OPPONENT_LIFE_SEPARATION_Y * display.height(),
+            OPPONENT_LIFE_JUSTIFICATION
+        ),
+        display,
+        OPPONENT_LIFE_X,
+        OPPONENT_LIFE_Y
+    );
+    
+    // Button for the opponent's active fighter.
+    Button opponent_active_button(
+        renderer.lined_render(
+            OPPONENT_ACTIVE_STRING,
+            OPPONENT_ACTIVE_WIDTH * display.width(),
+            OPPONENT_ACTIVE_HEIGHT * display.height(),
+            OPPONENT_ACTIVE_SEPARATION_X * display.width(),
+            OPPONENT_ACTIVE_MAX_WIDTH * display.width(),
+            OPPONENT_ACTIVE_SEPARATION_Y * display.height(),
+            OPPONENT_ACTIVE_JUSTIFICATION
+        ),
+        display,
+        OPPONENT_ACTIVE_X,
+        OPPONENT_ACTIVE_Y
+    );
+    
+    // Button for the opponent's benched fighters.
+    Button opponent_bench_button(
+        renderer.lined_render(
+            OPPONENT_BENCH_STRING,
+            OPPONENT_BENCH_WIDTH * display.width(),
+            OPPONENT_BENCH_HEIGHT * display.height(),
+            OPPONENT_BENCH_SEPARATION_X * display.width(),
+            OPPONENT_BENCH_MAX_WIDTH * display.width(),
+            OPPONENT_BENCH_SEPARATION_Y * display.height(),
+            OPPONENT_BENCH_JUSTIFICATION
+        ),
+        display,
+        OPPONENT_BENCH_X,
+        OPPONENT_BENCH_Y
+    );
+    
+    // Button for the opponent's effects fighters.
+    Button opponent_effects_button(
+        renderer.lined_render(
+            OPPONENT_EFFECTS_STRING,
+            OPPONENT_EFFECTS_WIDTH * display.width(),
+            OPPONENT_EFFECTS_HEIGHT * display.height(),
+            OPPONENT_EFFECTS_SEPARATION_X * display.width(),
+            OPPONENT_EFFECTS_MAX_WIDTH * display.width(),
+            OPPONENT_EFFECTS_SEPARATION_Y * display.height(),
+            OPPONENT_EFFECTS_JUSTIFICATION
+        ),
+        display,
+        OPPONENT_EFFECTS_X,
+        OPPONENT_EFFECTS_Y
+    );
+    //}
+    
+    // The other buttons are initialised.
+    //{
+    // Button for the void.
+    Button the_void_button(
+        renderer.render(
+            THE_VOID_STRING,
+            THE_VOID_WIDTH * display.width(),
+            THE_VOID_HEIGHT * display.height(),
+            THE_VOID_SEPARATION * display.width()
+        ),
+        display,
+        THE_VOID_X,
+        THE_VOID_Y
+    );
+    
+    // Button to end one's turn.
+    Button end_turn_button(
+        renderer.render(
+            END_TURN_STRING,
+            END_TURN_WIDTH * display.width(),
+            END_TURN_HEIGHT * display.height(),
+            END_TURN_SEPARATION * display.width()
+        ),
+        display,
+        END_TURN_X,
+        END_TURN_Y
+    );
+    
+    // Button to concede.
+    Button concede_button(
+        renderer.render(
+            CONCEDE_STRING,
+            CONCEDE_WIDTH * display.width(),
+            CONCEDE_HEIGHT * display.height(),
+            CONCEDE_SEPARATION * display.width()
+        ),
+        display,
+        CONCEDE_X,
+        CONCEDE_Y
+    );
+    //}
+    //}
+    
+    // The main game loop.
+    while (winner < 0) {
+        // If the player can draw at the start of their turn, they do so.
+        if (players[turn].can_draw()) {
+            int draws = TURN_DRAW;
+            players[turn].draw(draws);
+            
+            // The player sees the drawn card.
+            if (!turn) {
+                // The drawn card is displayed.
+                players[PLAYER].display_last_drawn();
+                next_button.blit_to(display);
+                display.update();
+                
+                // The player proceeds at their own discretion
+                //   or if the opponent conceded.
+                while (
+                    !Events::unpress(SUBMIT_KEY)
+                    && !next_button.get_rectangle().unclick()
+                    && message == EMPTY_MESSAGE
+                ) {
+                    Events::update();
+                }
+            }
+            
+            // The opponent sees the quantity of drawn cards.
+            else {
+                // The number of cards that the opponent drew is displayed.
+                display_draw_count(display, renderer, draws);
+                next_button.blit_to(display);
+                display.update();
+                
+                // The player proceeds at their own discretion
+                //   or when the opponent makes a move.
+                while (
+                    !Events::unpress(SUBMIT_KEY)
+                    && !next_button.get_rectangle().unclick()
+                    && message == EMPTY_MESSAGE
+                ) {
+                    Events::update();
+                }
+            }
+        }
+        
+        // Else, they draw a life card.
+        else {
+            // The player is informed that the draw failed.
+            players[0].announce(DRAW_FAIL_STRING);
+            
+            // The player draws a life card.
+            players[turn].draw_life(TURN_DRAW);
+        }
+        
+        // Defeat is checked for at the start of the battle.
+        winner = defeat_check(
+            display,
+            renderer,
+            messenger,
+            messenger_package,
+            messenger_thread,
+            back_button,
+            next_button,
+            players,
+            the_void,
+            generator,
+            turn
+        );
+        
+        // True when the turn should end.
+        bool end = false;
+        
+        // Player's turn.
+        while (!turn && !end && winner < 0) {
+            // The board is renderered.
+            //{
+            // The display is cleared.
+            display.fill();
+            
+            // The player's buttons are blitted.
+            your_deck_button.blit_to(display);
+            your_trash_button.blit_to(display);
+            your_hand_button.blit_to(display);
+            your_life_button.blit_to(display);
+            your_active_button.blit_to(display);
+            your_bench_button.blit_to(display);
+            your_effects_button.blit_to(display);
+            
+            // The opponent's buttons are blitted.
+            opponent_deck_button.blit_to(display);
+            opponent_trash_button.blit_to(display);
+            opponent_hand_button.blit_to(display);
+            opponent_life_button.blit_to(display);
+            opponent_active_button.blit_to(display);
+            opponent_bench_button.blit_to(display);
+            opponent_effects_button.blit_to(display);
+            
+            // The other buttons are blitted.
+            the_void_button.blit_to(display);
+            end_turn_button.blit_to(display);
+            concede_button.blit_to(display);
+            
+            // The display is updated.
+            display.update();
+            //}
+        
+            // True when the board should be rerendered.
+            bool rerender = false;
+        
+            // Loop to get user input.
+            while (!rerender) {
+                // End turn and concede.
+                //{
+                // The player can end their turn by
+                //   clicking the end turn button.
+                if (end_turn_button.get_rectangle().unclick()) {
+                    messenger.send(END_TURN_STRING);
+                    end = true;
+                    break;
+                }
+                
+                // The player can concede by clicking the concede button.
+                else if (concede_button.get_rectangle().unclick()) {
+                    messenger.send(CONCEDE_STRING);
+                    
+                    // The player is informed that they conceded.
+                    display.fill();
+                    display.blit(
+                        renderer.lined_render(
+                            PLAYER_CONCEDE_STRING,
+                            PLAYER_CONCEDE_WIDTH * display.width(),
+                            PLAYER_CONCEDE_HEIGHT * display.height(),
+                            PLAYER_CONCEDE_SEPARATION_X * display.width(),
+                            PLAYER_CONCEDE_MAX_WIDTH * display.width(),
+                            PLAYER_CONCEDE_SEPARATION_Y * display.height(),
+                            PLAYER_CONCEDE_JUSTIFICATION
+                        ),
+                        PLAYER_CONCEDE_X,
+                        PLAYER_CONCEDE_Y
+                    );
+                    next_button.blit_to(display);
+                    display.update();
+                    
+                    // The player proceeds at their own discretion.
+                    while (
+                        !Events::unpress(SUBMIT_KEY)
+                        && !next_button.get_rectangle().unclick()
+                    ) {
+                        Events::update();
+                    }
+                    
+                    winner = OPPONENT;
+                    end = true;
+                    break;
+                }
+                //}
+                
+                // Game state checks.
+                //{
+                // The player can view their deck by clicking on it.
+                else if (your_deck_button.get_rectangle().unclick()) {
+                    players[PLAYER].view_deck();
+                    rerender = true;
+                }
+                
+                // The player can view their trash by clicking on it.
+                else if (your_trash_button.get_rectangle().unclick()) {
+                    players[PLAYER].view_trash();
+                    rerender = true;
+                }
+                
+                // The plyer can view their life cards by clicking on them.
+                else if (your_life_button.get_rectangle().unclick()) {
+                    players[PLAYER].view_life_cards();
+                    rerender = true;
+                }
+                
+                // The player can view the void by clicking on it.
+                else if (the_void_button.get_rectangle().unclick()) {
+                    the_void.view(display, renderer, message);
+                    rerender = true;
+                }
+                
+                // The player can view the opponent's hand's size.
+                else if (opponent_hand_button.get_rectangle().unclick()) {
+                    players[OPPONENT].view_hand_size();
+                    rerender = true;
+                }
+                
+                // The player can view the opponent's deck's size.
+                else if (opponent_deck_button.get_rectangle().unclick()) {
+                    players[OPPONENT].view_deck_size();
+                    rerender = true;
+                }
+                
+                // The player can view the opponent's trash's size.
+                else if (opponent_trash_button.get_rectangle().unclick()) {
+                    players[OPPONENT].view_trash();
+                    rerender = true;
+                }
+                
+                // The player can view the opponent's life cards' size.
+                else if (opponent_life_button.get_rectangle().unclick()) {
+                    players[OPPONENT].view_life_cards_size();
+                    rerender = true;
+                }
+                
+                // The player can view their opponent's active fighter.
+                else if (opponent_active_button.get_rectangle().unclick()) {
+                    players[OPPONENT].view_active();
+                    rerender = true;
+                }
+                
+                // The player can view their opponent's benched fighters.
+                else if (opponent_bench_button.get_rectangle().unclick()) {
+                    players[OPPONENT].view_bench();
+                    rerender = true;
+                }
+                
+                // The player can view their effects.
+                else if (your_effects_button.get_rectangle().unclick()) {
+                    players[PLAYER].view_effects();
+                    rerender = true;
+                }
+                
+                // The player can view their opponent's effects.
+                else if (opponent_effects_button.get_rectangle().unclick()) {
+                    players[OPPONENT].view_effects();
+                    rerender = true;
+                }
+                //}
+                
+                // Potential moves.
+                //{
+                // The player may play a card from their hand during their turn.
+                else if (your_hand_button.get_rectangle().unclick()) {
+                    players[turn].play();
+                    rerender = true;
+                }
+                
+                // The player may use their active fighter during their turn.
+                else if (your_active_button.get_rectangle().unclick()) {
+                    players[turn].use_active();
+                    rerender = true;
+                }
+                
+                // The player may use their benched fighters during their turn.
+                else if (your_bench_button.get_rectangle().unclick()) {
+                    players[turn].use_bench();
+                    rerender = true;
+                }
+                //}
+                
+                // Opponent's actions.
+                //{
+                // The opponent conceded.
+                if (message == CONCEDE_STRING) {
+                    // The message from the opponent is awaited.
+                    message = EMPTY_MESSAGE;
+                    messenger_thread.new_thread(
+                        MessengerPackage::get_message,
+                        &messenger_package
+                    );
+                
+                    // The player is informed that the opponent conceded.
+                    display.fill();
+                    display.blit(
+                        renderer.lined_render(
+                            OPPONENT_CONCEDE_STRING,
+                            OPPONENT_CONCEDE_WIDTH * display.width(),
+                            OPPONENT_CONCEDE_HEIGHT * display.height(),
+                            OPPONENT_CONCEDE_SEPARATION_X * display.width(),
+                            OPPONENT_CONCEDE_MAX_WIDTH * display.width(),
+                            OPPONENT_CONCEDE_SEPARATION_Y * display.height(),
+                            OPPONENT_CONCEDE_JUSTIFICATION
+                        ),
+                        OPPONENT_CONCEDE_X,
+                        OPPONENT_CONCEDE_Y
+                    );
+                    next_button.blit_to(display);
+                    display.update();
+                    
+                    // The player proceeds at their own discretion.
+                    // The opponent quitting forces a procession.
+                    while (
+                        !Events::unpress(SUBMIT_KEY)
+                        && !next_button.get_rectangle().unclick()
+                        && message != TERMINATOR_STRING
+                    ) {
+                        Events::update();
+                    }
+                    
+                    winner = PLAYER;
+                    end = true;
+                    break;
+                }
+                
+                // A message was sent and was not dealt with.
+                // This can cause a player desync, so the error is logged.
+                else if (message != EMPTY_MESSAGE) {
+                    std::cerr
+                        << "\nUnhandled message:\n"
+                        << message
+                        << std::endl
+                    ;
+                }
+                //}
+                
+                // The events are updated.
+                Events::update();
+            }
+        
+            // A concede doesn't require a check.
+            if (winner == NO_END) {
+                // The players are checked for any defeated fighters.
+                winner = defeat_check(
+                    display,
+                    renderer,
+                    messenger,
+                    messenger_package,
+                    messenger_thread,
+                    back_button,
+                    next_button,
+                    players,
+                    the_void,
+                    generator,
+                    turn
+                );
+            }
+        }
+        
+        // Opponent's turn.
+        while (turn && !end && winner < 0) {
+            // The board is renderered.
+            //{
+            // The display is cleared.
+            display.fill();
+            
+            // The player's buttons are blitted.
+            your_deck_button.blit_to(display);
+            your_trash_button.blit_to(display);
+            your_hand_button.blit_to(display);
+            your_life_button.blit_to(display);
+            your_active_button.blit_to(display);
+            your_bench_button.blit_to(display);
+            your_effects_button.blit_to(display);
+            
+            // The opponent's buttons are blitted.
+            opponent_deck_button.blit_to(display);
+            opponent_trash_button.blit_to(display);
+            opponent_hand_button.blit_to(display);
+            opponent_life_button.blit_to(display);
+            opponent_active_button.blit_to(display);
+            opponent_bench_button.blit_to(display);
+            opponent_effects_button.blit_to(display);
+            
+            // The void' button is blitted.
+            the_void_button.blit_to(display);
+            concede_button.blit_to(display);
+            
+            // The display is updated.
+            display.update();
+            //}
+        
+            // True when the board should be rerendered.
+            bool rerender = false;
+        
+            // Loop for user input.
+            while (!rerender) {
+                // The player's actions.
+                //{
+                // The player can concede by clicking the concede button.
+                if (concede_button.get_rectangle().unclick()) {
+                    messenger.send(CONCEDE_STRING);
+                    
+                    // The player is informed that they conceded.
+                    display.fill();
+                    display.blit(
+                        renderer.lined_render(
+                            PLAYER_CONCEDE_STRING,
+                            PLAYER_CONCEDE_WIDTH * display.width(),
+                            PLAYER_CONCEDE_HEIGHT * display.height(),
+                            PLAYER_CONCEDE_SEPARATION_X * display.width(),
+                            PLAYER_CONCEDE_MAX_WIDTH * display.width(),
+                            PLAYER_CONCEDE_SEPARATION_Y * display.height(),
+                            PLAYER_CONCEDE_JUSTIFICATION
+                        ),
+                        PLAYER_CONCEDE_X,
+                        PLAYER_CONCEDE_Y
+                    );
+                    next_button.blit_to(display);
+                    display.update();
+                    
+                    // The player proceeds at their own discretion.
+                    while (
+                        !Events::unpress(SUBMIT_KEY)
+                        && !next_button.get_rectangle().unclick()
+                    ) {
+                        Events::update();
+                    }
+                    
+                    winner = OPPONENT;
+                    end = true;
+                    break;
+                }
+                
+                // The player can view their hand by clicking on it.
+                else if (your_hand_button.get_rectangle().unclick()) {
+                    players[PLAYER].view_hand();
+                    rerender = true;
+                }
+                
+                // The player can view their deck by clicking on it.
+                else if (your_deck_button.get_rectangle().unclick()) {
+                    players[PLAYER].view_deck();
+                    rerender = true;
+                }
+                
+                // The player can view their trash by clicking on it.
+                else if (your_trash_button.get_rectangle().unclick()) {
+                    players[PLAYER].view_trash();
+                    rerender = true;
+                }
+                
+                // The plyer can view their life cards by clicking on them.
+                else if (your_life_button.get_rectangle().unclick()) {
+                    players[PLAYER].view_life_cards();
+                    rerender = true;
+                }
+                
+                // The player can view the void by clicking on it.
+                else if (the_void_button.get_rectangle().unclick()) {
+                    the_void.view(display, renderer, message);
+                    rerender = true;
+                }
+                
+                // The player can view the opponent's hand's size.
+                else if (opponent_hand_button.get_rectangle().unclick()) {
+                    players[OPPONENT].view_hand_size();
+                    rerender = true;
+                }
+                
+                // The player can view the opponent's deck's size.
+                else if (opponent_deck_button.get_rectangle().unclick()) {
+                    players[OPPONENT].view_deck_size();
+                    rerender = true;
+                }
+                
+                // The player can view the opponent's trash's size.
+                else if (opponent_trash_button.get_rectangle().unclick()) {
+                    players[OPPONENT].view_trash();
+                    rerender = true;
+                }
+                
+                // The player can view the opponent's life cards' size.
+                else if (opponent_life_button.get_rectangle().unclick()) {
+                    players[OPPONENT].view_life_cards_size();
+                    rerender = true;
+                }
+                
+                // The player can view their active fighter.
+                else if (your_active_button.get_rectangle().unclick()) {
+                    players[PLAYER].view_active();
+                    rerender = true;
+                }
+                
+                // The player can view their benched fighters.
+                else if (your_bench_button.get_rectangle().unclick()) {
+                    players[PLAYER].view_bench();
+                    rerender = true;
+                }
+                
+                // The player can view their opponent's active fighter.
+                else if (opponent_active_button.get_rectangle().unclick()) {
+                    players[OPPONENT].view_active();
+                    rerender = true;
+                }
+                
+                // The player can view their opponent's benched fighters.
+                else if (opponent_bench_button.get_rectangle().unclick()) {
+                    players[OPPONENT].view_bench();
+                    rerender = true;
+                }
+                
+                // The player can view their effects.
+                else if (your_effects_button.get_rectangle().unclick()) {
+                    players[PLAYER].view_effects();
+                    rerender = true;
+                }
+                
+                // The player can view their opponent's effects.
+                else if (opponent_effects_button.get_rectangle().unclick()) {
+                    players[OPPONENT].view_effects();
+                    rerender = true;
+                }
+                //}
+                
+                // The opponent's actions.
+                //{
+                // The opponent ended their turn.
+                if (message == END_TURN_STRING) {
+                    // The message from the opponent is awaited.
+                    message = EMPTY_MESSAGE;
+                    messenger_thread.new_thread(
+                        MessengerPackage::get_message,
+                        &messenger_package
+                    );
+                    
+                    end = true;
+                    break;
+                }
+                
+                // The opponent conceded.
+                else if (message == CONCEDE_STRING) {
+                    // The message from the opponent is awaited.
+                    message = EMPTY_MESSAGE;
+                    messenger_thread.new_thread(
+                        MessengerPackage::get_message,
+                        &messenger_package
+                    );
+                    
+                    // The player is informed that the opponent conceded.
+                    display.fill();
+                    display.blit(
+                        renderer.lined_render(
+                            OPPONENT_CONCEDE_STRING,
+                            OPPONENT_CONCEDE_WIDTH * display.width(),
+                            OPPONENT_CONCEDE_HEIGHT * display.height(),
+                            OPPONENT_CONCEDE_SEPARATION_X * display.width(),
+                            OPPONENT_CONCEDE_MAX_WIDTH * display.width(),
+                            OPPONENT_CONCEDE_SEPARATION_Y * display.height(),
+                            OPPONENT_CONCEDE_JUSTIFICATION
+                        ),
+                        OPPONENT_CONCEDE_X,
+                        OPPONENT_CONCEDE_Y
+                    );
+                    next_button.blit_to(display);
+                    display.update();
+                    
+                    // The player proceeds at their own discretion.
+                    // The opponent quitting forces a procession.
+                    while (
+                        !Events::unpress(SUBMIT_KEY)
+                        && !next_button.get_rectangle().unclick()
+                        && message != TERMINATOR_STRING
+                    ) {
+                        Events::update();
+                    }
+                    
+                    winner = PLAYER;
+                    end = true;
+                    break;
+                }
+                
+                // The opponent played a card.
+                else if (message == PLAY_MESSAGE) {
+                    // The message from the opponent is awaited.
+                    message = EMPTY_MESSAGE;
+                    messenger_thread.new_thread(
+                        MessengerPackage::get_message,
+                        &messenger_package
+                    );
+                    
+                    // The message is waited for.
+                    while (message == EMPTY_MESSAGE) {
+                        Events::update();
+                    }
+                    
+                    // The index of the card is taken.
+                    int index = std::stoi(message);
+                    
+                    // The message from the opponent is awaited.
+                    message = EMPTY_MESSAGE;
+                    messenger_thread.new_thread(
+                        MessengerPackage::get_message,
+                        &messenger_package
+                    );
+                
+                    players[turn].play(index);
+                    
+                    rerender = true;
+                }
+                
+                // The opponent used an ability.
+                else if (message == ABILITY_MESSAGE) {
+                    // The message from the opponent is awaited.
+                    message = EMPTY_MESSAGE;
+                    messenger_thread.new_thread(
+                        MessengerPackage::get_message,
+                        &messenger_package
+                    );
+                    
+                    // The ability is used.
+                    players[turn].use_ability();
+                    
+                    rerender = true;
+                }
+                
+                // The opponent retreated their active fighter.
+                else if (message == RETREAT_MESSAGE) {
+                    // The message from the opponent is awaited.
+                    message = EMPTY_MESSAGE;
+                    messenger_thread.new_thread(
+                        MessengerPackage::get_message,
+                        &messenger_package
+                    );
+                    
+                    // The message is waited for.
+                    while (message == EMPTY_MESSAGE) {
+                        Events::update();
+                    }
+                    
+                    // The index of the fighter to switch is extracted.
+                    int index = std::stoi(message);
+                    
+                    // The message from the opponent is awaited.
+                    message = EMPTY_MESSAGE;
+                    messenger_thread.new_thread(
+                        MessengerPackage::get_message,
+                        &messenger_package
+                    );
+                
+                    players[turn].retreat(index);
+                    
+                    rerender = true;
+                }
+                
+                // The opponent attacked with their active fighter.
+                else if (message == ATTACK_MESSAGE) {
+                    // The message from the opponent is awaited.
+                    message = EMPTY_MESSAGE;
+                    messenger_thread.new_thread(
+                        MessengerPackage::get_message,
+                        &messenger_package
+                    );
+                    
+                    players[turn].attack();
+                    
+                    rerender = true;
+                }
+                
+                // A message was sent and was not dealt with.
+                // This can cause a player desync, so the error is logged.
+                else if (message != EMPTY_MESSAGE) {
+                    std::cerr
+                        << "\nUnhandled message:\n"
+                        << message
+                        << std::endl
+                    ;
+                }
+                //}
+                
+                // The events are updated.
+                Events::update();
+            }
+        
+            // A concede doesn't require a check.
+            if (winner == NO_END) {
+                // The players are checked for any defeated fighters.
+                winner = defeat_check(
+                    display,
+                    renderer,
+                    messenger,
+                    messenger_package,
+                    messenger_thread,
+                    back_button,
+                    next_button,
+                    players,
+                    the_void,
+                    generator,
+                    turn
+                );
+            }
+        }
+        
+        // End of turn effects.
+        if (winner < 0) {
+            // The players perform their end of turn effects.
+            players[turn].reset();
+            players[!turn].reset();
+            
+            // The other player takes their turn.
+            turn = !turn;
+            
+            // The number of turns taken is incremented.
+            ++turn_count;
+        }
+        
+        
+    }
+    
+    // Post game.
+    //{
+    // The play is notified if they won or lost.
+    display.fill();
+    display.blit(
+        renderer.render(
+            GAME_STRING,
+            GAME_WIDTH * display.width(),
+            GAME_HEIGHT * display.height(),
+            GAME_SEPARATION * display.width()
+        ),
+        GAME_X,
+        GAME_Y
+    );
+    next_button.blit_to(display);
+    display.update();
+    
+    // The player may advance at their discretion.
+    // The opponent quitting forces a procession.
+    while (
+        !Events::unpress(SUBMIT_KEY)
+        && !next_button.get_rectangle().unclick()
+        && message != TERMINATOR_STRING
+    ) {
+        Events::update();
+    }
+    
+    // The song is paused to terminate the thread.
+    duel_song.pause();
+    //}
 }
 //}
 
@@ -20037,1208 +19964,1208 @@ void game(
  *   with has an incompatible version of the program.
  */
 void incompatible(Display& display, const Renderer& renderer) noexcept {
-	// The components of the display are extracted.
-	Sprite& display_sprite = display.get_sprite();
-	int display_width = display_sprite.get_width();
-	int display_height = display_sprite.get_height();
-	
-	// The incomptability sprite is initialised.
-	Sprite incompatible_sprite(
-		renderer.lined_render(
-			INCOMPATIBLE_STRING,
-			INCOMPATIBLE_WIDTH * display_width,
-			INCOMPATIBLE_HEIGHT * display_height,
-			INCOMPATIBLE_SEPARATION_X * display_width,
-			INCOMPATIBLE_MAX_WIDTH * display_width,
-			INCOMPATIBLE_SEPARATION_Y * display_height,
-			INCOMPATIBLE_JUSTIFICATION
-		)
-	);
-	
-	// The back button is intialised.
-	Button back_button(
-		Sprite(
-			renderer.render(
-				BACK_STRING,
-				BACK_WIDTH * display_width,
-				BACK_HEIGHT * display_height,
-				BACK_SEPARATION * display_width
-			)
-		),
-		display_sprite,
-		BACK_X,
-		BACK_Y
-	);
-	
-	// The display is blitted to.
-	display_sprite.fill();
-	display_sprite.blit(incompatible_sprite, INCOMPATIBLE_X, INCOMPATIBLE_Y);
-	back_button.blit_to(display_sprite);
-	display.update();
-	
-	// Loop for user input.
-	while (
-		!Events::unpress(QUIT_KEY)
-		&& !back_button.get_rectangle().unclick()
-	) {
-		Events::update();
-	}
-}	
+    // The components of the display are extracted.
+    Sprite& display_sprite = display.get_sprite();
+    int display_width = display_sprite.get_width();
+    int display_height = display_sprite.get_height();
+    
+    // The incomptability sprite is initialised.
+    Sprite incompatible_sprite(
+        renderer.lined_render(
+            INCOMPATIBLE_STRING,
+            INCOMPATIBLE_WIDTH * display_width,
+            INCOMPATIBLE_HEIGHT * display_height,
+            INCOMPATIBLE_SEPARATION_X * display_width,
+            INCOMPATIBLE_MAX_WIDTH * display_width,
+            INCOMPATIBLE_SEPARATION_Y * display_height,
+            INCOMPATIBLE_JUSTIFICATION
+        )
+    );
+    
+    // The back button is intialised.
+    Button back_button(
+        Sprite(
+            renderer.render(
+                BACK_STRING,
+                BACK_WIDTH * display_width,
+                BACK_HEIGHT * display_height,
+                BACK_SEPARATION * display_width
+            )
+        ),
+        display_sprite,
+        BACK_X,
+        BACK_Y
+    );
+    
+    // The display is blitted to.
+    display_sprite.fill();
+    display_sprite.blit(incompatible_sprite, INCOMPATIBLE_X, INCOMPATIBLE_Y);
+    back_button.blit_to(display_sprite);
+    display.update();
+    
+    // Loop for user input.
+    while (
+        !Events::unpress(QUIT_KEY)
+        && !back_button.get_rectangle().unclick()
+    ) {
+        Events::update();
+    }
+}   
 
 /**
  * Adds fighter cards to the player's deck.
  */
 void add_fighter(
-	Display& display,
-	const Renderer& renderer,
-	const Messenger& messenger,
-	std::array<int, CARD_COUNT>& card_counts,
-	int& card_count,
-	const std::string& message
+    Display& display,
+    const Renderer& renderer,
+    const Messenger& messenger,
+    std::array<int, CARD_COUNT>& card_counts,
+    int& card_count,
+    const std::string& message
 ) noexcept {
-	// The components of the display are extracted.
-	Sprite& display_sprite = display.get_sprite();
-	int display_width = display_sprite.get_width();
-	int display_height = display_sprite.get_height();
-	
-	// The deck builder sprite is intialised.
-	Sprite builder_sprite(
-		renderer.render(
-			BUILDER_STRING,
-			BUILDER_WIDTH * display_width,
-			BUILDER_HEIGHT * display_height,
-			BUILDER_SEPARATION * display_width
-		)
-	);
-	
-	// The back button is initialised.
-	Button back_button(
-		Sprite(
-			renderer.render(
-				BACK_STRING,
-				BACK_WIDTH * display_width,
-				BACK_HEIGHT * display_height,
-				BACK_SEPARATION * display_width
-			)
-		),
-		display_sprite,
-		BACK_X,
-		BACK_Y
-	);
-	
-	// The left button is initialised.
-	Button left_button(
-		Sprite(
-			LEFT_SOURCE,
-			LEFT_WIDTH * display_width,
-			LEFT_HEIGHT * display_height
-		),
-		display_sprite,
-		LEFT_X,
-		LEFT_Y
-	);
-	
-	// The right button is initialised.
-	Button right_button(
-		Sprite(
-			RIGHT_SOURCE,
-			RIGHT_WIDTH * display_width,
-			RIGHT_HEIGHT * display_height
-		),
-		display_sprite,
-		RIGHT_X,
-		RIGHT_Y
-	);
-	
-	// The minus buttons are intialised.
-	std::vector<Button> minus_buttons;
-	
-	for (int i = 0; i < PAGE_COUNT; ++i) {
-		minus_buttons.push_back(
-			Button(
-				Sprite(
-					MINUS_SOURCE,
-					MINUS_WIDTH * display_width,
-					MINUS_HEIGHT * display_height
-				),
-				display_sprite,
-				MINUS_X,
-				MINUS_Y + i * MINUS_Y_SHIFT
-			)
-		);
-	}
-	
-	// The plus buttons are initialised.
-	std::vector<Button> plus_buttons;
-	
-	for (int i = 0; i < PAGE_COUNT; ++i) {
-		plus_buttons.push_back(
-			Button(
-				Sprite(
-					PLUS_SOURCE,
-					PLUS_WIDTH * display_width,
-					PLUS_HEIGHT * display_height
-				),
-				display_sprite,
-				PLUS_X,
-				PLUS_Y + i * PLUS_Y_SHIFT
-			)
-		);
-	}
-	
-	// Determines which cards are displayed.
-	int page = 0;
-	
-	// True if the function should return.
-	bool end = false;
-	
-	while (!end) {
-		// The sprites are blitted to the display.
-		display_sprite.fill();
-		display_sprite.blit(builder_sprite, BUILDER_X, BUILDER_Y);
-		back_button.blit_to(display_sprite);
-		
-		if (page > 0) {
-			left_button.blit_to(display_sprite);
-		}
-		
-		if (page < (FIGHTER_COUNT - 1) / PAGE_COUNT) {
-			right_button.blit_to(display_sprite);
-		}
-		
-		// The deck's capacity info is displayed.
-		display_sprite.blit(
-			renderer.render(
-				CAPACITY_STRING,
-				CAPACITY_WIDTH * display_width,
-				CAPACITY_HEIGHT * display_height,
-				CAPACITY_SEPARATION * display_width
-			),
-			CAPACITY_X,
-			CAPACITY_Y
-		);
-		
-		// A vector of buttons for the names is generated.
-		std::vector<Button> name_buttons;
-		
-		// The cards' names on the page are displayed.
-		for (
-			int i = 0;
-			i < PAGE_COUNT
-			&& page * PAGE_COUNT + i < FIGHTER_COUNT;
-			++i
-		) {
-			// The name button is stored in the vector.
-			name_buttons.push_back(
-				Button(
-					Sprite(
-						renderer.render(
-							ALL_FIGHTERS[page * PAGE_COUNT + i]->get_name(),
-							PAGE_WIDTH * display_width,
-							PAGE_HEIGHT * display_height,
-							PAGE_SEPARATION * display_width
-						)
-					),
-					display_sprite,
-					PAGE_NAME_X,
-					PAGE_Y + i * PAGE_Y_SHIFT
-				)
-			);
-			
-			// The name is displayed.
-			name_buttons[i].blit_to(display_sprite);
-			
-			// The card count is displayed.
-			display_sprite.blit(
-				renderer.render(
-					std::to_string(card_counts[page * PAGE_COUNT + i])
-					+ '/'
-					+ std::to_string(MAX_FIGHTER_COPIES),
-					PAGE_WIDTH * display_width,
-					PAGE_HEIGHT * display_height,
-					PAGE_SEPARATION * display_width
-				),
-				PAGE_VALUE_X,
-				PAGE_Y + i * PAGE_Y_SHIFT
-			);
-			
-			if (card_counts[page * PAGE_COUNT + i]) {
-				minus_buttons[i].blit_to(display_sprite);
-			}
-			
-			if (
-				card_counts[page * PAGE_COUNT + i] < MAX_FIGHTER_COPIES
-				&& card_count < DECK_SIZE
-			) {
-				plus_buttons[i].blit_to(display_sprite);
-			}
-		}
-		
-		// The display is updated.
-		display.update();
-		
-		// Loop to get user input.
-		while (true) {
-			// The user can return to the deck building menu
-			//   with the use of the back button.
-			// The opponent disconnecting also has this effect.
-			if (
-				Events::unpress(QUIT_KEY)
-				|| back_button.get_rectangle().unclick()
-				|| message == TERMINATOR_STRING
-			) {
-				end = true;
-				break;
-			}
-			
-			// The page number is decremented (if possible).
-			else if (
-				(
-					Events::unpress(Events::LEFT)
-					|| left_button.get_rectangle().unclick()
-				) && page > 0
-			) {
-				--page;
-				break;
-			}
-			
-			// The page number is incremented (if possible).
-			else if (
-				(
-					Events::unpress(Events::RIGHT)
-					|| right_button.get_rectangle().unclick()
-				) && page < (FIGHTER_COUNT - 1) / PAGE_COUNT
-			) {
-				++page;
-				break;
-			}
-			
-			// The other buttons are checked.
-			else {
-				// True if the button being clicked was found.
-				bool found = false;
-				
-				// The plus and minus buttons increment or decrement
-				//   the number of copies of a card in the deck.
-				// The names display the card's details.
-				for (
-					int i = 0;
-					i < PAGE_COUNT && page * PAGE_COUNT + i < FIGHTER_COUNT;
-					++i
-				) {
-					// Removes a card.
-					if (
-						card_counts[page * PAGE_COUNT + i]
-						&& minus_buttons[i].get_rectangle().unclick()
-					) {
-						--card_counts[page * PAGE_COUNT + i];
-						--card_count;
-						found = true;
-						break;
-					}
-					
-					// Adds a card.
-					else if (
-						card_counts[page * PAGE_COUNT + i] < MAX_FIGHTER_COPIES
-						&& card_count < DECK_SIZE
-						&& plus_buttons[i].get_rectangle().unclick()
-					) {
-						++card_counts[page * PAGE_COUNT + i];
-						++card_count;
-						found = true;
-						break;
-					}
-					
-					// Diplays a card's details.
-					else if (name_buttons[i].get_rectangle().unclick()) {
-						ALL_FIGHTERS[page * PAGE_COUNT + i]->render(display, renderer);
-						back_button.blit_to(display_sprite);
-						display.update();
-						
-						while (
-							!Events::unpress(QUIT_KEY)
-							&& !back_button.get_rectangle().unclick()
-						) {
-							Events::update();
-						}
-						
-						found = true;
-						break;
-					}
-				}
-				
-				if (found) {
-					break;
-				}
-			}
-			
-			// The events are updated.
-			Events::update();
-		}
-	}
+    // The components of the display are extracted.
+    Sprite& display_sprite = display.get_sprite();
+    int display_width = display_sprite.get_width();
+    int display_height = display_sprite.get_height();
+    
+    // The deck builder sprite is intialised.
+    Sprite builder_sprite(
+        renderer.render(
+            BUILDER_STRING,
+            BUILDER_WIDTH * display_width,
+            BUILDER_HEIGHT * display_height,
+            BUILDER_SEPARATION * display_width
+        )
+    );
+    
+    // The back button is initialised.
+    Button back_button(
+        Sprite(
+            renderer.render(
+                BACK_STRING,
+                BACK_WIDTH * display_width,
+                BACK_HEIGHT * display_height,
+                BACK_SEPARATION * display_width
+            )
+        ),
+        display_sprite,
+        BACK_X,
+        BACK_Y
+    );
+    
+    // The left button is initialised.
+    Button left_button(
+        Sprite(
+            LEFT_SOURCE,
+            LEFT_WIDTH * display_width,
+            LEFT_HEIGHT * display_height
+        ),
+        display_sprite,
+        LEFT_X,
+        LEFT_Y
+    );
+    
+    // The right button is initialised.
+    Button right_button(
+        Sprite(
+            RIGHT_SOURCE,
+            RIGHT_WIDTH * display_width,
+            RIGHT_HEIGHT * display_height
+        ),
+        display_sprite,
+        RIGHT_X,
+        RIGHT_Y
+    );
+    
+    // The minus buttons are intialised.
+    std::vector<Button> minus_buttons;
+    
+    for (int i = 0; i < PAGE_COUNT; ++i) {
+        minus_buttons.push_back(
+            Button(
+                Sprite(
+                    MINUS_SOURCE,
+                    MINUS_WIDTH * display_width,
+                    MINUS_HEIGHT * display_height
+                ),
+                display_sprite,
+                MINUS_X,
+                MINUS_Y + i * MINUS_Y_SHIFT
+            )
+        );
+    }
+    
+    // The plus buttons are initialised.
+    std::vector<Button> plus_buttons;
+    
+    for (int i = 0; i < PAGE_COUNT; ++i) {
+        plus_buttons.push_back(
+            Button(
+                Sprite(
+                    PLUS_SOURCE,
+                    PLUS_WIDTH * display_width,
+                    PLUS_HEIGHT * display_height
+                ),
+                display_sprite,
+                PLUS_X,
+                PLUS_Y + i * PLUS_Y_SHIFT
+            )
+        );
+    }
+    
+    // Determines which cards are displayed.
+    int page = 0;
+    
+    // True if the function should return.
+    bool end = false;
+    
+    while (!end) {
+        // The sprites are blitted to the display.
+        display_sprite.fill();
+        display_sprite.blit(builder_sprite, BUILDER_X, BUILDER_Y);
+        back_button.blit_to(display_sprite);
+        
+        if (page > 0) {
+            left_button.blit_to(display_sprite);
+        }
+        
+        if (page < (FIGHTER_COUNT - 1) / PAGE_COUNT) {
+            right_button.blit_to(display_sprite);
+        }
+        
+        // The deck's capacity info is displayed.
+        display_sprite.blit(
+            renderer.render(
+                CAPACITY_STRING,
+                CAPACITY_WIDTH * display_width,
+                CAPACITY_HEIGHT * display_height,
+                CAPACITY_SEPARATION * display_width
+            ),
+            CAPACITY_X,
+            CAPACITY_Y
+        );
+        
+        // A vector of buttons for the names is generated.
+        std::vector<Button> name_buttons;
+        
+        // The cards' names on the page are displayed.
+        for (
+            int i = 0;
+            i < PAGE_COUNT
+            && page * PAGE_COUNT + i < FIGHTER_COUNT;
+            ++i
+        ) {
+            // The name button is stored in the vector.
+            name_buttons.push_back(
+                Button(
+                    Sprite(
+                        renderer.render(
+                            ALL_FIGHTERS[page * PAGE_COUNT + i]->get_name(),
+                            PAGE_WIDTH * display_width,
+                            PAGE_HEIGHT * display_height,
+                            PAGE_SEPARATION * display_width
+                        )
+                    ),
+                    display_sprite,
+                    PAGE_NAME_X,
+                    PAGE_Y + i * PAGE_Y_SHIFT
+                )
+            );
+            
+            // The name is displayed.
+            name_buttons[i].blit_to(display_sprite);
+            
+            // The card count is displayed.
+            display_sprite.blit(
+                renderer.render(
+                    std::to_string(card_counts[page * PAGE_COUNT + i])
+                    + '/'
+                    + std::to_string(MAX_FIGHTER_COPIES),
+                    PAGE_WIDTH * display_width,
+                    PAGE_HEIGHT * display_height,
+                    PAGE_SEPARATION * display_width
+                ),
+                PAGE_VALUE_X,
+                PAGE_Y + i * PAGE_Y_SHIFT
+            );
+            
+            if (card_counts[page * PAGE_COUNT + i]) {
+                minus_buttons[i].blit_to(display_sprite);
+            }
+            
+            if (
+                card_counts[page * PAGE_COUNT + i] < MAX_FIGHTER_COPIES
+                && card_count < DECK_SIZE
+            ) {
+                plus_buttons[i].blit_to(display_sprite);
+            }
+        }
+        
+        // The display is updated.
+        display.update();
+        
+        // Loop to get user input.
+        while (true) {
+            // The user can return to the deck building menu
+            //   with the use of the back button.
+            // The opponent disconnecting also has this effect.
+            if (
+                Events::unpress(QUIT_KEY)
+                || back_button.get_rectangle().unclick()
+                || message == TERMINATOR_STRING
+            ) {
+                end = true;
+                break;
+            }
+            
+            // The page number is decremented (if possible).
+            else if (
+                (
+                    Events::unpress(Events::LEFT)
+                    || left_button.get_rectangle().unclick()
+                ) && page > 0
+            ) {
+                --page;
+                break;
+            }
+            
+            // The page number is incremented (if possible).
+            else if (
+                (
+                    Events::unpress(Events::RIGHT)
+                    || right_button.get_rectangle().unclick()
+                ) && page < (FIGHTER_COUNT - 1) / PAGE_COUNT
+            ) {
+                ++page;
+                break;
+            }
+            
+            // The other buttons are checked.
+            else {
+                // True if the button being clicked was found.
+                bool found = false;
+                
+                // The plus and minus buttons increment or decrement
+                //   the number of copies of a card in the deck.
+                // The names display the card's details.
+                for (
+                    int i = 0;
+                    i < PAGE_COUNT && page * PAGE_COUNT + i < FIGHTER_COUNT;
+                    ++i
+                ) {
+                    // Removes a card.
+                    if (
+                        card_counts[page * PAGE_COUNT + i]
+                        && minus_buttons[i].get_rectangle().unclick()
+                    ) {
+                        --card_counts[page * PAGE_COUNT + i];
+                        --card_count;
+                        found = true;
+                        break;
+                    }
+                    
+                    // Adds a card.
+                    else if (
+                        card_counts[page * PAGE_COUNT + i] < MAX_FIGHTER_COPIES
+                        && card_count < DECK_SIZE
+                        && plus_buttons[i].get_rectangle().unclick()
+                    ) {
+                        ++card_counts[page * PAGE_COUNT + i];
+                        ++card_count;
+                        found = true;
+                        break;
+                    }
+                    
+                    // Diplays a card's details.
+                    else if (name_buttons[i].get_rectangle().unclick()) {
+                        ALL_FIGHTERS[page * PAGE_COUNT + i]->render(display, renderer);
+                        back_button.blit_to(display_sprite);
+                        display.update();
+                        
+                        while (
+                            !Events::unpress(QUIT_KEY)
+                            && !back_button.get_rectangle().unclick()
+                        ) {
+                            Events::update();
+                        }
+                        
+                        found = true;
+                        break;
+                    }
+                }
+                
+                if (found) {
+                    break;
+                }
+            }
+            
+            // The events are updated.
+            Events::update();
+        }
+    }
 }
 
 /**
  * Adds supporter cards to the player's deck.
  */
 void add_supporter(
-	Display& display,
-	const Renderer& renderer,
-	const Messenger& messenger,
-	std::array<int, CARD_COUNT>& card_counts,
-	int& card_count,
-	const std::string& message
+    Display& display,
+    const Renderer& renderer,
+    const Messenger& messenger,
+    std::array<int, CARD_COUNT>& card_counts,
+    int& card_count,
+    const std::string& message
 ) noexcept {
-	// The components of the display are extracted.
-	Sprite& display_sprite = display.get_sprite();
-	int display_width = display_sprite.get_width();
-	int display_height = display_sprite.get_height();
-	
-	// The deck builder sprite is intialised.
-	Sprite builder_sprite(
-		renderer.render(
-			BUILDER_STRING,
-			BUILDER_WIDTH * display_width,
-			BUILDER_HEIGHT * display_height,
-			BUILDER_SEPARATION * display_width
-		)
-	);
-	
-	// The back button is initialised.
-	Button back_button(
-		Sprite(
-			renderer.render(
-				BACK_STRING,
-				BACK_WIDTH * display_width,
-				BACK_HEIGHT * display_height,
-				BACK_SEPARATION * display_width
-			)
-		),
-		display_sprite,
-		BACK_X,
-		BACK_Y
-	);
-	
-	// The left button is initialised.
-	Button left_button(
-		Sprite(
-			LEFT_SOURCE,
-			LEFT_WIDTH * display_width,
-			LEFT_HEIGHT * display_height
-		),
-		display_sprite,
-		LEFT_X,
-		LEFT_Y
-	);
-	
-	// The right button is initialised.
-	Button right_button(
-		Sprite(
-			RIGHT_SOURCE,
-			RIGHT_WIDTH * display_width,
-			RIGHT_HEIGHT * display_height
-		),
-		display_sprite,
-		RIGHT_X,
-		RIGHT_Y
-	);
-	
-	// The minus buttons are intialised.
-	std::vector<Button> minus_buttons;
-	
-	for (int i = 0; i < PAGE_COUNT; ++i) {
-		minus_buttons.push_back(
-			Button(
-				Sprite(
-					MINUS_SOURCE,
-					MINUS_WIDTH * display_width,
-					MINUS_HEIGHT * display_height
-				),
-				display_sprite,
-				MINUS_X,
-				MINUS_Y + i * MINUS_Y_SHIFT
-			)
-		);
-	}
-	
-	
-	// The plus buttons are initialised.
-	std::vector<Button> plus_buttons;
-	
-	for (int i = 0; i < PAGE_COUNT; ++i) {
-		plus_buttons.push_back(
-			Button(
-				Sprite(
-					PLUS_SOURCE,
-					PLUS_WIDTH * display_width,
-					PLUS_HEIGHT * display_height
-				),
-				display_sprite,
-				PLUS_X,
-				PLUS_Y + i * PLUS_Y_SHIFT
-			)
-		);
-	}
-	
-	// Determines which cards are displayed.
-	int page = 0;
-	
-	// True if the function should return.
-	bool end = false;
-	
-	while (!end) {
-		// The sprites are blitted to the display.
-		display_sprite.fill();
-		display_sprite.blit(builder_sprite, BUILDER_X, BUILDER_Y);
-		back_button.blit_to(display_sprite);
-		
-		if (page > 0) {
-			left_button.blit_to(display_sprite);
-		}
-		
-		if (page < (SUPPORTER_COUNT - 1) / PAGE_COUNT) {
-			right_button.blit_to(display_sprite);
-		}
-		
-		// The deck's capacity info is displayed.
-		display_sprite.blit(
-			renderer.render(
-				CAPACITY_STRING,
-				CAPACITY_WIDTH * display_width,
-				CAPACITY_HEIGHT * display_height,
-				CAPACITY_SEPARATION * display_width
-			),
-			CAPACITY_X,
-			CAPACITY_Y
-		);
-		
-		// A vector of buttons for the names is generated.
-		std::vector<Button> name_buttons;
-		
-		// The cards' names on the page are displayed.
-		for (
-			int i = 0;
-			i < PAGE_COUNT
-			&& page * PAGE_COUNT + i < SUPPORTER_COUNT;
-			++i
-		) {
-			// The name button is stored in the vector.
-			name_buttons.push_back(
-				Button(
-					Sprite(
-						renderer.render(
-							ALL_SUPPORTERS[page * PAGE_COUNT + i]->get_name(),
-							PAGE_WIDTH * display_width,
-							PAGE_HEIGHT * display_height,
-							PAGE_SEPARATION * display_width
-						)
-					),
-					display_sprite,
-					PAGE_NAME_X,
-					PAGE_Y + i * PAGE_Y_SHIFT
-				)
-			);
-			
-			// The name is displayed.
-			name_buttons[i].blit_to(display_sprite);
-			
-			// The card count is displayed.
-			display_sprite.blit(
-				renderer.render(
-					std::to_string(card_counts[FIGHTER_COUNT + page * PAGE_COUNT + i])
-					+ '/'
-					+ std::to_string(MAX_SUPPORTER_COPIES),
-					PAGE_WIDTH * display_width,
-					PAGE_HEIGHT * display_height,
-					PAGE_SEPARATION * display_width
-				),
-				PAGE_VALUE_X,
-				PAGE_Y + i * PAGE_Y_SHIFT
-			);
-			
-			if (card_counts[FIGHTER_COUNT + page * PAGE_COUNT + i]) {
-				minus_buttons[i].blit_to(display_sprite);
-			}
-			
-			if (
-				card_counts[FIGHTER_COUNT + page * PAGE_COUNT + i] < MAX_SUPPORTER_COPIES
-				&& card_count < DECK_SIZE
-			) {
-				plus_buttons[i].blit_to(display_sprite);
-			}
-		}
-		
-		// The display is updated.
-		display.update();
-		
-		// Loop to get user input.
-		while (true) {
-			// The user can return to the deck building menu
-			//   with the use of the back button.
-			// The opponent disconnecting also has this effect.
-			if (
-				Events::unpress(QUIT_KEY)
-				|| back_button.get_rectangle().unclick()
-				|| message == TERMINATOR_STRING
-			) {
-				end = true;
-				break;
-			}
-			
-			// The page number is decremented (if possible).
-			else if (
-				(
-					Events::unpress(Events::LEFT)
-					|| left_button.get_rectangle().unclick()
-				) && page > 0
-			) {
-				--page;
-				break;
-			}
-			
-			// The page number is incremented (if possible).
-			else if (
-				(
-					Events::unpress(Events::RIGHT)
-					|| right_button.get_rectangle().unclick()
-				) && page < (SUPPORTER_COUNT - 1) / PAGE_COUNT
-			) {
-				++page;
-				break;
-			}
-			
-			// The other buttons are checked.
-			else {
-				// True if the button being clicked was found.
-				bool found = false;
-				
-				// The plus and minus buttons increment or decrement
-				//   the number of copies of a card in the deck.
-				// The names display the card's details.
-				for (
-					int i = 0;
-					i < PAGE_COUNT && page * PAGE_COUNT + i < SUPPORTER_COUNT;
-					++i
-				) {
-					// Removes a card.
-					if (
-						card_counts[FIGHTER_COUNT + page * PAGE_COUNT + i]
-						&& minus_buttons[i].get_rectangle().unclick()
-					) {
-						--card_counts[FIGHTER_COUNT + page * PAGE_COUNT + i];
-						--card_count;
-						found = true;
-						break;
-					}
-					
-					// Adds a card.
-					else if (
-						card_counts[FIGHTER_COUNT + page * PAGE_COUNT + i]
-						< MAX_SUPPORTER_COPIES
-						&& card_count < DECK_SIZE
-						&& plus_buttons[i].get_rectangle().unclick()
-					) {
-						++card_counts[FIGHTER_COUNT + page * PAGE_COUNT + i];
-						++card_count;
-						found = true;
-						break;
-					}
-					
-					// Diplays a card's details.
-					else if (name_buttons[i].get_rectangle().unclick()) {
-						ALL_SUPPORTERS[page * PAGE_COUNT + i]->render(display, renderer);
-						back_button.blit_to(display_sprite);
-						display.update();
-						
-						while (
-							!Events::unpress(QUIT_KEY)
-							&& !back_button.get_rectangle().unclick()
-						) {
-							Events::update();
-						}
-						
-						found = true;
-						break;
-					}
-				}
-				
-				if (found) {
-					break;
-				}
-			}
-			
-			// The events are updated.
-			Events::update();
-		}
-	}
+    // The components of the display are extracted.
+    Sprite& display_sprite = display.get_sprite();
+    int display_width = display_sprite.get_width();
+    int display_height = display_sprite.get_height();
+    
+    // The deck builder sprite is intialised.
+    Sprite builder_sprite(
+        renderer.render(
+            BUILDER_STRING,
+            BUILDER_WIDTH * display_width,
+            BUILDER_HEIGHT * display_height,
+            BUILDER_SEPARATION * display_width
+        )
+    );
+    
+    // The back button is initialised.
+    Button back_button(
+        Sprite(
+            renderer.render(
+                BACK_STRING,
+                BACK_WIDTH * display_width,
+                BACK_HEIGHT * display_height,
+                BACK_SEPARATION * display_width
+            )
+        ),
+        display_sprite,
+        BACK_X,
+        BACK_Y
+    );
+    
+    // The left button is initialised.
+    Button left_button(
+        Sprite(
+            LEFT_SOURCE,
+            LEFT_WIDTH * display_width,
+            LEFT_HEIGHT * display_height
+        ),
+        display_sprite,
+        LEFT_X,
+        LEFT_Y
+    );
+    
+    // The right button is initialised.
+    Button right_button(
+        Sprite(
+            RIGHT_SOURCE,
+            RIGHT_WIDTH * display_width,
+            RIGHT_HEIGHT * display_height
+        ),
+        display_sprite,
+        RIGHT_X,
+        RIGHT_Y
+    );
+    
+    // The minus buttons are intialised.
+    std::vector<Button> minus_buttons;
+    
+    for (int i = 0; i < PAGE_COUNT; ++i) {
+        minus_buttons.push_back(
+            Button(
+                Sprite(
+                    MINUS_SOURCE,
+                    MINUS_WIDTH * display_width,
+                    MINUS_HEIGHT * display_height
+                ),
+                display_sprite,
+                MINUS_X,
+                MINUS_Y + i * MINUS_Y_SHIFT
+            )
+        );
+    }
+    
+    
+    // The plus buttons are initialised.
+    std::vector<Button> plus_buttons;
+    
+    for (int i = 0; i < PAGE_COUNT; ++i) {
+        plus_buttons.push_back(
+            Button(
+                Sprite(
+                    PLUS_SOURCE,
+                    PLUS_WIDTH * display_width,
+                    PLUS_HEIGHT * display_height
+                ),
+                display_sprite,
+                PLUS_X,
+                PLUS_Y + i * PLUS_Y_SHIFT
+            )
+        );
+    }
+    
+    // Determines which cards are displayed.
+    int page = 0;
+    
+    // True if the function should return.
+    bool end = false;
+    
+    while (!end) {
+        // The sprites are blitted to the display.
+        display_sprite.fill();
+        display_sprite.blit(builder_sprite, BUILDER_X, BUILDER_Y);
+        back_button.blit_to(display_sprite);
+        
+        if (page > 0) {
+            left_button.blit_to(display_sprite);
+        }
+        
+        if (page < (SUPPORTER_COUNT - 1) / PAGE_COUNT) {
+            right_button.blit_to(display_sprite);
+        }
+        
+        // The deck's capacity info is displayed.
+        display_sprite.blit(
+            renderer.render(
+                CAPACITY_STRING,
+                CAPACITY_WIDTH * display_width,
+                CAPACITY_HEIGHT * display_height,
+                CAPACITY_SEPARATION * display_width
+            ),
+            CAPACITY_X,
+            CAPACITY_Y
+        );
+        
+        // A vector of buttons for the names is generated.
+        std::vector<Button> name_buttons;
+        
+        // The cards' names on the page are displayed.
+        for (
+            int i = 0;
+            i < PAGE_COUNT
+            && page * PAGE_COUNT + i < SUPPORTER_COUNT;
+            ++i
+        ) {
+            // The name button is stored in the vector.
+            name_buttons.push_back(
+                Button(
+                    Sprite(
+                        renderer.render(
+                            ALL_SUPPORTERS[page * PAGE_COUNT + i]->get_name(),
+                            PAGE_WIDTH * display_width,
+                            PAGE_HEIGHT * display_height,
+                            PAGE_SEPARATION * display_width
+                        )
+                    ),
+                    display_sprite,
+                    PAGE_NAME_X,
+                    PAGE_Y + i * PAGE_Y_SHIFT
+                )
+            );
+            
+            // The name is displayed.
+            name_buttons[i].blit_to(display_sprite);
+            
+            // The card count is displayed.
+            display_sprite.blit(
+                renderer.render(
+                    std::to_string(card_counts[FIGHTER_COUNT + page * PAGE_COUNT + i])
+                    + '/'
+                    + std::to_string(MAX_SUPPORTER_COPIES),
+                    PAGE_WIDTH * display_width,
+                    PAGE_HEIGHT * display_height,
+                    PAGE_SEPARATION * display_width
+                ),
+                PAGE_VALUE_X,
+                PAGE_Y + i * PAGE_Y_SHIFT
+            );
+            
+            if (card_counts[FIGHTER_COUNT + page * PAGE_COUNT + i]) {
+                minus_buttons[i].blit_to(display_sprite);
+            }
+            
+            if (
+                card_counts[FIGHTER_COUNT + page * PAGE_COUNT + i] < MAX_SUPPORTER_COPIES
+                && card_count < DECK_SIZE
+            ) {
+                plus_buttons[i].blit_to(display_sprite);
+            }
+        }
+        
+        // The display is updated.
+        display.update();
+        
+        // Loop to get user input.
+        while (true) {
+            // The user can return to the deck building menu
+            //   with the use of the back button.
+            // The opponent disconnecting also has this effect.
+            if (
+                Events::unpress(QUIT_KEY)
+                || back_button.get_rectangle().unclick()
+                || message == TERMINATOR_STRING
+            ) {
+                end = true;
+                break;
+            }
+            
+            // The page number is decremented (if possible).
+            else if (
+                (
+                    Events::unpress(Events::LEFT)
+                    || left_button.get_rectangle().unclick()
+                ) && page > 0
+            ) {
+                --page;
+                break;
+            }
+            
+            // The page number is incremented (if possible).
+            else if (
+                (
+                    Events::unpress(Events::RIGHT)
+                    || right_button.get_rectangle().unclick()
+                ) && page < (SUPPORTER_COUNT - 1) / PAGE_COUNT
+            ) {
+                ++page;
+                break;
+            }
+            
+            // The other buttons are checked.
+            else {
+                // True if the button being clicked was found.
+                bool found = false;
+                
+                // The plus and minus buttons increment or decrement
+                //   the number of copies of a card in the deck.
+                // The names display the card's details.
+                for (
+                    int i = 0;
+                    i < PAGE_COUNT && page * PAGE_COUNT + i < SUPPORTER_COUNT;
+                    ++i
+                ) {
+                    // Removes a card.
+                    if (
+                        card_counts[FIGHTER_COUNT + page * PAGE_COUNT + i]
+                        && minus_buttons[i].get_rectangle().unclick()
+                    ) {
+                        --card_counts[FIGHTER_COUNT + page * PAGE_COUNT + i];
+                        --card_count;
+                        found = true;
+                        break;
+                    }
+                    
+                    // Adds a card.
+                    else if (
+                        card_counts[FIGHTER_COUNT + page * PAGE_COUNT + i]
+                        < MAX_SUPPORTER_COPIES
+                        && card_count < DECK_SIZE
+                        && plus_buttons[i].get_rectangle().unclick()
+                    ) {
+                        ++card_counts[FIGHTER_COUNT + page * PAGE_COUNT + i];
+                        ++card_count;
+                        found = true;
+                        break;
+                    }
+                    
+                    // Diplays a card's details.
+                    else if (name_buttons[i].get_rectangle().unclick()) {
+                        ALL_SUPPORTERS[page * PAGE_COUNT + i]->render(display, renderer);
+                        back_button.blit_to(display_sprite);
+                        display.update();
+                        
+                        while (
+                            !Events::unpress(QUIT_KEY)
+                            && !back_button.get_rectangle().unclick()
+                        ) {
+                            Events::update();
+                        }
+                        
+                        found = true;
+                        break;
+                    }
+                }
+                
+                if (found) {
+                    break;
+                }
+            }
+            
+            // The events are updated.
+            Events::update();
+        }
+    }
 }
 
 /**
  * Adds energy cards to the player's deck.
  */
 void add_energy(
-	Display& display,
-	const Renderer& renderer,
-	const Messenger& messenger,
-	std::array<int, CARD_COUNT>& card_counts,
-	int& card_count,
-	const std::string& message
+    Display& display,
+    const Renderer& renderer,
+    const Messenger& messenger,
+    std::array<int, CARD_COUNT>& card_counts,
+    int& card_count,
+    const std::string& message
 ) noexcept {
-	// The components of the display are extracted.
-	Sprite& display_sprite = display.get_sprite();
-	int display_width = display_sprite.get_width();
-	int display_height = display_sprite.get_height();
-	
-	// The deck builder sprite is intialised.
-	Sprite builder_sprite(
-		renderer.render(
-			BUILDER_STRING,
-			BUILDER_WIDTH * display_width,
-			BUILDER_HEIGHT * display_height,
-			BUILDER_SEPARATION * display_width
-		)
-	);
-	
-	// The back button is initialised.
-	Button back_button(
-		Sprite(
-			renderer.render(
-				BACK_STRING,
-				BACK_WIDTH * display_width,
-				BACK_HEIGHT * display_height,
-				BACK_SEPARATION * display_width
-			)
-		),
-		display_sprite,
-		BACK_X,
-		BACK_Y
-	);
-	
-	// The left button is initialised.
-	Button left_button(
-		Sprite(
-			LEFT_SOURCE,
-			LEFT_WIDTH * display_width,
-			LEFT_HEIGHT * display_height
-		),
-		display_sprite,
-		LEFT_X,
-		LEFT_Y
-	);
-	
-	// The right button is initialised.
-	Button right_button(
-		Sprite(
-			RIGHT_SOURCE,
-			RIGHT_WIDTH * display_width,
-			RIGHT_HEIGHT * display_height
-		),
-		display_sprite,
-		RIGHT_X,
-		RIGHT_Y
-	);
-	
-	// The minus buttons are intialised.
-	std::vector<Button> minus_buttons;
-	
-	for (int i = 0; i < PAGE_COUNT; ++i) {
-		minus_buttons.push_back(
-			Button(
-				Sprite(
-					MINUS_SOURCE,
-					MINUS_WIDTH * display_width,
-					MINUS_HEIGHT * display_height
-				),
-				display_sprite,
-				MINUS_X,
-				MINUS_Y + i * MINUS_Y_SHIFT
-			)
-		);
-	}
-	
-	
-	// The plus buttons are initialised.
-	std::vector<Button> plus_buttons;
-	
-	for (int i = 0; i < PAGE_COUNT; ++i) {
-		plus_buttons.push_back(
-			Button(
-				Sprite(
-					PLUS_SOURCE,
-					PLUS_WIDTH * display_width,
-					PLUS_HEIGHT * display_height
-				),
-				display_sprite,
-				PLUS_X,
-				PLUS_Y + i * PLUS_Y_SHIFT
-			)
-		);
-	}
-	
-	// Determines which cards are displayed.
-	int page = 0;
-	
-	// True if the function should return.
-	bool end = false;
-	
-	while (!end) {
-		// The sprites are blitted to the display.
-		display_sprite.fill();
-		display_sprite.blit(builder_sprite, BUILDER_X, BUILDER_Y);
-		back_button.blit_to(display_sprite);
-		
-		if (page > 0) {
-			left_button.blit_to(display_sprite);
-		}
-		
-		if (page < (ENERGY_COUNT - 1) / PAGE_COUNT) {
-			right_button.blit_to(display_sprite);
-		}
-		
-		// The deck's capacity info is displayed.
-		display_sprite.blit(
-			renderer.render(
-				CAPACITY_STRING,
-				CAPACITY_WIDTH * display_width,
-				CAPACITY_HEIGHT * display_height,
-				CAPACITY_SEPARATION * display_width
-			),
-			CAPACITY_X,
-			CAPACITY_Y
-		);
-		
-		// A vector of buttons for the names is generated.
-		std::vector<Button> name_buttons;
-		
-		// The cards' names on the page are displayed.
-		for (
-			int i = 0;
-			i < PAGE_COUNT
-			&& page * PAGE_COUNT + i < ENERGY_COUNT;
-			++i
-		) {
-			// The name button is stored in the vector.
-			name_buttons.push_back(
-				Button(
-					Sprite(
-						renderer.render(
-							ALL_ENERGY[page * PAGE_COUNT + i]->get_name(),
-							PAGE_WIDTH * display_width,
-							PAGE_HEIGHT * display_height,
-							PAGE_SEPARATION * display_width
-						)
-					),
-					display_sprite,
-					PAGE_NAME_X,
-					PAGE_Y + i * PAGE_Y_SHIFT
-				)
-			);
-			
-			// The name is displayed.
-			name_buttons[i].blit_to(display_sprite);
-			
-			// The card count is displayed.
-			display_sprite.blit(
-				renderer.render(
-					std::to_string(card_counts[
-						FIGHTER_COUNT + SUPPORTER_COUNT + page * PAGE_COUNT + i
-					])
-					+ '/'
-					+ std::to_string(MAX_ENERGY_COPIES),
-					PAGE_WIDTH * display_width,
-					PAGE_HEIGHT * display_height,
-					PAGE_SEPARATION * display_width
-				),
-				PAGE_VALUE_X,
-				PAGE_Y + i * PAGE_Y_SHIFT
-			);
-			
-			if (card_counts[FIGHTER_COUNT + SUPPORTER_COUNT + page * PAGE_COUNT + i]) {
-				minus_buttons[i].blit_to(display_sprite);
-			}
-			
-			if (
-				card_counts[FIGHTER_COUNT + SUPPORTER_COUNT + page * PAGE_COUNT + i]
-				< MAX_ENERGY_COPIES
-				&& card_count < DECK_SIZE
-			) {
-				plus_buttons[i].blit_to(display_sprite);
-			}
-		}
-		
-		// The display is updated.
-		display.update();
-		
-		// Loop to get user input.
-		while (true) {
-			// The user can return to the deck building menu
-			//   with the use of the back button.
-			// The opponent disconnecting also has this effect.
-			if (
-				Events::unpress(QUIT_KEY)
-				|| back_button.get_rectangle().unclick()
-				|| message == TERMINATOR_STRING
-			) {
-				end = true;
-				break;
-			}
-			
-			// The page number is decremented (if possible).
-			else if (
-				(
-					Events::unpress(Events::LEFT)
-					|| left_button.get_rectangle().unclick()
-				) && page > 0
-			) {
-				--page;
-				break;
-			}
-			
-			// The page number is incremented (if possible).
-			else if (
-				(
-					Events::unpress(Events::RIGHT)
-					|| right_button.get_rectangle().unclick()
-				) && page < (ENERGY_COUNT - 1) / PAGE_COUNT
-			) {
-				++page;
-				break;
-			}
-			
-			// The other buttons are checked.
-			else {
-				// True if the button being clicked was found.
-				bool found = false;
-				
-				// The plus and minus buttons increment or decrement
-				//   the number of copies of a card in the deck.
-				// The names display the card's details.
-				for (
-					int i = 0;
-					i < PAGE_COUNT && page * PAGE_COUNT + i < ENERGY_COUNT;
-					++i
-				) {
-					// Removes a card.
-					if (
-						card_counts[FIGHTER_COUNT + SUPPORTER_COUNT + page * PAGE_COUNT + i]
-						&& minus_buttons[i].get_rectangle().unclick()
-					) {
-						--card_counts[
-							FIGHTER_COUNT + SUPPORTER_COUNT + page * PAGE_COUNT + i
-						];
-						--card_count;
-						found = true;
-						break;
-					}
-					
-					// Adds a card.
-					else if (
-						card_counts[FIGHTER_COUNT + SUPPORTER_COUNT + page * PAGE_COUNT + i]
-						< MAX_ENERGY_COPIES
-						&& card_count < DECK_SIZE
-						&& plus_buttons[i].get_rectangle().unclick()
-					) {
-						++card_counts[
-							FIGHTER_COUNT + SUPPORTER_COUNT + page * PAGE_COUNT + i
-						];
-						++card_count;
-						found = true;
-						break;
-					}
-					
-					// Diplays a card's details.
-					else if (name_buttons[i].get_rectangle().unclick()) {
-						ALL_ENERGY[page * PAGE_COUNT + i]->render(display, renderer);
-						back_button.blit_to(display_sprite);
-						display.update();
-						
-						while (
-							!Events::unpress(QUIT_KEY)
-							&& !back_button.get_rectangle().unclick()
-						) {
-							Events::update();
-						}
-						
-						found = true;
-						break;
-					}
-				}
-				
-				if (found) {
-					break;
-				}
-			}
-			
-			// The events are updated.
-			Events::update();
-		}
-	}
+    // The components of the display are extracted.
+    Sprite& display_sprite = display.get_sprite();
+    int display_width = display_sprite.get_width();
+    int display_height = display_sprite.get_height();
+    
+    // The deck builder sprite is intialised.
+    Sprite builder_sprite(
+        renderer.render(
+            BUILDER_STRING,
+            BUILDER_WIDTH * display_width,
+            BUILDER_HEIGHT * display_height,
+            BUILDER_SEPARATION * display_width
+        )
+    );
+    
+    // The back button is initialised.
+    Button back_button(
+        Sprite(
+            renderer.render(
+                BACK_STRING,
+                BACK_WIDTH * display_width,
+                BACK_HEIGHT * display_height,
+                BACK_SEPARATION * display_width
+            )
+        ),
+        display_sprite,
+        BACK_X,
+        BACK_Y
+    );
+    
+    // The left button is initialised.
+    Button left_button(
+        Sprite(
+            LEFT_SOURCE,
+            LEFT_WIDTH * display_width,
+            LEFT_HEIGHT * display_height
+        ),
+        display_sprite,
+        LEFT_X,
+        LEFT_Y
+    );
+    
+    // The right button is initialised.
+    Button right_button(
+        Sprite(
+            RIGHT_SOURCE,
+            RIGHT_WIDTH * display_width,
+            RIGHT_HEIGHT * display_height
+        ),
+        display_sprite,
+        RIGHT_X,
+        RIGHT_Y
+    );
+    
+    // The minus buttons are intialised.
+    std::vector<Button> minus_buttons;
+    
+    for (int i = 0; i < PAGE_COUNT; ++i) {
+        minus_buttons.push_back(
+            Button(
+                Sprite(
+                    MINUS_SOURCE,
+                    MINUS_WIDTH * display_width,
+                    MINUS_HEIGHT * display_height
+                ),
+                display_sprite,
+                MINUS_X,
+                MINUS_Y + i * MINUS_Y_SHIFT
+            )
+        );
+    }
+    
+    
+    // The plus buttons are initialised.
+    std::vector<Button> plus_buttons;
+    
+    for (int i = 0; i < PAGE_COUNT; ++i) {
+        plus_buttons.push_back(
+            Button(
+                Sprite(
+                    PLUS_SOURCE,
+                    PLUS_WIDTH * display_width,
+                    PLUS_HEIGHT * display_height
+                ),
+                display_sprite,
+                PLUS_X,
+                PLUS_Y + i * PLUS_Y_SHIFT
+            )
+        );
+    }
+    
+    // Determines which cards are displayed.
+    int page = 0;
+    
+    // True if the function should return.
+    bool end = false;
+    
+    while (!end) {
+        // The sprites are blitted to the display.
+        display_sprite.fill();
+        display_sprite.blit(builder_sprite, BUILDER_X, BUILDER_Y);
+        back_button.blit_to(display_sprite);
+        
+        if (page > 0) {
+            left_button.blit_to(display_sprite);
+        }
+        
+        if (page < (ENERGY_COUNT - 1) / PAGE_COUNT) {
+            right_button.blit_to(display_sprite);
+        }
+        
+        // The deck's capacity info is displayed.
+        display_sprite.blit(
+            renderer.render(
+                CAPACITY_STRING,
+                CAPACITY_WIDTH * display_width,
+                CAPACITY_HEIGHT * display_height,
+                CAPACITY_SEPARATION * display_width
+            ),
+            CAPACITY_X,
+            CAPACITY_Y
+        );
+        
+        // A vector of buttons for the names is generated.
+        std::vector<Button> name_buttons;
+        
+        // The cards' names on the page are displayed.
+        for (
+            int i = 0;
+            i < PAGE_COUNT
+            && page * PAGE_COUNT + i < ENERGY_COUNT;
+            ++i
+        ) {
+            // The name button is stored in the vector.
+            name_buttons.push_back(
+                Button(
+                    Sprite(
+                        renderer.render(
+                            ALL_ENERGY[page * PAGE_COUNT + i]->get_name(),
+                            PAGE_WIDTH * display_width,
+                            PAGE_HEIGHT * display_height,
+                            PAGE_SEPARATION * display_width
+                        )
+                    ),
+                    display_sprite,
+                    PAGE_NAME_X,
+                    PAGE_Y + i * PAGE_Y_SHIFT
+                )
+            );
+            
+            // The name is displayed.
+            name_buttons[i].blit_to(display_sprite);
+            
+            // The card count is displayed.
+            display_sprite.blit(
+                renderer.render(
+                    std::to_string(card_counts[
+                        FIGHTER_COUNT + SUPPORTER_COUNT + page * PAGE_COUNT + i
+                    ])
+                    + '/'
+                    + std::to_string(MAX_ENERGY_COPIES),
+                    PAGE_WIDTH * display_width,
+                    PAGE_HEIGHT * display_height,
+                    PAGE_SEPARATION * display_width
+                ),
+                PAGE_VALUE_X,
+                PAGE_Y + i * PAGE_Y_SHIFT
+            );
+            
+            if (card_counts[FIGHTER_COUNT + SUPPORTER_COUNT + page * PAGE_COUNT + i]) {
+                minus_buttons[i].blit_to(display_sprite);
+            }
+            
+            if (
+                card_counts[FIGHTER_COUNT + SUPPORTER_COUNT + page * PAGE_COUNT + i]
+                < MAX_ENERGY_COPIES
+                && card_count < DECK_SIZE
+            ) {
+                plus_buttons[i].blit_to(display_sprite);
+            }
+        }
+        
+        // The display is updated.
+        display.update();
+        
+        // Loop to get user input.
+        while (true) {
+            // The user can return to the deck building menu
+            //   with the use of the back button.
+            // The opponent disconnecting also has this effect.
+            if (
+                Events::unpress(QUIT_KEY)
+                || back_button.get_rectangle().unclick()
+                || message == TERMINATOR_STRING
+            ) {
+                end = true;
+                break;
+            }
+            
+            // The page number is decremented (if possible).
+            else if (
+                (
+                    Events::unpress(Events::LEFT)
+                    || left_button.get_rectangle().unclick()
+                ) && page > 0
+            ) {
+                --page;
+                break;
+            }
+            
+            // The page number is incremented (if possible).
+            else if (
+                (
+                    Events::unpress(Events::RIGHT)
+                    || right_button.get_rectangle().unclick()
+                ) && page < (ENERGY_COUNT - 1) / PAGE_COUNT
+            ) {
+                ++page;
+                break;
+            }
+            
+            // The other buttons are checked.
+            else {
+                // True if the button being clicked was found.
+                bool found = false;
+                
+                // The plus and minus buttons increment or decrement
+                //   the number of copies of a card in the deck.
+                // The names display the card's details.
+                for (
+                    int i = 0;
+                    i < PAGE_COUNT && page * PAGE_COUNT + i < ENERGY_COUNT;
+                    ++i
+                ) {
+                    // Removes a card.
+                    if (
+                        card_counts[FIGHTER_COUNT + SUPPORTER_COUNT + page * PAGE_COUNT + i]
+                        && minus_buttons[i].get_rectangle().unclick()
+                    ) {
+                        --card_counts[
+                            FIGHTER_COUNT + SUPPORTER_COUNT + page * PAGE_COUNT + i
+                        ];
+                        --card_count;
+                        found = true;
+                        break;
+                    }
+                    
+                    // Adds a card.
+                    else if (
+                        card_counts[FIGHTER_COUNT + SUPPORTER_COUNT + page * PAGE_COUNT + i]
+                        < MAX_ENERGY_COPIES
+                        && card_count < DECK_SIZE
+                        && plus_buttons[i].get_rectangle().unclick()
+                    ) {
+                        ++card_counts[
+                            FIGHTER_COUNT + SUPPORTER_COUNT + page * PAGE_COUNT + i
+                        ];
+                        ++card_count;
+                        found = true;
+                        break;
+                    }
+                    
+                    // Diplays a card's details.
+                    else if (name_buttons[i].get_rectangle().unclick()) {
+                        ALL_ENERGY[page * PAGE_COUNT + i]->render(display, renderer);
+                        back_button.blit_to(display_sprite);
+                        display.update();
+                        
+                        while (
+                            !Events::unpress(QUIT_KEY)
+                            && !back_button.get_rectangle().unclick()
+                        ) {
+                            Events::update();
+                        }
+                        
+                        found = true;
+                        break;
+                    }
+                }
+                
+                if (found) {
+                    break;
+                }
+            }
+            
+            // The events are updated.
+            Events::update();
+        }
+    }
 }
 
 /**
  * Generates a premade deck.
  */
 void generate(
-	Display& display,
-	const Renderer& renderer,
-	const Messenger& messenger,
-	std::array<int, CARD_COUNT>& card_counts,
-	int& card_count,
-	const std::string& message
+    Display& display,
+    const Renderer& renderer,
+    const Messenger& messenger,
+    std::array<int, CARD_COUNT>& card_counts,
+    int& card_count,
+    const std::string& message
 ) noexcept {
-	// The components of the display are extracted.
-	Sprite& display_sprite = display.get_sprite();
-	int display_width = display_sprite.get_width();
-	int display_height = display_sprite.get_height();
-	
-	// The deck builder sprite is intialised.
-	Sprite builder_sprite(
-		renderer.render(
-			BUILDER_STRING,
-			BUILDER_WIDTH * display_width,
-			BUILDER_HEIGHT * display_height,
-			BUILDER_SEPARATION * display_width
-		)
-	);
-	
-	// The back button is initialised.
-	Button back_button(
-		Sprite(
-			renderer.render(
-				BACK_STRING,
-				BACK_WIDTH * display_width,
-				BACK_HEIGHT * display_height,
-				BACK_SEPARATION * display_width
-			)
-		),
-		display_sprite,
-		BACK_X,
-		BACK_Y
-	);
-	
-	// The left button is initialised.
-	Button left_button(
-		Sprite(
-			LEFT_SOURCE,
-			LEFT_WIDTH * display_width,
-			LEFT_HEIGHT * display_height
-		),
-		display_sprite,
-		LEFT_X,
-		LEFT_Y
-	);
-	
-	// The right button is initialised.
-	Button right_button(
-		Sprite(
-			RIGHT_SOURCE,
-			RIGHT_WIDTH * display_width,
-			RIGHT_HEIGHT * display_height
-		),
-		display_sprite,
-		RIGHT_X,
-		RIGHT_Y
-	);
-	
-	// The generate buttons are intialised.
-	std::vector<Button> generate_buttons;
-	
-	for (int i = 0; i < PAGE_COUNT; ++i) {
-		generate_buttons.push_back(
-			Button(
-				renderer.render(
-					GENERATE_STRING,
-					GENERATE_WIDTH * display_width,
-					GENERATE_HEIGHT * display_height,
-					GENERATE_SEPARATION * display_width
-				),
-				display_sprite,
-				GENERATE_X,
-				GENERATE_Y + i * GENERATE_Y_SHIFT
-			)
-		);
-	}
-	
-	// Determines which decks are displayed.
-	int page = 0;
-	
-	// True if the function should return.
-	bool end = false;
-	
-	while (!end) {
-		// The sprites are blitted to the display.
-		display_sprite.fill();
-		display_sprite.blit(builder_sprite, BUILDER_X, BUILDER_Y);
-		back_button.blit_to(display_sprite);
-		
-		if (page > 0) {
-			left_button.blit_to(display_sprite);
-		}
-		
-		if (page < (DECK_CODE_COUNT - 1) / PAGE_COUNT) {
-			right_button.blit_to(display_sprite);
-		}
-		
-		// The deck's capacity info is displayed.
-		display_sprite.blit(
-			renderer.render(
-				CAPACITY_STRING,
-				CAPACITY_WIDTH * display_width,
-				CAPACITY_HEIGHT * display_height,
-				CAPACITY_SEPARATION * display_width
-			),
-			CAPACITY_X,
-			CAPACITY_Y
-		);
-		
-		// A vector of buttons for the names is generated.
-		std::vector<Button> name_buttons;
-		
-		// The decks' names on the page are displayed.
-		for (
-			int i = 0;
-			i < PAGE_COUNT
-			&& page * PAGE_COUNT + i < DECK_CODE_COUNT;
-			++i
-		) {
-			// The name button is stored in the vector.
-			name_buttons.push_back(
-				Button(
-					Sprite(
-						renderer.render(
-							ALL_DECK_CODES[page * PAGE_COUNT + i]->get_name(),
-							PAGE_WIDTH * display_width,
-							PAGE_HEIGHT * display_height,
-							PAGE_SEPARATION * display_width
-						)
-					),
-					display_sprite,
-					PAGE_NAME_X,
-					PAGE_Y + i * PAGE_Y_SHIFT
-				)
-			);
-			
-			// The name is displayed.
-			name_buttons[i].blit_to(display_sprite);
-			
-			// The generate buttons are diplayed.
-			generate_buttons[i].blit_to(display_sprite);
-		}
-		
-		// The display is updated.
-		display.update();
-		
-		// Loop to get user input.
-		while (true) {
-			// The user can return to the deck building menu
-			//   with the use of the back button.
-			// The opponent disconnecting also has this effect.
-			if (
-				Events::unpress(QUIT_KEY)
-				|| back_button.get_rectangle().unclick()
-				|| message == TERMINATOR_STRING
-			) {
-				end = true;
-				break;
-			}
-			
-			// The page number is decremented (if possible).
-			else if (
-				(
-					Events::unpress(Events::LEFT)
-					|| left_button.get_rectangle().unclick()
-				) && page > 0
-			) {
-				--page;
-				break;
-			}
-			
-			// The page number is incremented (if possible).
-			else if (
-				(
-					Events::unpress(Events::RIGHT)
-					|| right_button.get_rectangle().unclick()
-				) && page < (DECK_CODE_COUNT - 1) / PAGE_COUNT
-			) {
-				++page;
-				break;
-			}
-			
-			// The other buttons are checked.
-			else {
-				// True if the button being clicked was found.
-				bool found = false;
-				
-				// The plus and minus buttons increment or decrement
-				//   the number of copies of a card in the deck.
-				// The names display the card's details.
-				for (
-					int i = 0;
-					i < PAGE_COUNT && page * PAGE_COUNT + i < DECK_CODE_COUNT;
-					++i
-				) {
-					// Generates the chosen deck.
-					if (generate_buttons[i].get_rectangle().unclick()) {
-						int index = page * PAGE_COUNT + i;
-						
-						// The random deck was chosen.
-						if (index == DECK_CODE_COUNT - 1) {
-							// RNG is initialised using the current time.
-							std::mt19937 generator(
-								Timer::current()
-							);
-							
-							// A random index of a valid deck is assigned.
-							index = Random::get_int(generator, 1, DECK_CODE_COUNT - 2);
-						}
-						
-						card_counts = ALL_DECK_CODES[index]->get_code();
-						card_count = ALL_DECK_CODES[index]->get_size();
-						found = true;
-						break;
-					}
-					
-					// Displays a deck's details.
-					else if (name_buttons[i].get_rectangle().unclick()) {
-						display_sprite.fill();
-						display_sprite.blit(
-							renderer.lined_render(
-								DESCRIPTION_STRING,
-								DESCRIPTION_WIDTH * display_width,
-								DESCRIPTION_HEIGHT * display_height,
-								DESCRIPTION_SEPARATION_X * display_width,
-								DESCRIPTION_MAX_WIDTH * display_width,
-								DESCRIPTION_SEPARATION_Y * display_height,
-								DESCRIPTION_JUSTIFICATION
-							),
-							DESCRIPTION_X,
-							DESCRIPTION_Y
-						);
-						back_button.blit_to(display_sprite);
-						display.update();
-						
-						// Pressing or clicking back stops displaying the deck's details.
-						while (
-							!Events::unpress(QUIT_KEY)
-							&& !back_button.get_rectangle().unclick()
-						) {
-							Events::update();
-						}
-						
-						found = true;
-						break;
-					}
-				}
-				
-				if (found) {
-					break;
-				}
-			}
-			
-			// The events are updated.
-			Events::update();
-		}
-	}
+    // The components of the display are extracted.
+    Sprite& display_sprite = display.get_sprite();
+    int display_width = display_sprite.get_width();
+    int display_height = display_sprite.get_height();
+    
+    // The deck builder sprite is intialised.
+    Sprite builder_sprite(
+        renderer.render(
+            BUILDER_STRING,
+            BUILDER_WIDTH * display_width,
+            BUILDER_HEIGHT * display_height,
+            BUILDER_SEPARATION * display_width
+        )
+    );
+    
+    // The back button is initialised.
+    Button back_button(
+        Sprite(
+            renderer.render(
+                BACK_STRING,
+                BACK_WIDTH * display_width,
+                BACK_HEIGHT * display_height,
+                BACK_SEPARATION * display_width
+            )
+        ),
+        display_sprite,
+        BACK_X,
+        BACK_Y
+    );
+    
+    // The left button is initialised.
+    Button left_button(
+        Sprite(
+            LEFT_SOURCE,
+            LEFT_WIDTH * display_width,
+            LEFT_HEIGHT * display_height
+        ),
+        display_sprite,
+        LEFT_X,
+        LEFT_Y
+    );
+    
+    // The right button is initialised.
+    Button right_button(
+        Sprite(
+            RIGHT_SOURCE,
+            RIGHT_WIDTH * display_width,
+            RIGHT_HEIGHT * display_height
+        ),
+        display_sprite,
+        RIGHT_X,
+        RIGHT_Y
+    );
+    
+    // The generate buttons are intialised.
+    std::vector<Button> generate_buttons;
+    
+    for (int i = 0; i < PAGE_COUNT; ++i) {
+        generate_buttons.push_back(
+            Button(
+                renderer.render(
+                    GENERATE_STRING,
+                    GENERATE_WIDTH * display_width,
+                    GENERATE_HEIGHT * display_height,
+                    GENERATE_SEPARATION * display_width
+                ),
+                display_sprite,
+                GENERATE_X,
+                GENERATE_Y + i * GENERATE_Y_SHIFT
+            )
+        );
+    }
+    
+    // Determines which decks are displayed.
+    int page = 0;
+    
+    // True if the function should return.
+    bool end = false;
+    
+    while (!end) {
+        // The sprites are blitted to the display.
+        display_sprite.fill();
+        display_sprite.blit(builder_sprite, BUILDER_X, BUILDER_Y);
+        back_button.blit_to(display_sprite);
+        
+        if (page > 0) {
+            left_button.blit_to(display_sprite);
+        }
+        
+        if (page < (DECK_CODE_COUNT - 1) / PAGE_COUNT) {
+            right_button.blit_to(display_sprite);
+        }
+        
+        // The deck's capacity info is displayed.
+        display_sprite.blit(
+            renderer.render(
+                CAPACITY_STRING,
+                CAPACITY_WIDTH * display_width,
+                CAPACITY_HEIGHT * display_height,
+                CAPACITY_SEPARATION * display_width
+            ),
+            CAPACITY_X,
+            CAPACITY_Y
+        );
+        
+        // A vector of buttons for the names is generated.
+        std::vector<Button> name_buttons;
+        
+        // The decks' names on the page are displayed.
+        for (
+            int i = 0;
+            i < PAGE_COUNT
+            && page * PAGE_COUNT + i < DECK_CODE_COUNT;
+            ++i
+        ) {
+            // The name button is stored in the vector.
+            name_buttons.push_back(
+                Button(
+                    Sprite(
+                        renderer.render(
+                            ALL_DECK_CODES[page * PAGE_COUNT + i]->get_name(),
+                            PAGE_WIDTH * display_width,
+                            PAGE_HEIGHT * display_height,
+                            PAGE_SEPARATION * display_width
+                        )
+                    ),
+                    display_sprite,
+                    PAGE_NAME_X,
+                    PAGE_Y + i * PAGE_Y_SHIFT
+                )
+            );
+            
+            // The name is displayed.
+            name_buttons[i].blit_to(display_sprite);
+            
+            // The generate buttons are diplayed.
+            generate_buttons[i].blit_to(display_sprite);
+        }
+        
+        // The display is updated.
+        display.update();
+        
+        // Loop to get user input.
+        while (true) {
+            // The user can return to the deck building menu
+            //   with the use of the back button.
+            // The opponent disconnecting also has this effect.
+            if (
+                Events::unpress(QUIT_KEY)
+                || back_button.get_rectangle().unclick()
+                || message == TERMINATOR_STRING
+            ) {
+                end = true;
+                break;
+            }
+            
+            // The page number is decremented (if possible).
+            else if (
+                (
+                    Events::unpress(Events::LEFT)
+                    || left_button.get_rectangle().unclick()
+                ) && page > 0
+            ) {
+                --page;
+                break;
+            }
+            
+            // The page number is incremented (if possible).
+            else if (
+                (
+                    Events::unpress(Events::RIGHT)
+                    || right_button.get_rectangle().unclick()
+                ) && page < (DECK_CODE_COUNT - 1) / PAGE_COUNT
+            ) {
+                ++page;
+                break;
+            }
+            
+            // The other buttons are checked.
+            else {
+                // True if the button being clicked was found.
+                bool found = false;
+                
+                // The plus and minus buttons increment or decrement
+                //   the number of copies of a card in the deck.
+                // The names display the card's details.
+                for (
+                    int i = 0;
+                    i < PAGE_COUNT && page * PAGE_COUNT + i < DECK_CODE_COUNT;
+                    ++i
+                ) {
+                    // Generates the chosen deck.
+                    if (generate_buttons[i].get_rectangle().unclick()) {
+                        int index = page * PAGE_COUNT + i;
+                        
+                        // The random deck was chosen.
+                        if (index == DECK_CODE_COUNT - 1) {
+                            // RNG is initialised using the current time.
+                            std::mt19937 generator(
+                                Timer::current()
+                            );
+                            
+                            // A random index of a valid deck is assigned.
+                            index = Random::get_int(generator, 1, DECK_CODE_COUNT - 2);
+                        }
+                        
+                        card_counts = ALL_DECK_CODES[index]->get_code();
+                        card_count = ALL_DECK_CODES[index]->get_size();
+                        found = true;
+                        break;
+                    }
+                    
+                    // Displays a deck's details.
+                    else if (name_buttons[i].get_rectangle().unclick()) {
+                        display_sprite.fill();
+                        display_sprite.blit(
+                            renderer.lined_render(
+                                DESCRIPTION_STRING,
+                                DESCRIPTION_WIDTH * display_width,
+                                DESCRIPTION_HEIGHT * display_height,
+                                DESCRIPTION_SEPARATION_X * display_width,
+                                DESCRIPTION_MAX_WIDTH * display_width,
+                                DESCRIPTION_SEPARATION_Y * display_height,
+                                DESCRIPTION_JUSTIFICATION
+                            ),
+                            DESCRIPTION_X,
+                            DESCRIPTION_Y
+                        );
+                        back_button.blit_to(display_sprite);
+                        display.update();
+                        
+                        // Pressing or clicking back stops displaying the deck's details.
+                        while (
+                            !Events::unpress(QUIT_KEY)
+                            && !back_button.get_rectangle().unclick()
+                        ) {
+                            Events::update();
+                        }
+                        
+                        found = true;
+                        break;
+                    }
+                }
+                
+                if (found) {
+                    break;
+                }
+            }
+            
+            // The events are updated.
+            Events::update();
+        }
+    }
 }
 
 /**
@@ -21246,15 +21173,15 @@ void generate(
  *   does not rank up from another fighter.
  */
 bool has_basic(const std::array<int, CARD_COUNT>& card_counts) noexcept {
-	for (int i = 0; i < FIGHTER_COUNT; i++) {
-		if (card_counts[i]) {
-			if (ALL_FIGHTERS[i]->basic()) {
-				return true;
-			}
-		}
-	}
-	
-	return false;
+    for (int i = 0; i < FIGHTER_COUNT; i++) {
+        if (card_counts[i]) {
+            if (ALL_FIGHTERS[i]->basic()) {
+                return true;
+            }
+        }
+    }
+    
+    return false;
 }
 
 /**
@@ -21262,75 +21189,75 @@ bool has_basic(const std::array<int, CARD_COUNT>& card_counts) noexcept {
  * Gives the reason for deck invalidity if false is to be returned.
  */
 bool valid_deck(
-	Display& display,
-	const Renderer& renderer,
-	const std::array<int, CARD_COUNT>& card_counts,
-	const int& card_count
+    Display& display,
+    const Renderer& renderer,
+    const std::array<int, CARD_COUNT>& card_counts,
+    const int& card_count
 ) noexcept {
-	std::string error_string;
-	
-	if (card_count == DECK_SIZE) {
-		if (has_basic(card_counts)) {
-			return true;
-		}
-		
-		else {
-			error_string = NO_BASICS_STRING;
-		}
-	}
-	
-	else {
-		error_string = INVALID_SIZE_STRING;
-	}
-	
-	// The components of the display are extracted.
-	Sprite& display_sprite = display.get_sprite();
-	int display_width = display_sprite.get_width();
-	int display_height = display_sprite.get_height();
-	
-	// The error sprite is initialised.
-	Sprite deck_error_sprite(
-		renderer.lined_render(
-			error_string,
-			DECK_ERROR_WIDTH * display_width,
-			DECK_ERROR_HEIGHT * display_height,
-			DECK_ERROR_SEPARATION_X * display_width,
-			DECK_ERROR_MAX_WIDTH * display_width,
-			DECK_ERROR_SEPARATION_Y * display_height,
-			DECK_ERROR_JUSTIFICATION
-		)
-	);
-	
-	// The back button is initialised.
-	Button back_button(
-		Sprite(
-			renderer.render(
-				BACK_STRING,
-				BACK_WIDTH * display_width,
-				BACK_HEIGHT * display_height,
-				BACK_SEPARATION * display_width
-			)
-		),
-		display_sprite,
-		BACK_X,
-		BACK_Y
-	);
-	
-	// The display is blitted to.
-	display_sprite.fill();
-	display_sprite.blit(deck_error_sprite, DECK_ERROR_X, DECK_ERROR_Y);
-	back_button.blit_to(display_sprite);
-	display.update();
-	
-	// The error message is displayed until the user goes back.
-	while (
-		!Events::unpress(QUIT_KEY)
-		&& !back_button.get_rectangle().unclick()
-	) {
-		Events::update();
-	}
-	
-	return false;
+    std::string error_string;
+    
+    if (card_count == DECK_SIZE) {
+        if (has_basic(card_counts)) {
+            return true;
+        }
+        
+        else {
+            error_string = NO_BASICS_STRING;
+        }
+    }
+    
+    else {
+        error_string = INVALID_SIZE_STRING;
+    }
+    
+    // The components of the display are extracted.
+    Sprite& display_sprite = display.get_sprite();
+    int display_width = display_sprite.get_width();
+    int display_height = display_sprite.get_height();
+    
+    // The error sprite is initialised.
+    Sprite deck_error_sprite(
+        renderer.lined_render(
+            error_string,
+            DECK_ERROR_WIDTH * display_width,
+            DECK_ERROR_HEIGHT * display_height,
+            DECK_ERROR_SEPARATION_X * display_width,
+            DECK_ERROR_MAX_WIDTH * display_width,
+            DECK_ERROR_SEPARATION_Y * display_height,
+            DECK_ERROR_JUSTIFICATION
+        )
+    );
+    
+    // The back button is initialised.
+    Button back_button(
+        Sprite(
+            renderer.render(
+                BACK_STRING,
+                BACK_WIDTH * display_width,
+                BACK_HEIGHT * display_height,
+                BACK_SEPARATION * display_width
+            )
+        ),
+        display_sprite,
+        BACK_X,
+        BACK_Y
+    );
+    
+    // The display is blitted to.
+    display_sprite.fill();
+    display_sprite.blit(deck_error_sprite, DECK_ERROR_X, DECK_ERROR_Y);
+    back_button.blit_to(display_sprite);
+    display.update();
+    
+    // The error message is displayed until the user goes back.
+    while (
+        !Events::unpress(QUIT_KEY)
+        && !back_button.get_rectangle().unclick()
+    ) {
+        Events::update();
+    }
+    
+    return false;
 }
 
 /**
@@ -21339,271 +21266,283 @@ bool valid_deck(
  *   client and seeds both player's RNG.
  */
 void build_deck(
-	Display& display,
-	const Renderer& renderer,
-	const Messenger& messenger
+    Display& display,
+    const Renderer& renderer,
+    const Messenger& messenger
 ) noexcept {
-	std::string connection_test = System::version(VERSION);
-	
-	// Sends a message to the other player to confirm the connection.
-	// The message sent is the program version in string form.
-	messenger.send(connection_test);
-	
-	// If the received string does not match, the connection was unsuccessful.
-	// This ensures that other TCP program do not connect with this one.
-	// This also ensures that the versions of the program match.
-	// This also allows for connection bridging to be performed safely,
-	//   as the game will not start until both players connect.
-	if (messenger.read() != connection_test) {
-		incompatible(display, renderer);
-		messenger.send(TERMINATOR_STRING);
-		return;
-	}
-	
-	// The components of the display are extracted.
-	Sprite& display_sprite = display.get_sprite();
-	int display_width = display_sprite.get_width();
-	int display_height = display_sprite.get_height();
-	
-	// The deck builder sprite is intialised.
-	Sprite builder_sprite(
-		renderer.render(
-			BUILDER_STRING,
-			BUILDER_WIDTH * display_width,
-			BUILDER_HEIGHT * display_height,
-			BUILDER_SEPARATION * display_width
-		)
-	);
-	
-	// The fighter button is intialised.
-	Button fighter_button(
-		Sprite(
-			renderer.render(
-				FIGHTER_STRING,
-				FIGHTER_WIDTH * display_width,
-				FIGHTER_HEIGHT * display_height,
-				FIGHTER_SEPARATION * display_width
-			)
-		),
-		display_sprite,
-		FIGHTER_X,
-		FIGHTER_Y
-	);
-	
-	// The supporter button is intitialised.
-	Button supporter_button(
-		Sprite(
-			renderer.render(
-				SUPPORTER_STRING,
-				SUPPORTER_WIDTH * display_width,
-				SUPPORTER_HEIGHT * display_height,
-				SUPPORTER_SEPARATION * display_width
-			)
-		),
-		display_sprite,
-		SUPPORTER_X,
-		SUPPORTER_Y
-	);
-	
-	// The energy button is intialised.
-	Button energy_button(
-		Sprite(
-			renderer.render(
-				ENERGY_STRING,
-				ENERGY_WIDTH * display_width,
-				ENERGY_HEIGHT * display_height,
-				ENERGY_SEPARATION * display_width
-			)
-		),
-		display_sprite,
-		ENERGY_X,
-		ENERGY_Y
-	);
-	
-	// The generator button is initialised.
-	Button generator_button(
-		Sprite(
-			renderer.render(
-				GENERATOR_STRING,
-				GENERATOR_WIDTH * display_width,
-				GENERATOR_HEIGHT * display_height,
-				GENERATOR_SEPARATION * display_width
-			)
-		),
-		display_sprite,
-		GENERATOR_X,
-		GENERATOR_Y
-	);
-	
-	// The done button is initialised.
-	Button done_button(
-		Sprite(
-			renderer.render(
-				DONE_STRING,
-				DONE_WIDTH * display_width,
-				DONE_HEIGHT * display_height,
-				DONE_SEPARATION * display_width
-			)
-		),
-		display_sprite,
-		DONE_X,
-		DONE_Y
-	);
-	
-	// The quit button is initialised.
-	Button quit_button(
-		Sprite(
-			renderer.render(
-				QUIT_STRING,
-				QUIT_WIDTH * display_width,
-				QUIT_HEIGHT * display_height,
-				QUIT_SEPARATION * display_width
-			)
-		),
-		display_sprite,
-		QUIT_X_ALT,
-		QUIT_Y
-	);
-	
-	// The opponent's message is read and stored in another thread.
-	std::string message(EMPTY_MESSAGE);
-	MessengerPackage package(messenger, message);
-	Thread message_thread(MessengerPackage::get_message, &package);
-	
-	// The number of cards currently in the player's deck.
-	int card_count = 0;
-	
-	// The number of cards that should be included in the players deck.
-	std::array<int, CARD_COUNT> card_counts{};
-	
-	// True if the function should return.
-	bool end = false;
-	
-	// Loop to display the deck building main menu.
-	while (!end) {
-		// The display is blitted to.
-		display_sprite.fill();
-		display_sprite.blit(builder_sprite, BUILDER_X, BUILDER_Y);
-		fighter_button.blit_to(display_sprite);
-		supporter_button.blit_to(display_sprite);
-		energy_button.blit_to(display_sprite);
-		generator_button.blit_to(display_sprite);
-		done_button.blit_to(display_sprite);
-		quit_button.blit_to(display_sprite);
-		
-		// The deck's capacity info is displayed.
-		display_sprite.blit(
-			renderer.render(
-				CAPACITY_STRING,
-				CAPACITY_WIDTH * display_width,
-				CAPACITY_HEIGHT * display_height,
-				CAPACITY_SEPARATION * display_width
-			),
-			CAPACITY_X,
-			CAPACITY_Y
-		);
-		
-		// The display is updated.
-		display.update();
-		
-		// Loop to get user input.
-		while (true) {
-			// If the quit button was pressed or
-			//   clicked, or the opponent disconnected,
-			//   the port menu is returned to.
-			if (
-				quit_button.get_rectangle().unclick()
-				|| message == TERMINATOR_STRING
-			) {
-				end = true;
-				break;
-			}
-			
-			// Else, if the fighter button was clicked,
-			//   the fighter addition menu is opened.
-			else if (fighter_button.get_rectangle().unclick()) {
-				add_fighter(
-					display,
-					renderer,
-					messenger,
-					card_counts,
-					card_count,
-					message
-				);
-				
-				break;
-			}
-			
-			// Else, if the supporter button was clicked,
-			//   the supporter addition menu is opened.
-			else if (supporter_button.get_rectangle().unclick()) {
-				add_supporter(
-					display,
-					renderer,
-					messenger,
-					card_counts,
-					card_count,
-					message
-				);
-				
-				break;
-			}
-			
-			// Else, if the energy button was clicked,
-			//   the energy addition menu is opened.
-			else if (energy_button.get_rectangle().unclick()) {
-				add_energy(
-					display,
-					renderer,
-					messenger,
-					card_counts,
-					card_count,
-					message
-				);
-				
-				break;
-			}
-			
-			// Else, if the deck generator button was clicked,
-			//   the deck generator menu is opened.
-			else if (generator_button.get_rectangle().unclick()) {
-				generate(
-					display,
-					renderer,
-					messenger,
-					card_counts,
-					card_count,
-					message
-				);
-				
-				break;
-			}
-			
-			// Else, if the done button was pressed or clicked
-			//   and the deck is valid, the game begins.
-			else if (done_button.get_rectangle().unclick()) {
-				// Separate if statement to get the break (for rendering this menu).
-				if (valid_deck(display, renderer, card_counts, card_count)) {
-					game(
-						display,
-						renderer,
-						messenger,
-						card_counts,
-						package,
-						message_thread
-					);
-				}
-				
-				break;
-			}
-			
-			// The events are updated.
-			Events::update();
-		}
-	}
-	
-	// The other player is notified that this player has disconnected.
-	messenger.send(TERMINATOR_STRING);
+    std::string connection_test = System::version(VERSION);
+    
+    // Sends a message to the other player to confirm the connection.
+    // The message sent is the program version in string form.
+    messenger.send(connection_test);
+    
+    // If the received string does not match, the connection was unsuccessful.
+    // This ensures that other TCP program do not connect with this one.
+    // This also ensures that the versions of the program match.
+    // This also allows for connection bridging to be performed safely,
+    //   as the game will not start until both players connect.
+    if (messenger.read() != connection_test) {
+        incompatible(display, renderer);
+        messenger.send(TERMINATOR_STRING);
+        return;
+    }
+    
+    // The components of the display are extracted.
+    Sprite& display_sprite = display.get_sprite();
+    int display_width = display_sprite.get_width();
+    int display_height = display_sprite.get_height();
+    
+    // The deck builder sprite is intialised.
+    Sprite builder_sprite(
+        renderer.render(
+            BUILDER_STRING,
+            BUILDER_WIDTH * display_width,
+            BUILDER_HEIGHT * display_height,
+            BUILDER_SEPARATION * display_width
+        )
+    );
+    
+    // The fighter button is intialised.
+    Button fighter_button(
+        Sprite(
+            renderer.render(
+                FIGHTER_STRING,
+                FIGHTER_WIDTH * display_width,
+                FIGHTER_HEIGHT * display_height,
+                FIGHTER_SEPARATION * display_width
+            )
+        ),
+        display_sprite,
+        FIGHTER_X,
+        FIGHTER_Y
+    );
+    
+    // The supporter button is intitialised.
+    Button supporter_button(
+        Sprite(
+            renderer.render(
+                SUPPORTER_STRING,
+                SUPPORTER_WIDTH * display_width,
+                SUPPORTER_HEIGHT * display_height,
+                SUPPORTER_SEPARATION * display_width
+            )
+        ),
+        display_sprite,
+        SUPPORTER_X,
+        SUPPORTER_Y
+    );
+    
+    // The energy button is intialised.
+    Button energy_button(
+        Sprite(
+            renderer.render(
+                ENERGY_STRING,
+                ENERGY_WIDTH * display_width,
+                ENERGY_HEIGHT * display_height,
+                ENERGY_SEPARATION * display_width
+            )
+        ),
+        display_sprite,
+        ENERGY_X,
+        ENERGY_Y
+    );
+    
+    // The generator button is initialised.
+    Button generator_button(
+        Sprite(
+            renderer.render(
+                GENERATOR_STRING,
+                GENERATOR_WIDTH * display_width,
+                GENERATOR_HEIGHT * display_height,
+                GENERATOR_SEPARATION * display_width
+            )
+        ),
+        display_sprite,
+        GENERATOR_X,
+        GENERATOR_Y
+    );
+    
+    // The done button is initialised.
+    Button done_button(
+        Sprite(
+            renderer.render(
+                DONE_STRING,
+                DONE_WIDTH * display_width,
+                DONE_HEIGHT * display_height,
+                DONE_SEPARATION * display_width
+            )
+        ),
+        display_sprite,
+        DONE_X,
+        DONE_Y
+    );
+    
+    // The quit button is initialised.
+    Button quit_button(
+        Sprite(
+            renderer.render(
+                QUIT_STRING,
+                QUIT_WIDTH * display_width,
+                QUIT_HEIGHT * display_height,
+                QUIT_SEPARATION * display_width
+            )
+        ),
+        display_sprite,
+        QUIT_X_ALT,
+        QUIT_Y
+    );
+    
+    // The deck building song is loaded and queued in another thread.
+    Audio build_song(BUILD_SONG_SOURCE, BUILD_SONG_LENGTH);
+    Thread song_thread(Audio::thread_queue, &build_song);
+    
+    // The opponent's message is read and stored in another thread.
+    std::string message(EMPTY_MESSAGE);
+    MessengerPackage package(messenger, message);
+    Thread message_thread(MessengerPackage::get_message, &package);
+    
+    // The number of cards currently in the player's deck.
+    int card_count = 0;
+    
+    // The number of cards that should be included in the players deck.
+    std::array<int, CARD_COUNT> card_counts{};
+    
+    // True if the function should return.
+    bool end = false;
+    
+    // Loop to display the deck building main menu.
+    while (!end) {
+        // The display is blitted to.
+        display_sprite.fill();
+        display_sprite.blit(builder_sprite, BUILDER_X, BUILDER_Y);
+        fighter_button.blit_to(display_sprite);
+        supporter_button.blit_to(display_sprite);
+        energy_button.blit_to(display_sprite);
+        generator_button.blit_to(display_sprite);
+        done_button.blit_to(display_sprite);
+        quit_button.blit_to(display_sprite);
+        
+        // The deck's capacity info is displayed.
+        display_sprite.blit(
+            renderer.render(
+                CAPACITY_STRING,
+                CAPACITY_WIDTH * display_width,
+                CAPACITY_HEIGHT * display_height,
+                CAPACITY_SEPARATION * display_width
+            ),
+            CAPACITY_X,
+            CAPACITY_Y
+        );
+        
+        // The display is updated.
+        display.update();
+        
+        // Loop to get user input.
+        while (true) {
+            // If the quit button was pressed or
+            //   clicked, or the opponent disconnected,
+            //   the port menu is returned to.
+            if (
+                quit_button.get_rectangle().unclick()
+                || message == TERMINATOR_STRING
+            ) {
+                end = true;
+                break;
+            }
+            
+            // Else, if the fighter button was clicked,
+            //   the fighter addition menu is opened.
+            else if (fighter_button.get_rectangle().unclick()) {
+                add_fighter(
+                    display,
+                    renderer,
+                    messenger,
+                    card_counts,
+                    card_count,
+                    message
+                );
+                
+                break;
+            }
+            
+            // Else, if the supporter button was clicked,
+            //   the supporter addition menu is opened.
+            else if (supporter_button.get_rectangle().unclick()) {
+                add_supporter(
+                    display,
+                    renderer,
+                    messenger,
+                    card_counts,
+                    card_count,
+                    message
+                );
+                
+                break;
+            }
+            
+            // Else, if the energy button was clicked,
+            //   the energy addition menu is opened.
+            else if (energy_button.get_rectangle().unclick()) {
+                add_energy(
+                    display,
+                    renderer,
+                    messenger,
+                    card_counts,
+                    card_count,
+                    message
+                );
+                
+                break;
+            }
+            
+            // Else, if the deck generator button was clicked,
+            //   the deck generator menu is opened.
+            else if (generator_button.get_rectangle().unclick()) {
+                generate(
+                    display,
+                    renderer,
+                    messenger,
+                    card_counts,
+                    card_count,
+                    message
+                );
+                
+                break;
+            }
+            
+            // Else, if the done button was pressed or clicked
+            //   and the deck is valid, the game begins.
+            else if (done_button.get_rectangle().unclick()) {
+                // Separate if statement to get the break (for rendering this menu).
+                if (valid_deck(display, renderer, card_counts, card_count)) {
+                    build_song.pause();
+                    song_thread.wait();
+                    build_song.play();
+                    build_song.dequeue();
+                    game(
+                        display,
+                        renderer,
+                        messenger,
+                        card_counts,
+                        package,
+                        message_thread
+                    );
+                    song_thread.new_thread(Audio::thread_queue, &build_song);
+                }
+                
+                break;
+            }
+            
+            // The events are updated.
+            Events::update();
+        }
+    }
+    
+    // The other player is notified that this player has disconnected.
+    messenger.send(TERMINATOR_STRING);
+    
+    // The build song is paused, which terminates the queuing thread.
+    build_song.pause();
 }
 //}
 
@@ -21614,77 +21553,85 @@ void build_deck(
  * The user may cancel this intialisation.
  */
 void set_server(
-	Display& display,
-	const Renderer& renderer,
-	Button& back_button,
-	int port
+    Display& display,
+    const Renderer& renderer,
+    Audio& menu_song,
+    Thread& song_thread,
+    Button& back_button,
+    int port
 ) noexcept {
-	// The components of the display are extracted.
-	Sprite& display_sprite = display.get_sprite();
-	int display_width = display_sprite.get_width();
-	int display_height = display_sprite.get_height();
-	
-	// The wait sprite is intialised.
-	Sprite wait_sprite(
-		renderer.lined_render(
-			WAIT_STRING,
-			WAIT_WIDTH * display_width,
-			WAIT_HEIGHT * display_height,
-			WAIT_SEPARATION_X * display_width,
-			WAIT_MAX_WIDTH * display_width,
-			WAIT_SEPARATION_Y * display_height,
-			WAIT_JUSTIFICATION
-		)
-	);
-	
-	// True if the function should return.
-	bool end = false;
-	
-	// The server is initialised in another thread.
-	// This allows the user to cancel the operation.
-	std::unique_ptr<Server> server;
-	ServerPackage package(server, end, port);
-	Thread thread(ServerPackage::make_server, &package);
-	
-	// Loop to display the wait screen.
-	while (!end) {
-		// The display is blitted to.
-		display_sprite.fill();
-		display_sprite.blit(wait_sprite, WAIT_X, WAIT_Y);
-		back_button.blit_to(display_sprite);
-		display.update();
-		
-		// Loop to get user input and wait for the client.
-		while (!end) {
-			// If the user clicks the back button or presses
-			//   the quit key, the port menu is returned to.
-			if (
-				Events::unpress(QUIT_KEY)
-				|| back_button.get_rectangle().unclick()
-			) {
-				end = true;
-			}
-			
-			// If the server was successfully constructed,
-			//   the main game is moved to.
-			// The main menu music stops playing and is dequeued.
-			// The music starts playing from the start,
-			//   when the main game function returns.
-			// This screen is not returned to.
-			else if (server) {
-				build_deck(
-					display,
-					renderer,
-					*server
-				);
+    // The components of the display are extracted.
+    Sprite& display_sprite = display.get_sprite();
+    int display_width = display_sprite.get_width();
+    int display_height = display_sprite.get_height();
+    
+    // The wait sprite is intialised.
+    Sprite wait_sprite(
+        renderer.lined_render(
+            WAIT_STRING,
+            WAIT_WIDTH * display_width,
+            WAIT_HEIGHT * display_height,
+            WAIT_SEPARATION_X * display_width,
+            WAIT_MAX_WIDTH * display_width,
+            WAIT_SEPARATION_Y * display_height,
+            WAIT_JUSTIFICATION
+        )
+    );
+    
+    // True if the function should return.
+    bool end = false;
+    
+    // The server is initialised in another thread.
+    // This allows the user to cancel the operation.
+    std::unique_ptr<Server> server;
+    ServerPackage package(server, end, port);
+    Thread thread(ServerPackage::make_server, &package);
+    
+    // Loop to display the wait screen.
+    while (!end) {
+        // The display is blitted to.
+        display_sprite.fill();
+        display_sprite.blit(wait_sprite, WAIT_X, WAIT_Y);
+        back_button.blit_to(display_sprite);
+        display.update();
+        
+        // Loop to get user input and wait for the client.
+        while (!end) {
+            // If the user clicks the back button or presses
+            //   the quit key, the port menu is returned to.
+            if (
+                Events::unpress(QUIT_KEY)
+                || back_button.get_rectangle().unclick()
+            ) {
+                end = true;
+            }
+            
+            // If the server was successfully constructed,
+            //   the main game is moved to.
+            // The main menu music stops playing and is dequeued.
+            // The music starts playing from the start,
+            //   when the main game function returns.
+            // This screen is not returned to.
+            else if (server) {
+                menu_song.pause();
+                song_thread.wait();
+                menu_song.play();
+                menu_song.dequeue();
                 
-				end = true;
-			}
-			
-			// The events are updated.
-			Events::update();
-		}
-	}
+                build_deck(
+                    display,
+                    renderer,
+                    *server
+                );
+                
+                song_thread.new_thread(Audio::thread_queue, &menu_song);
+                end = true;
+            }
+            
+            // The events are updated.
+            Events::update();
+        }
+    }
 }
 
 /**
@@ -21692,385 +21639,328 @@ void set_server(
  * The initialisation is cancelled if the host cannot be resolved.
  */
 void set_client(
-	Display& display,
-	const Renderer& renderer,
-	Button& back_button,
-	const std::string& address,
-	int port
+    Display& display,
+    const Renderer& renderer,
+    Audio& menu_song,
+    Thread& song_thread,
+    Button& back_button,
+    const std::string& address,
+    int port
 ) noexcept {
-	// An attempt is made to connect to the server.
-	try {
-		build_deck(
-			display,
-			renderer,
-			Client(address, port)
-		);
-	}
-	
-	// If the server cannot be connected to, an error message
-	//   is displayed on the screen and the user can return
-	//   to the port configuration menu.
-	catch (const std::exception&) {
-		// The components of the display are extracted.
-		Sprite& display_sprite = display.get_sprite();
-		int display_width = display_sprite.get_width();
-		int display_height = display_sprite.get_height();
-		
-		Sprite no_server_sprite(
-			renderer.lined_render(
-				NO_SERVER_STRING,
-				NO_SERVER_WIDTH * display_width,
-				NO_SERVER_HEIGHT * display_height,
-				NO_SERVER_SEPARATION_X * display_width,
-				NO_SERVER_MAX_WIDTH * display_width,
-				NO_SERVER_SEPARATION_Y * display_height,
-				NO_SERVER_JUSTIFICATION
-			)
-		);
-		
-		// The display is blitted to.
-		display_sprite.fill();
-		display_sprite.blit(no_server_sprite, NO_SERVER_X, NO_SERVER_Y);
-		back_button.blit_to(display_sprite);
-		display.update();
-		
-		// Loop for input.
-		while (
-			!Events::unpress(QUIT_KEY)
-			&& !back_button.get_rectangle().unclick()
-		) {
-			Events::update();
-		}
-	}
+    // The main menu music is stopped.
+    menu_song.pause();
+    song_thread.wait();
+    menu_song.play();
+    menu_song.dequeue();
+    
+    // An attempt is made to connect to the server.
+    try {
+        build_deck(
+            display,
+            renderer,
+            Client(address, port)
+        );
+    }
+    
+    // If the server cannot be connected to, an error message
+    //   is displayed on the screen and the user can return
+    //   to the port configuration menu.
+    catch (const std::exception&) {
+        // The components of the display are extracted.
+        Sprite& display_sprite = display.get_sprite();
+        int display_width = display_sprite.get_width();
+        int display_height = display_sprite.get_height();
+        
+        Sprite no_server_sprite(
+            renderer.lined_render(
+                NO_SERVER_STRING,
+                NO_SERVER_WIDTH * display_width,
+                NO_SERVER_HEIGHT * display_height,
+                NO_SERVER_SEPARATION_X * display_width,
+                NO_SERVER_MAX_WIDTH * display_width,
+                NO_SERVER_SEPARATION_Y * display_height,
+                NO_SERVER_JUSTIFICATION
+            )
+        );
+        
+        // The display is blitted to.
+        display_sprite.fill();
+        display_sprite.blit(no_server_sprite, NO_SERVER_X, NO_SERVER_Y);
+        back_button.blit_to(display_sprite);
+        display.update();
+        
+        // Loop for input.
+        while (
+            !Events::unpress(QUIT_KEY)
+            && !back_button.get_rectangle().unclick()
+        ) {
+            Events::update();
+        }
+    }
+    
+    // The main menu music recommences from the start.
+    song_thread.new_thread(Audio::thread_queue, &menu_song);
 }
 
 /**
  * Sets the host's port.
  */
 void set_port(
-	Display& display,
-	const Renderer& renderer,
-	Button& back_button,
-	Button& next_button,
-	const std::string& address
+    Display& display,
+    const Renderer& renderer,
+    Audio& menu_song,
+    Thread& song_thread,
+    Button& back_button,
+    Button& next_button,
+    const std::string& address
 ) noexcept {
-	// The components of the display are extracted.
-	Sprite& display_sprite = display.get_sprite();
-	int display_width = display_sprite.get_width();
-	int display_height = display_sprite.get_height();
-	
-	// The port sprite is initialised.
-	Sprite port_sprite(
-		renderer.render(
-			PORT_STRING,
-			PORT_WIDTH * display_width,
-			PORT_HEIGHT * display_height,
-			PORT_SEPARATION * display_width
-		)
-	);
-	
-	// The host's port.
-	std::string port;
-	
-	// A vector of number buttons for use on mobile devices.
-	std::vector<Button> number_buttons;
-	
-	for (int i = 0; i < NUMBERS; ++i) {
-		number_buttons.push_back(
-			Button(
-				Sprite(
-					NUMBER_SOURCES[i],
-					NUMBER_WIDTH * display.width(),
-					NUMBER_HEIGHT * display.height()
-				),
-				display,
-				NUMBER_X[i],
-				NUMBER_Y
-			)
-		);
-	}
-	
-	// True if the function should return.
-	bool end = false;
-	
-	// Loop to display the port menu.
-	while (!end) {
-		// The display is blitted to.
-		display_sprite.fill();
-		display_sprite.blit(port_sprite, PORT_X, PORT_Y);
-		back_button.blit_to(display_sprite);
-		next_button.blit_to(display_sprite);
-		
-		for (int i = 0; i < NUMBERS; ++i) {
-			number_buttons[i].blit_to(display);
-		}
-		
-		// The host port is rendered.
-		display_sprite.blit(
-			renderer.render(
-				port,
-				PORT_WIDTH * display_width,
-				PORT_HEIGHT * display_height,
-				PORT_SEPARATION * display_width
-			),
-			PORT_X,
-			PORT_Y + PORT_SHIFT
-		);
-		
-		// The display is updated.
-		display.update();
-		
-		// Loop to get user input.
-		while (true) {
-			// If the user clicks the back button or presses
-			//   the quit key, the address menu is returned to.
-			if (
-				Events::unpress(QUIT_KEY)
-				|| !port.length()
-				&& back_button.get_rectangle().unclick()
-			) {
-				end = true;
-				break;
-			}
-			
-			// If the user clicks the next button or presses the
-			//   submit key, the messenger is initialised.
-			else if (
-				Events::unpress(SUBMIT_KEY)
-				|| next_button.get_rectangle().unclick()
-			) {
-				try {
-					// The server is hosted at the given port.
-					if (address == SERVER_STRING) {
-						set_server(
-							display,
-							renderer,
-							back_button,
-							std::stoi(port)
-						);
-					}
-					
-					// The client attempts to connect to the server.
-					else {
-						set_client(
-							display,
-							renderer,
-							back_button,
-							address,
-							std::stoi(port)
-						);
-					}
-				}
-				
-				catch (const std::exception&) {}
-				
-				break;
-			}
-			
-			// If the user presses the delete button,
-			//   the last character entered is removed.
-			else if (
-				(
-					Events::unpress(DELETE_KEY)
-					|| back_button.get_rectangle().unclick()
-				) && port.length()
-			) {
-				port.pop_back();
-				break;
-			}
-			
-			// Else the number buttons are checked to form the port string.
-			else {
-				// True when the key being pressed is found.
-				bool found = false;
-				
-				// The numbers are checked.
-				for (int i = 0; !found && i < NUMBERS; i++) {
-					if (
-						Events::unpress(Events::NUMBERS[i])
-						|| number_buttons[i].get_rectangle().unclick()
-					) {
-						port += '0' + i;
-						found = true;
-					}
-				}
-				
-				// If a valid key was pressed, the display is updated.
-				if (found) {
-					break;
-				}
-			}
+    // The components of the display are extracted.
+    Sprite& display_sprite = display.get_sprite();
+    int display_width = display_sprite.get_width();
+    int display_height = display_sprite.get_height();
+    
+    // The port sprite is initialised.
+    Sprite port_sprite(
+        renderer.render(
+            PORT_STRING,
+            PORT_WIDTH * display_width,
+            PORT_HEIGHT * display_height,
+            PORT_SEPARATION * display_width
+        )
+    );
+    
+    // The host's port.
+    std::string port;
+    
+    // True if the function should return.
+    bool end = false;
+    
+    // Loop to display the port menu.
+    while (!end) {
+        // The display is blitted to.
+        display_sprite.fill();
+        display_sprite.blit(port_sprite, PORT_X, PORT_Y);
+        back_button.blit_to(display_sprite);
+        next_button.blit_to(display_sprite);
+        
+        // The host port is rendered.
+        display_sprite.blit(
+            renderer.render(
+                port,
+                PORT_WIDTH * display_width,
+                PORT_HEIGHT * display_height,
+                PORT_SEPARATION * display_width
+            ),
+            PORT_X,
+            PORT_Y + PORT_SHIFT
+        );
+        
+        // The display is updated.
+        display.update();
+        
+        // Loop to get user input.
+        while (true) {
+            // If the user clicks the back button or presses
+            //   the quit key, the address menu is returned to.
+            if (
+                Events::unpress(QUIT_KEY)
+                || back_button.get_rectangle().unclick()
+            ) {
+                end = true;
+                break;
+            }
+            
+            // If the user clicks the next button or presses the
+            //   submit key, the messenger is initialised.
+            else if (
+                Events::unpress(SUBMIT_KEY)
+                || next_button.get_rectangle().unclick()
+            ) {
+                try {
+                    // The server is hosted at the given port.
+                    if (address == SERVER_STRING) {
+                        set_server(
+                            display,
+                            renderer,
+                            menu_song,
+                            song_thread,
+                            back_button,
+                            std::stoi(port)
+                        );
+                    }
+                    
+                    // The client attempts to connect to the server.
+                    else {
+                        set_client(
+                            display,
+                            renderer,
+                            menu_song,
+                            song_thread,
+                            back_button,
+                            address,
+                            std::stoi(port)
+                        );
+                    }
+                }
+                
+                catch (const std::exception&) {}
+                
+                break;
+            }
+            
+            // If the user presses the delete button,
+            //   the last character entered is removed.
+            else if (Events::unpress(DELETE_KEY) && port.length()) {
+                port.pop_back();
+                break;
+            }
+            
+            // Else the number buttons are checked to form the port string.
+            else {
+                // True when the key being pressed is found.
+                bool found = false;
+                
+                // The numbers are checked.
+                for (int i = 0; !found && i < NUMBERS; i++) {
+                    if (Events::unpress(Events::NUMBERS[i])) {
+                        port += '0' + i;
+                        found = true;
+                    }
+                }
+                
+                // If a valid key was pressed, the display is updated.
+                if (found) {
+                    break;
+                }
+            }
 
-			Events::update();
-		}
-	}
+            Events::update();
+        }
+    }
 }
 
 /**
  * Sets the host's address.
  */
 void set_address(
-	Display& display,
-	const Renderer& renderer,
-	Button& back_button,
-	Button& next_button
+    Display& display,
+    const Renderer& renderer,
+    Audio& menu_song,
+    Thread& song_thread,
+    Button& back_button,
+    Button& next_button
 ) noexcept {
-	// The components of the display are extracted.
-	Sprite& display_sprite = display.get_sprite();
-	int display_width = display_sprite.get_width();
-	int display_height = display_sprite.get_height();
-	
-	// The address sprite is initialised.
-	Sprite address_sprite(
-		renderer.render(
-			ADDRESS_STRING,
-			ADDRESS_WIDTH * display_width,
-			ADDRESS_HEIGHT * display_height,
-			ADDRESS_SEPARATION * display_width
-		)
-	);
-	
-	// The address of the host.
-	std::string address;
-	
-	// A dot button for use on mobile devices.
-	Button dot_button(
-		Sprite(
-			DOT_SOURCE,
-			DOT_WIDTH * display.width(),
-			DOT_HEIGHT * display.height()
-		),
-		display,
-		DOT_X,
-		DOT_Y
-	);
-	
-	// A vector of number buttons for use on mobile devices.
-	std::vector<Button> number_buttons;
-	
-	for (int i = 0; i < NUMBERS; ++i) {
-		number_buttons.push_back(
-			Button(
-				Sprite(
-					NUMBER_SOURCES[i],
-					NUMBER_WIDTH * display.width(),
-					NUMBER_HEIGHT * display.height()
-				),
-				display,
-				NUMBER_X[i],
-				NUMBER_Y
-			)
-		);
-	}
-	
-	// True if the function should return.
-	bool end = false;
-	
-	// Loop to display the address menu.
-	while (!end) {
-		// The display is blitted to.
-		display_sprite.fill();
-		display_sprite.blit(address_sprite, ADDRESS_X, ADDRESS_Y);
-		back_button.blit_to(display_sprite);
-		next_button.blit_to(display_sprite);
-		dot_button.blit_to(display);
-		
-		for (int i = 0; i < NUMBERS; ++i) {
-			number_buttons[i].blit_to(display);
-		}
-		
-		// The host address is rendered.
-		display_sprite.blit(
-			renderer.render(
-				address,
-				ADDRESS_WIDTH * display_width,
-				ADDRESS_HEIGHT * display_height,
-				ADDRESS_SEPARATION * display_width
-			),
-			ADDRESS_X,
-			ADDRESS_Y + ADDRESS_SHIFT
-		);
-		
-		// The display is updated.
-		display.update();
-		
-		// Loop to get user input.
-		while (true) {
-			// If the user clicks the back button or presses
-			//   the quit key, the connect menu is returned to.
-			if (
-				Events::unpress(QUIT_KEY)
-				|| !address.length()
-				&& back_button.get_rectangle().unclick()
-			) {
-				end = true;
-				break;
-			}
-			
-			// If the user clicks the next button or presses
-			//   the submit key, the port menu is moved to.
-			else if (
-				Events::unpress(SUBMIT_KEY)
-				|| next_button.get_rectangle().unclick()
-			) {
-				set_port(
-					display,
-					renderer,
-					back_button,
-					next_button,
-					address
-				);
-				
-				break;
-			}
-			
-			// If the user presses the delete button,
-			//   the last character entered is removed.
-			else if (
-				(
-					Events::unpress(DELETE_KEY)
-					|| back_button.get_rectangle().unclick()
-				) && address.length()
-			) {
-				address.pop_back();
-				break;
-			}
-			
-			// A full stop is appended to the address, if
-			//   the user pressed the full stop button.
-			else if (
-				Events::unpress(Events::FULL_STOP)
-				|| dot_button.get_rectangle().unclick()
-			) {
-				address += '.';
-				break;
-			}
-			
-			// Else the number buttons are checked to form the address string.
-			else {
-				// True when the key being pressed is found.
-				bool found = false;
-				
-				// The numbers are checked.
-				for (int i = 0; !found && i < NUMBERS; i++) {
-					if (
-						Events::unpress(Events::NUMBERS[i])
-						|| number_buttons[i].get_rectangle().unclick()
-					) {
-						address += '0' + i;
-						found = true;
-					}
-				}
-				
-				// If a valid key was pressed, the display is updated.
-				if (found) {
-					break;
-				}
-			}
+    // The components of the display are extracted.
+    Sprite& display_sprite = display.get_sprite();
+    int display_width = display_sprite.get_width();
+    int display_height = display_sprite.get_height();
+    
+    // The address sprite is initialised.
+    Sprite address_sprite(
+        renderer.render(
+            ADDRESS_STRING,
+            ADDRESS_WIDTH * display_width,
+            ADDRESS_HEIGHT * display_height,
+            ADDRESS_SEPARATION * display_width
+        )
+    );
+    
+    // The address of the host.
+    std::string address;
+    
+    // True if the function should return.
+    bool end = false;
+    
+    // Loop to display the address menu.
+    while (!end) {
+        // The display is blitted to.
+        display_sprite.fill();
+        display_sprite.blit(address_sprite, ADDRESS_X, ADDRESS_Y);
+        back_button.blit_to(display_sprite);
+        next_button.blit_to(display_sprite);
+        
+        // The host address is rendered.
+        display_sprite.blit(
+            renderer.render(
+                address,
+                ADDRESS_WIDTH * display_width,
+                ADDRESS_HEIGHT * display_height,
+                ADDRESS_SEPARATION * display_width
+            ),
+            ADDRESS_X,
+            ADDRESS_Y + ADDRESS_SHIFT
+        );
+        
+        // The display is updated.
+        display.update();
+        
+        // Loop to get user input.
+        while (true) {
+            // If the user clicks the back button or presses
+            //   the quit key, the connect menu is returned to.
+            if (
+                Events::unpress(QUIT_KEY)
+                || back_button.get_rectangle().unclick()
+            ) {
+                end = true;
+                break;
+            }
+            
+            // If the user clicks the next button or presses
+            //   the submit key, the port menu is moved to.
+            else if (
+                Events::unpress(SUBMIT_KEY)
+                || next_button.get_rectangle().unclick()
+            ) {
+                set_port(
+                    display,
+                    renderer,
+                    menu_song,
+                    song_thread,
+                    back_button,
+                    next_button,
+                    address
+                );
+                
+                break;
+            }
+            
+            // If the user presses the delete button,
+            //   the last character entered is removed.
+            else if (Events::unpress(DELETE_KEY) && address.length()) {
+                address.pop_back();
+                break;
+            }
+            
+            // A full stop is appended to the address, if
+            //   the user pressed the full stop button.
+            else if (Events::unpress(Events::FULL_STOP)) {
+                address += '.';
+                break;
+            }
+            
+            // Else the number buttons are checked to form the address string.
+            else {
+                // True when the key being pressed is found.
+                bool found = false;
+                
+                // The numbers are checked.
+                for (int i = 0; !found && i < NUMBERS; i++) {
+                    if (Events::unpress(Events::NUMBERS[i])) {
+                        address += '0' + i;
+                        found = true;
+                    }
+                }
+                
+                // If a valid key was pressed, the display is updated.
+                if (found) {
+                    break;
+                }
+            }
 
-			Events::update();
-		}
-	}
+            Events::update();
+        }
+    }
 }
 
 /**
@@ -22079,129 +21969,135 @@ void set_address(
  * The other player will connect to the server as a client.
  */
 void connect(
-	Display& display,
-	const Renderer& renderer
+    Display& display,
+    const Renderer& renderer,
+    Audio& menu_song,
+    Thread& song_thread
 ) noexcept {
-	// The components of the display are extracted.
-	Sprite& display_sprite = display.get_sprite();
-	int display_width = display_sprite.get_width();
-	int display_height = display_sprite.get_height();
-	
-	// The server button is initialised.
-	Button server_button(
-		Sprite(
-			renderer.render(
-				SERVER_STRING,
-				SERVER_WIDTH * display_width,
-				SERVER_HEIGHT * display_height,
-				SERVER_SEPARATION * display_width
-			)
-		),
-		display_sprite,
-		SERVER_X,
-		SERVER_Y
-	);
-	
-	// The client button is initialised.
-	Button client_button(
-		Sprite(
-			renderer.render(
-				CLIENT_STRING,
-				CLIENT_WIDTH * display_width,
-				CLIENT_HEIGHT * display_height,
-				CLIENT_SEPARATION * display_width
-			)
-		),
-		display_sprite,
-		CLIENT_X,
-		CLIENT_Y
-	);
-	
-	// The back button is initialised.
-	Button back_button(
-		Sprite(
-			renderer.render(
-				BACK_STRING,
-				BACK_WIDTH * display_width,
-				BACK_HEIGHT * display_height,
-				BACK_SEPARATION * display_width
-			)
-		),
-		display_sprite,
-		BACK_X,
-		BACK_Y
-	);
-	
-	// The next button is initialised for future use.
-	Button next_button(
-		Sprite(
-			renderer.render(
-				NEXT_STRING,
-				NEXT_WIDTH * display_width,
-				NEXT_HEIGHT * display_height,
-				NEXT_SEPARATION * display_width
-			)
-		),
-		display_sprite,
-		NEXT_X,
-		NEXT_Y
-	);
-	
-	// True if the function should return.
-	bool end = false;
-	
-	// Loop to display the connection menu.
-	while (!end) {
-		// The sprites are blitted to the display.
-		display_sprite.fill();
-		server_button.blit_to(display_sprite);
-		client_button.blit_to(display_sprite);
-		back_button.blit_to(display_sprite);
-		display.update();
-		
-		// Loop to get user input.
-		while (true) {
-			// If the user clicks the back button or the
-			//   quit key, the main menu is returned to.
-			if (
-				Events::unpress(QUIT_KEY)
-				|| back_button.get_rectangle().unclick()
-			) {
-				end = true;
-				break;
-			}
-			
-			// If the server button is clicked, the port for
-			//   the server to be hosted on is prompted for.
-			else if (server_button.get_rectangle().unclick()) {
-				set_port(
-					display,
-					renderer,
-					back_button,
-					next_button,
-					SERVER_STRING
-				);
-				
-				break;
-			}
-			
-			// If the client button is clicked, the
-			//   address of the server is prompted for.
-			else if (client_button.get_rectangle().unclick()) {
-				set_address(
-					display,
-					renderer,
-					back_button,
-					next_button
-				);
-				
-				break;
-			}
-			
-			// The events are updated.
-			Events::update();
-		}
-	}
+    // The components of the display are extracted.
+    Sprite& display_sprite = display.get_sprite();
+    int display_width = display_sprite.get_width();
+    int display_height = display_sprite.get_height();
+    
+    // The server button is initialised.
+    Button server_button(
+        Sprite(
+            renderer.render(
+                SERVER_STRING,
+                SERVER_WIDTH * display_width,
+                SERVER_HEIGHT * display_height,
+                SERVER_SEPARATION * display_width
+            )
+        ),
+        display_sprite,
+        SERVER_X,
+        SERVER_Y
+    );
+    
+    // The client button is initialised.
+    Button client_button(
+        Sprite(
+            renderer.render(
+                CLIENT_STRING,
+                CLIENT_WIDTH * display_width,
+                CLIENT_HEIGHT * display_height,
+                CLIENT_SEPARATION * display_width
+            )
+        ),
+        display_sprite,
+        CLIENT_X,
+        CLIENT_Y
+    );
+    
+    // The back button is initialised.
+    Button back_button(
+        Sprite(
+            renderer.render(
+                BACK_STRING,
+                BACK_WIDTH * display_width,
+                BACK_HEIGHT * display_height,
+                BACK_SEPARATION * display_width
+            )
+        ),
+        display_sprite,
+        BACK_X,
+        BACK_Y
+    );
+    
+    // The next button is initialised for future use.
+    Button next_button(
+        Sprite(
+            renderer.render(
+                NEXT_STRING,
+                NEXT_WIDTH * display_width,
+                NEXT_HEIGHT * display_height,
+                NEXT_SEPARATION * display_width
+            )
+        ),
+        display_sprite,
+        NEXT_X,
+        NEXT_Y
+    );
+    
+    // True if the function should return.
+    bool end = false;
+    
+    // Loop to display the connection menu.
+    while (!end) {
+        // The sprites are blitted to the display.
+        display_sprite.fill();
+        server_button.blit_to(display_sprite);
+        client_button.blit_to(display_sprite);
+        back_button.blit_to(display_sprite);
+        display.update();
+        
+        // Loop to get user input.
+        while (true) {
+            // If the user clicks the back button or the
+            //   quit key, the main menu is returned to.
+            if (
+                Events::unpress(QUIT_KEY)
+                || back_button.get_rectangle().unclick()
+            ) {
+                end = true;
+                break;
+            }
+            
+            // If the server button is clicked, the port for
+            //   the server to be hosted on is prompted for.
+            else if (server_button.get_rectangle().unclick()) {
+                set_port(
+                    display,
+                    renderer,
+                    menu_song,
+                    song_thread,
+                    back_button,
+                    next_button,
+                    SERVER_STRING
+                );
+                
+                break;
+            }
+            
+            // If the client button is clicked, the
+            //   address of the server is prompted for.
+            else if (client_button.get_rectangle().unclick()) {
+                set_address(
+                    display,
+                    renderer,
+                    menu_song,
+                    song_thread,
+                    back_button,
+                    next_button
+                );
+                
+                break;
+            }
+            
+            // The events are updated.
+            Events::update();
+        }
+    }
 }
 
 /**
@@ -22210,198 +22106,198 @@ void connect(
  * A retake on LifeTCG with graphics.
  */
 int main(int argc, char** argv) noexcept {
-	// The library is initialised for video, audio, and networking.
-	System::initialise(System::VIDEO | System::AUDIO | System::NET);
-	
-	// The version of this program and the version of
-	//   the SDL and Net Utilities library are displayed.
-	std::string version_string = System::version(VERSION);
-	std::cout
-		<< "\nDemi Duel by Chigozie Agomo.\nVersion: "
-		<< version_string
-		<< "\n\nPowered by:\n"
-		<< System::info()
-		<< std::endl
-	;
-	
-	{
-		// The display can be modified by command line arguments.
-		int width = WINDOW_WIDTH;
-		int height = WINDOW_HEIGHT;
-		
-		if (argc > 2) {
-			width = std::stoi(argv[1]);
-			height = std::stoi(argv[2]);
-		}
-		
-		// The display is initialised and its components are extracted.
-		Display display(TITLE_STRING, width, height);
-		Sprite& display_sprite = display.get_sprite();
-		int display_width = display_sprite.get_width();
-		int display_height = display_sprite.get_height();
-		
-		// The renderer is initialised.
-		//   The characters and sources are set.
-		std::array<char, RENDERER_COUNT> characters;
-		std::array<std::string, RENDERER_COUNT> sources;
-		
-		//     The directory is set.
-		for (int i = 0; i < RENDERER_COUNT; i++) {
-			sources[i] = SOURCE_DIRECTORY;
-		}
-		
-		//     The lowercase letters are set.
-		for (int i = 0; i < LETTERS; i++) {
-			characters[i] = 'a' + i;
-			sources[i] += 'a' + i;
-		}
-		
-		// The uppercase letters are set.
-		for (int i = 0; i < LETTERS; i++) {
-			characters[LETTERS + i] = 'A' + i;
-			sources[LETTERS + i] += 'a' + i;
-		}
-		
-		//     The numbers are set.
-		for (int i = 0; i < NUMBERS; i++) {
-			characters[2 * LETTERS + i] = '0' + i;
-			sources[2 * LETTERS + i] += '0' + i;
-		}
-		
-		//     The file extension is set.
-		for (int i = 0; i < RENDERER_COUNT; i++) {
-			sources[i] += SOURCE_EXTENSION;
-		}
-		
-		// The punctuation characters and sources are set.
-		characters[RENDERER_COUNT - 4] = '.';
-		sources[RENDERER_COUNT - 4] = FULL_STOP_SOURCE;
-		characters[RENDERER_COUNT - 3] = ',';
-		sources[RENDERER_COUNT - 3] = COMMA_SOURCE;
-		characters[RENDERER_COUNT - 2] = ':';
-		sources[RENDERER_COUNT - 2] = COLON_SOURCE;
-		characters[RENDERER_COUNT - 1] = '/';
-		sources[RENDERER_COUNT - 1] = SLASH_SOURCE;
-		characters[RENDERER_COUNT - 7] = '!';
-		sources[RENDERER_COUNT - 7] = EXCLAMATION_SOURCE;
-		characters[RENDERER_COUNT - 6] = '?';
-		sources[RENDERER_COUNT - 6] = QUESTION_SOURCE;
-		characters[RENDERER_COUNT - 5] = ';';
-		sources[RENDERER_COUNT - 5] = SEMICOLON_SOURCE;
-		characters[RENDERER_COUNT - 9] = '(';
-		sources[RENDERER_COUNT - 9] = LEFT_BRACKET_SOURCE;
-		characters[RENDERER_COUNT - 8] = ')';
-		sources[RENDERER_COUNT - 8] = RIGHT_BRACKET_SOURCE;
-		characters[RENDERER_COUNT - 10] = '\'';
-		sources[RENDERER_COUNT - 10] = APOSTROPHE_SOURCE;
-		characters[RENDERER_COUNT - 12] = '+';
-		sources[RENDERER_COUNT - 12] = PLUS_SOURCE;
-		characters[RENDERER_COUNT - 11] = '-';
-		sources[RENDERER_COUNT - 11] = MINUS_SOURCE;
-		
-		//   The sprites are loaded.
-		FullRenderer<RENDERER_COUNT> renderer(characters, sources);
-		
-		// The title is rendered.
-		Sprite title_sprite(
-			renderer.render(
-				TITLE_STRING,
-				TITLE_WIDTH * display_width,
-				TITLE_HEIGHT * display_height,
-				TITLE_SEPARATION * display_width
-			)
-		);
-		
-		// The copyright is rendered.
-		Sprite credits_sprite(
-			renderer.lined_render(
-				CREDITS_STRING,
-				CREDITS_WIDTH * display_width,
-				CREDITS_HEIGHT * display_height,
-				CREDITS_SEPARATION_X * display_width,
-				CREDITS_MAX_WIDTH * display_width,
-				CREDITS_SEPARATION_Y * display_height,
-				CREDITS_JUSTIFICATION
-			)
-		);
-		
-		// The quit button is initialised.
-		Button quit_button(
-			Sprite(
-				renderer.render(
-					QUIT_STRING,
-					QUIT_WIDTH * display_width,
-					QUIT_HEIGHT * display_height,
-					QUIT_SEPARATION * display_width
-				)
-			),
-			display_sprite,
-			QUIT_X,
-			QUIT_Y
-		);
-		
-		// The play button is initialised.
-		Button play_button(
-			Sprite(
-				renderer.render(
-					PLAY_STRING,
-					PLAY_WIDTH * display_width,
-					PLAY_HEIGHT * display_height,
-					PLAY_SEPARATION * display_width
-				)
-			),
-			display_sprite,
-			PLAY_X,
-			PLAY_Y
-		);
-		
-		// The duel song is loaded and queued in another thread.
-		Audio duel_song(DUEL_SONG_SOURCE, DUEL_SONG_LENGTH);
-		Thread thread(Audio::thread_queue, &duel_song);
-		
-		// True when the program should end.
-		bool end = false;
-		
-		// Loop to display the main menu.
-		while (!end) {
-			display_sprite.fill();
-			display_sprite.blit(title_sprite, TITLE_X, TITLE_Y);
-			display_sprite.blit(credits_sprite, CREDITS_X, CREDITS_Y);
-			quit_button.blit_to(display_sprite);
-			play_button.blit_to(display_sprite);
-			display.update();
-			
-			// Loop to get user input.
-			while (true) {
-				// The user can quit with the keyboard or mouse.
-				if (
-					Events::press(QUIT_KEY)
-					|| quit_button.get_rectangle().click()
-				) {
-					end = true;
-					break;
-				}
-				
-				// The user can start by clicking the play button.
-				else if (
-					play_button.get_rectangle().unclick()
-				) {
-					connect(display, renderer);
-					break;
-				}
-				
-				// The events are updated.
-				Events::update();
-			}
-		}
+    // The library is initialised for video, audio, and networking.
+    System::initialise(System::VIDEO | System::AUDIO | System::NET);
+    
+    // The version of this program and the version of
+    //   the SDL and Net Utilities library are displayed.
+    std::string version_string = System::version(VERSION);
+    std::cout
+        << "\nDemi Duel by Chigozie Agomo.\nVersion: "
+        << version_string
+        << "\n\nPowered by:\n"
+        << System::info()
+        << std::endl
+    ;
+    
+    {
+        // The display can be modified by command line arguments.
+        int width = WINDOW_WIDTH;
+        int height = WINDOW_HEIGHT;
+        
+        if (argc > 2) {
+            width = std::stoi(argv[1]);
+            height = std::stoi(argv[2]);
+        }
+        
+        // The display is initialised and its components are extracted.
+        Display display(TITLE_STRING, width, height);
+        Sprite& display_sprite = display.get_sprite();
+        int display_width = display_sprite.get_width();
+        int display_height = display_sprite.get_height();
+        
+        // The renderer is initialised.
+        //   The characters and sources are set.
+        std::array<char, RENDERER_COUNT> characters;
+        std::array<std::string, RENDERER_COUNT> sources;
+        
+        //     The directory is set.
+        for (int i = 0; i < RENDERER_COUNT; i++) {
+            sources[i] = SOURCE_DIRECTORY;
+        }
+        
+        //     The lowercase letters are set.
+        for (int i = 0; i < LETTERS; i++) {
+            characters[i] = 'a' + i;
+            sources[i] += 'a' + i;
+        }
+        
+        // The uppercase letters are set.
+        for (int i = 0; i < LETTERS; i++) {
+            characters[LETTERS + i] = 'A' + i;
+            sources[LETTERS + i] += 'a' + i;
+        }
+        
+        //     The numbers are set.
+        for (int i = 0; i < NUMBERS; i++) {
+            characters[2 * LETTERS + i] = '0' + i;
+            sources[2 * LETTERS + i] += '0' + i;
+        }
+        
+        //     The file extension is set.
+        for (int i = 0; i < RENDERER_COUNT; i++) {
+            sources[i] += SOURCE_EXTENSION;
+        }
+        
+        // The punctuation characters and sources are set.
+        characters[RENDERER_COUNT - 4] = '.';
+        sources[RENDERER_COUNT - 4] = FULL_STOP_SOURCE;
+        characters[RENDERER_COUNT - 3] = ',';
+        sources[RENDERER_COUNT - 3] = COMMA_SOURCE;
+        characters[RENDERER_COUNT - 2] = ':';
+        sources[RENDERER_COUNT - 2] = COLON_SOURCE;
+        characters[RENDERER_COUNT - 1] = '/';
+        sources[RENDERER_COUNT - 1] = SLASH_SOURCE;
+        characters[RENDERER_COUNT - 7] = '!';
+        sources[RENDERER_COUNT - 7] = EXCLAMATION_SOURCE;
+        characters[RENDERER_COUNT - 6] = '?';
+        sources[RENDERER_COUNT - 6] = QUESTION_SOURCE;
+        characters[RENDERER_COUNT - 5] = ';';
+        sources[RENDERER_COUNT - 5] = SEMICOLON_SOURCE;
+        characters[RENDERER_COUNT - 9] = '(';
+        sources[RENDERER_COUNT - 9] = LEFT_BRACKET_SOURCE;
+        characters[RENDERER_COUNT - 8] = ')';
+        sources[RENDERER_COUNT - 8] = RIGHT_BRACKET_SOURCE;
+        characters[RENDERER_COUNT - 10] = '\'';
+        sources[RENDERER_COUNT - 10] = APOSTROPHE_SOURCE;
+        characters[RENDERER_COUNT - 12] = '+';
+        sources[RENDERER_COUNT - 12] = PLUS_SOURCE;
+        characters[RENDERER_COUNT - 11] = '-';
+        sources[RENDERER_COUNT - 11] = MINUS_SOURCE;
+        
+        //   The sprites are loaded.
+        FullRenderer<RENDERER_COUNT> renderer(characters, sources);
+        
+        // The title is rendered.
+        Sprite title_sprite(
+            renderer.render(
+                TITLE_STRING,
+                TITLE_WIDTH * display_width,
+                TITLE_HEIGHT * display_height,
+                TITLE_SEPARATION * display_width
+            )
+        );
+        
+        // The copyright is rendered.
+        Sprite credits_sprite(
+            renderer.lined_render(
+                CREDITS_STRING,
+                CREDITS_WIDTH * display_width,
+                CREDITS_HEIGHT * display_height,
+                CREDITS_SEPARATION_X * display_width,
+                CREDITS_MAX_WIDTH * display_width,
+                CREDITS_SEPARATION_Y * display_height,
+                CREDITS_JUSTIFICATION
+            )
+        );
+        
+        // The quit button is initialised.
+        Button quit_button(
+            Sprite(
+                renderer.render(
+                    QUIT_STRING,
+                    QUIT_WIDTH * display_width,
+                    QUIT_HEIGHT * display_height,
+                    QUIT_SEPARATION * display_width
+                )
+            ),
+            display_sprite,
+            QUIT_X,
+            QUIT_Y
+        );
+        
+        // The play button is initialised.
+        Button play_button(
+            Sprite(
+                renderer.render(
+                    PLAY_STRING,
+                    PLAY_WIDTH * display_width,
+                    PLAY_HEIGHT * display_height,
+                    PLAY_SEPARATION * display_width
+                )
+            ),
+            display_sprite,
+            PLAY_X,
+            PLAY_Y
+        );
+        
+        // The menu song is loaded and queued in another thread.
+        Audio menu_song(MENU_SONG_SOURCE, MENU_SONG_LENGTH);
+        Thread thread(Audio::thread_queue, &menu_song);
+        
+        // True when the program should end.
+        bool end = false;
+        
+        // Loop to display the main menu.
+        while (!end) {
+            display_sprite.fill();
+            display_sprite.blit(title_sprite, TITLE_X, TITLE_Y);
+            display_sprite.blit(credits_sprite, CREDITS_X, CREDITS_Y);
+            quit_button.blit_to(display_sprite);
+            play_button.blit_to(display_sprite);
+            display.update();
+            
+            // Loop to get user input.
+            while (true) {
+                // The user can quit with the keyboard or mouse.
+                if (
+                    Events::press(QUIT_KEY)
+                    || quit_button.get_rectangle().click()
+                ) {
+                    end = true;
+                    break;
+                }
+                
+                // The user can start by clicking the play button.
+                else if (
+                    play_button.get_rectangle().unclick()
+                ) {
+                    connect(display, renderer, menu_song, thread);
+                    break;
+                }
+                
+                // The events are updated.
+                Events::update();
+            }
+        }
 
-		// The duel song is paused, which terminates the queuing thread.
-		duel_song.pause();
-	}
-	
-	// The library is shut down.
-	System::terminate();
-	return 0;
+        // The menu song is paused, which terminates the queuing thread.
+        menu_song.pause();
+    }
+    
+    // The library is shut down.
+    System::terminate();
+    return 0;
 }
 //}
 //}

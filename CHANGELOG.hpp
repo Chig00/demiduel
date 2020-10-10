@@ -1,4 +1,21 @@
 /* CHANGELOG:
+     v1.11:
+       Void Pact's scaling was decreased from 25 to 20.
+       Void Pact's cap was decreased from 375 to 300.
+       Shadow Bond's cost was decreased from 3000 to 2000.
+       Earth Affinity and Air Affinity were replaced with Ascension.
+       Ascension allows for a rank up into a card in hand.
+       Shuriken Storm was replaced with Infiltrate.
+       Infiltrate deals 400 to 600 damage in a single snipe (depending on coin flips).
+       Subjugate's damage was decreased from 275 to 250.
+       Omega Fusion's defeat requirement was increased from 2 to 3.
+       Omega Fusion now stores the user in the life cards (if successful).
+       Omega Elemental's health was increased from 1750 to 2000.
+       Assimilate's damage was decreased from 700 to 500.
+       Assimilate's healing ratio was increased from 0.5 to 0.8.
+       Arms Smuggler's effect was changed to a permanent power boost of 50 (overload 1).
+       Peacemaker's damage reduction was increased from 1000 to 10000.
+       Improved decklist descriptions.
      v1.10.1.1:
        The mobile version's Duel Song was changed to the Record Keeper remix.
        Audio Constants were separated from the Universal Constants.

@@ -7,7 +7,7 @@
 // System Constants
 //{
 // The current version of the program.
-constexpr int VERSION[] = {1, 10, 1, 1};
+constexpr int VERSION[] = {1, 11, 0, 0};
 
 // The title of the game in string form.
 constexpr const char* TITLE_STRING = "Demi Duel";
@@ -238,6 +238,9 @@ constexpr const char* OVERLOAD_EFFECT = "overload";
 constexpr const char* DOUBLE_ROOT_EFFECT = "double_root";
 constexpr const char* UNRANKED_EFFECT = "unranked";
 constexpr const char* ASSASSINATE_EFFECT = "assassinate";
+constexpr const char* ASCENSION_EFFECT = "ascension";
+constexpr const char* POWER_AURA_EFFECT = "power_aura";
+constexpr const char* DEPOWER_EFFECT = "depower";
 //}
 
 // The constants for effect explanations.
@@ -279,6 +282,19 @@ constexpr const char* PLAYER_POWER_REPRESENTATION = "Power";
     + std::to_string(abs(std::stoi(effect_value)))      \
     + (std::stoi(effect_value) < 0 ? " less" : " more") \
     + " damage this turn."                              \
+)
+//}
+
+// The constants for the power effect explanation.
+//{
+#define POWER_AURA_CONDITION (value = effect_count(POWER_AURA_EFFECT))
+constexpr const char* POWER_AURA_REPRESENTATION = "Power Aura";
+#define POWER_AURA_VALUE std::to_string(value)
+#define POWER_AURA_EXPLANATION (                        \
+    "This player's fighters' attacks deal "             \
+    + std::to_string(abs(std::stoi(effect_value)))      \
+    + (std::stoi(effect_value) < 0 ? " less" : " more") \
+    + " damage for the rest of the duel."               \
 )
 //}
 
@@ -736,7 +752,7 @@ constexpr const char* EFFECT_REPRESENTATIONS[EXPLANATION_COUNT] = {
 //}
 
 // The total number of player-specific explainable effects.
-constexpr int PLAYER_EXPLANATION_COUNT = 19;
+constexpr int PLAYER_EXPLANATION_COUNT = 20;
 
 // All of the player-specific explainable effect conditions.
 //{
@@ -754,11 +770,12 @@ constexpr int PLAYER_EXPLANATION_COUNT = 19;
     : X == 10 ? static_cast<bool>(FREEDOM_CONDITION)                  \
     : X == 11 ? static_cast<bool>(AGILITY_AURA_CONDITION)             \
     : X == 12 ? static_cast<bool>(HEAL_AURA_CONDITION)                \
-    : X == 13 ? static_cast<bool>(PLAYER_POWER_CONDITION)             \
-    : X == 14 ? static_cast<bool>(END_DRAW_CONDITION)                 \
-    : X == 15 ? static_cast<bool>(EXPERIMENTER_END_DISCARD_CONDITION) \
-    : X == 16 ? static_cast<bool>(BANKER_END_DISCARD_CONDITION)       \
-    : X == 17 ? static_cast<bool>(GATEKEEPER_END_DISCARD_CONDITION)   \
+    : X == 13 ? static_cast<bool>(POWER_AURA_CONDITION)               \
+    : X == 14 ? static_cast<bool>(PLAYER_POWER_CONDITION)             \
+    : X == 15 ? static_cast<bool>(END_DRAW_CONDITION)                 \
+    : X == 16 ? static_cast<bool>(EXPERIMENTER_END_DISCARD_CONDITION) \
+    : X == 17 ? static_cast<bool>(BANKER_END_DISCARD_CONDITION)       \
+    : X == 18 ? static_cast<bool>(GATEKEEPER_END_DISCARD_CONDITION)   \
     : static_cast<bool>(MILLER_END_DISCARD_CONDITION)                 \
 )
 //}
@@ -778,6 +795,7 @@ constexpr const char* PLAYER_EFFECT_REPRESENTATIONS[PLAYER_EXPLANATION_COUNT] = 
     FREEDOM_REPRESENTATION,
     AGILITY_AURA_REPRESENTATION,
     HEAL_AURA_REPRESENTATION,
+    POWER_AURA_REPRESENTATION,
     PLAYER_POWER_REPRESENTATION,
     END_DRAW_REPRESENTATION,
     END_DISCARD_REPRESENTATION,
@@ -802,11 +820,12 @@ constexpr const char* PLAYER_EFFECT_REPRESENTATIONS[PLAYER_EXPLANATION_COUNT] = 
     : X == 10 ? FREEDOM_VALUE                  \
     : X == 11 ? AGILITY_AURA_VALUE             \
     : X == 12 ? HEAL_AURA_VALUE                \
-    : X == 13 ? PLAYER_POWER_VALUE             \
-    : X == 14 ? END_DRAW_VALUE                 \
-    : X == 15 ? EXPERIMENTER_END_DISCARD_VALUE \
-    : X == 16 ? BANKER_END_DISCARD_VALUE       \
-    : X == 17 ? GATEKEEPER_END_DISCARD_VALUE   \
+    : X == 13 ? POWER_AURA_VALUE               \
+    : X == 14 ? PLAYER_POWER_VALUE             \
+    : X == 15 ? END_DRAW_VALUE                 \
+    : X == 16 ? EXPERIMENTER_END_DISCARD_VALUE \
+    : X == 17 ? BANKER_END_DISCARD_VALUE       \
+    : X == 18 ? GATEKEEPER_END_DISCARD_VALUE   \
     : MILLER_END_DISCARD_VALUE                 \
 )
 //}
@@ -827,11 +846,12 @@ constexpr const char* PLAYER_EFFECT_REPRESENTATIONS[PLAYER_EXPLANATION_COUNT] = 
     : X == 10 ? FREEDOM_EXPLANATION             \
     : X == 11 ? AGILITY_AURA_EXPLANATION        \
     : X == 12 ? HEAL_AURA_EXPLANATION           \
-    : X == 13 ? PLAYER_POWER_EXPLANATION        \
-    : X == 14 ? END_DRAW_EXPLANATION            \
-    : X == 15 ? END_DISCARD_EXPLANATION         \
+    : X == 13 ? POWER_AURA_EXPLANATION          \
+    : X == 14 ? PLAYER_POWER_EXPLANATION        \
+    : X == 15 ? END_DRAW_EXPLANATION            \
     : X == 16 ? END_DISCARD_EXPLANATION         \
     : X == 17 ? END_DISCARD_EXPLANATION         \
+    : X == 18 ? END_DISCARD_EXPLANATION         \
     : END_DISCARD_EXPLANATION                   \
 )
 //}
@@ -1952,6 +1972,17 @@ constexpr Renderer::Justification ANNOUNCEMENT_JUSTIFICATION = Renderer::CENTRE_
     + std::to_string(abs(std::stoi(power)))            \
     + (std::stoi(power) < 0 ? " less" : " more")       \
     + " damage this turn!"                             \
+)
+//}
+
+// Announcement to declare permanent player empowerment.
+//{
+#define POWER_AURA_ANNOUNCEMENT (                      \
+    std::string(opposing ? "Your opponent's" : "Your") \
+    + " fighters' attacks deal "                       \
+    + std::to_string(abs(std::stoi(power)))            \
+    + (std::stoi(power) < 0 ? " less" : " more")       \
+    + " damage for the rest of the duel!"              \
 )
 //}
 
@@ -4023,9 +4054,9 @@ constexpr const char* CULTIST_OLD_RANK = NO_OLD_RANK;
 constexpr const char* CULTIST_ABILITY_NAME = "Void Pact";
 constexpr const char* CULTIST_ABILITY_DESCRIPTION =
     "Once a turn, you may banish a card in your hand "
-    "and heal 25 damage from one "
+    "and heal 20 damage from one "
     "of your fighters, for each card in the void, "
-    "for a maximum of 375 healing."
+    "for a maximum of 300 healing."
 ;
 const std::string CULTIST_ABILITY_EFFECTS(
     std::string(BANISH_EFFECT) // banish
@@ -4036,9 +4067,9 @@ const std::string CULTIST_ABILITY_EFFECTS(
     + EFFECT_SEPARATOR         //
     + VOID_EFFECT              // void
     + EFFECT_SEPARATOR         //
-    + "25"                     // 25
+    + "20"                     // 20
     + EFFECT_SEPARATOR         //
-    + "375"                    // 375
+    + "300"                    // 300
 );
 constexpr bool CULTIST_ABILITY_PASSIVE = false;
 constexpr int CULTIST_ABILITY_USES = 1;
@@ -4053,12 +4084,23 @@ const std::string CULTIST_ATTACK_EFFECTS(
     + VOID_EFFECT             // void
 );
 constexpr int CULTIST_ATTACK_DAMAGE = 0;
-constexpr int CULTIST_ATTACK_COST = 3000;
+constexpr int CULTIST_ATTACK_COST = 2000;
 //}
 //}
 
 // Apprentice Family
 //{
+// Universal Apprentice Rank Ability Constants
+//{
+constexpr const char* APPRENTICE_RANK_ABILITY_NAME = "Ascension";
+constexpr const char* APPRENTICE_RANK_ABILITY_DESCRIPTION =
+    "Once a turn, you may rank this fighter up into a random fighter in your hand."
+;
+constexpr const char* APPRENTICE_RANK_ABILITY_EFFECTS = ASCENSION_EFFECT; // ascension
+constexpr bool APPRENTICE_RANK_ABILITY_PASSIVE = false;
+constexpr int APPRENTICE_RANK_ABILITY_USES = 1;
+//}
+
 // Universal Apprentice Final Rank Ability Constants
 //{
 constexpr const char* APPRENTICE_FINAL_RANK_ABILITY_NAME = "Combo Attack";
@@ -4078,17 +4120,11 @@ constexpr const char* APPRENTICE_ELEMENT = AIR_ELEMENT;
 constexpr int APPRENTICE_HEALTH = 1000;
 constexpr int APPRENTICE_RETREAT_COST = 1000;
 constexpr const char* APPRENTICE_OLD_RANK = NO_OLD_RANK;
-constexpr const char* APPRENTICE_ABILITY_NAME = "Earth Affinity";
-constexpr const char* APPRENTICE_ABILITY_DESCRIPTION =
-    "This fighter can use energy of the Earth element."
-;
-const std::string APPRENTICE_ABILITY_EFFECTS(
-    std::string(AFFINITY_EFFECT) // affinity
-    + EFFECT_SEPARATOR           //
-    + EARTH_ELEMENT              // Earth
-);
-constexpr bool APPRENTICE_ABILITY_PASSIVE = true;
-constexpr int APPRENTICE_ABILITY_USES = PASSIVE_USES;
+constexpr const char* APPRENTICE_ABILITY_NAME = APPRENTICE_RANK_ABILITY_NAME;
+constexpr const char* APPRENTICE_ABILITY_DESCRIPTION = APPRENTICE_RANK_ABILITY_DESCRIPTION;
+constexpr const char* APPRENTICE_ABILITY_EFFECTS = APPRENTICE_RANK_ABILITY_EFFECTS;
+constexpr bool APPRENTICE_ABILITY_PASSIVE = APPRENTICE_RANK_ABILITY_PASSIVE;
+constexpr int APPRENTICE_ABILITY_USES = APPRENTICE_RANK_ABILITY_USES;
 constexpr const char* APPRENTICE_ATTACK_NAME = "Fist Flurry";
 constexpr const char* APPRENTICE_ATTACK_DESCRIPTION =
     "Deal 250 damage to your opponent's active fighter."
@@ -4105,17 +4141,11 @@ constexpr const char* SENSEIS_CHOSEN_ELEMENT = EARTH_ELEMENT;
 constexpr int SENSEIS_CHOSEN_HEALTH = 1200;
 constexpr int SENSEIS_CHOSEN_RETREAT_COST = 1000;
 constexpr const char* SENSEIS_CHOSEN_OLD_RANK = APPRENTICE_NAME;
-constexpr const char* SENSEIS_CHOSEN_ABILITY_NAME = "Air Affinity";
-constexpr const char* SENSEIS_CHOSEN_ABILITY_DESCRIPTION =
-    "This fighter can use energy of the Air element."
-;
-const std::string SENSEIS_CHOSEN_ABILITY_EFFECTS(
-    std::string(AFFINITY_EFFECT) // affinity
-    + EFFECT_SEPARATOR           //
-    + AIR_ELEMENT                // Air
-);
-constexpr bool SENSEIS_CHOSEN_ABILITY_PASSIVE = true;
-constexpr int SENSEIS_CHOSEN_ABILITY_USES = PASSIVE_USES;
+constexpr const char* SENSEIS_CHOSEN_ABILITY_NAME = APPRENTICE_RANK_ABILITY_NAME;
+constexpr const char* SENSEIS_CHOSEN_ABILITY_DESCRIPTION = APPRENTICE_RANK_ABILITY_DESCRIPTION;
+constexpr const char* SENSEIS_CHOSEN_ABILITY_EFFECTS = APPRENTICE_RANK_ABILITY_EFFECTS;
+constexpr bool SENSEIS_CHOSEN_ABILITY_PASSIVE = APPRENTICE_RANK_ABILITY_PASSIVE;
+constexpr int SENSEIS_CHOSEN_ABILITY_USES = APPRENTICE_RANK_ABILITY_USES;
 constexpr const char* SENSEIS_CHOSEN_ATTACK_NAME = "Flying Kick";
 constexpr const char* SENSEIS_CHOSEN_ATTACK_DESCRIPTION =
     "Deal 400 damage to your opponent's active fighter.\n"
@@ -4149,31 +4179,38 @@ constexpr const char* NINJA_ABILITY_DESCRIPTION = APPRENTICE_FINAL_RANK_ABILITY_
 constexpr const char* NINJA_ABILITY_EFFECTS = APPRENTICE_FINAL_RANK_ABILITY_EFFECTS;
 constexpr bool NINJA_ABILITY_PASSIVE = APPRENTICE_FINAL_RANK_ABILITY_PASSIVE;
 constexpr int NINJA_ABILITY_USES = APPRENTICE_FINAL_RANK_ABILITY_USES;
-constexpr const char* NINJA_ATTACK_NAME = "Shuriken Storm";
+constexpr const char* NINJA_ATTACK_NAME = "Infiltrate";
 constexpr const char* NINJA_ATTACK_DESCRIPTION =
+    "Deal 400 damage to one of your opponent's fighters.\n"
     "Flip 2 coins.\n"
-    "Deal 350 damage in 175 damage bursts to your opponent's "
-    "fighters in a distribution of your choosing.\n"
-    "For each heads, deal another 175 damage burst."
+    "Deal 100 more damage for each heads."
 ;
 const std::string NINJA_ATTACK_EFFECTS(
     std::string(FLIP_EFFECT) // flip
     + EFFECT_SEPARATOR       //
-    + "2"                    // 2
+    + "1"                    // 1
+    + EFFECT_TERMINATOR
+    + HEADS_EFFECT           // heads
+    + EFFECT_SEPARATOR       //
+    + POWER_EFFECT           // power
+    + EFFECT_SEPARATOR       //
+    + "100"                  // 100
+    + EFFECT_TERMINATOR
+    + FLIP_EFFECT            // flip
+    + EFFECT_SEPARATOR       //
+    + "1"                    // 1
+    + EFFECT_TERMINATOR
+    + HEADS_EFFECT           // heads
+    + EFFECT_SEPARATOR       //
+    + POWER_EFFECT           // power
+    + EFFECT_SEPARATOR       //
+    + "100"                  // 100
     + EFFECT_TERMINATOR
     + SNIPE_EFFECT           // snipe
     + EFFECT_SEPARATOR       //
-    + HEADS_COUNT_EFFECT     // heads_count
-    + EFFECT_SEPARATOR       //
-    + "175"                  // 175
+    + "400"                  // 400
     + EFFECT_TERMINATOR
-    + SNIPE_EFFECT           // snipe
-    + EFFECT_SEPARATOR       //
-    + "175"                  // 175
-    + EFFECT_TERMINATOR
-    + SNIPE_EFFECT           // snipe
-    + EFFECT_SEPARATOR       //
-    + "175"                  // 175
+    + DEPOWER_EFFECT         // depower
 );
 constexpr int NINJA_ATTACK_DAMAGE = 0;
 constexpr int NINJA_ATTACK_COST = 1000;
@@ -4193,7 +4230,7 @@ constexpr bool SAMURAI_ABILITY_PASSIVE = APPRENTICE_FINAL_RANK_ABILITY_PASSIVE;
 constexpr int SAMURAI_ABILITY_USES = APPRENTICE_FINAL_RANK_ABILITY_USES;
 constexpr const char* SAMURAI_ATTACK_NAME = "Subjugate";
 constexpr const char* SAMURAI_ATTACK_DESCRIPTION =
-    "Deal 275 damage to your opponent's active fighter.\n"
+    "Deal 250 damage to your opponent's active fighter.\n"
     "Flip 2 coins.\n"
     "Your opponent's active fighter can't attack if the first flip gives heads.\n"
     "Your opponent's active fighter can't retreat if the second flip gives heads."
@@ -4215,7 +4252,7 @@ const std::string SAMURAI_ATTACK_EFFECTS(
     + EFFECT_SEPARATOR       //
     + CRIPPLE_EFFECT         // cripple
 );
-constexpr int SAMURAI_ATTACK_DAMAGE = 275;
+constexpr int SAMURAI_ATTACK_DAMAGE = 250;
 constexpr int SAMURAI_ATTACK_COST = 1000;
 //}
 //}
@@ -4231,13 +4268,14 @@ constexpr const char* ELEMENTAL_ABILITY_NAME = "Omega Fusion";
 constexpr const char* ELEMENTAL_ABILITY_DESCRIPTION =
     "If this fighter is your active fighter, you may defeat "
     "the fighters on your bench with this ability.\n"
-    "If you defeat at least 2, rank this fighter up into a random "
-    "fighter card in your hand that ranks up from this ability."
+    "If you defeat at least 3, rank this fighter up into a random "
+    "fighter card in your hand that ranks up from this ability.\n"
+    "Store this fighter card with your life cards."
 ;
 const std::string ELEMENTAL_ABILITY_EFFECTS(
     std::string(FUSION_EFFECT) // fusion
     + EFFECT_SEPARATOR         //
-    + "2"                      // 2
+    + "3"                      // 3
 );
 constexpr bool ELEMENTAL_ABILITY_PASSIVE = false;
 constexpr int ELEMENTAL_ABILITY_USES = 1;
@@ -4340,7 +4378,7 @@ constexpr int EARTH_ELEMENTAL_ATTACK_COST = ELEMENTAL_ATTACK_COST;
 //{
 constexpr const char* OMEGA_ELEMENTAL_NAME = "Omega Elemental";
 constexpr const char* OMEGA_ELEMENTAL_ELEMENT = NO_ELEMENT;
-constexpr int OMEGA_ELEMENTAL_HEALTH = 1750;
+constexpr int OMEGA_ELEMENTAL_HEALTH = 2000;
 constexpr int OMEGA_ELEMENTAL_RETREAT_COST = 0;
 constexpr const char* OMEGA_ELEMENTAL_OLD_RANK = ELEMENTAL_ABILITY_NAME;
 constexpr const char* OMEGA_ELEMENTAL_ABILITY_NAME = "Synthesise";
@@ -4360,13 +4398,13 @@ constexpr bool OMEGA_ELEMENTAL_ABILITY_PASSIVE = false;
 constexpr int OMEGA_ELEMENTAL_ABILITY_USES = 1;
 constexpr const char* OMEGA_ELEMENTAL_ATTACK_NAME = "Assimilate";
 constexpr const char* OMEGA_ELEMENTAL_ATTACK_DESCRIPTION =
-    "Randomly distribute 700 damage between your opponent's fighters.\n"
-    "Heal 0.5 damage from this fighter multiplied by the damage dealt."
+    "Randomly distribute 500 damage between your opponent's fighters.\n"
+    "Heal 0.8 damage from this fighter multiplied by the damage dealt."
 ;
 const std::string OMEGA_ELEMENTAL_ATTACK_EFFECTS(
     std::string(DISTRIBUTE_EFFECT) // distribute
     + EFFECT_SEPARATOR             //
-    + "700"                        // 700
+    + "500"                        // 500
     + EFFECT_TERMINATOR
     + HEAL_EFFECT                  // heal
     + EFFECT_SEPARATOR             //
@@ -4374,7 +4412,7 @@ const std::string OMEGA_ELEMENTAL_ATTACK_EFFECTS(
     + EFFECT_SEPARATOR             //
     + DAMAGE_EFFECT                // damage
     + EFFECT_SEPARATOR             //
-    + "0.5"                        // 0.5
+    + "0.8"                        // 0.8
 );
 constexpr int OMEGA_ELEMENTAL_ATTACK_DAMAGE = 0;
 constexpr int OMEGA_ELEMENTAL_ATTACK_COST = 2000;
@@ -4920,25 +4958,17 @@ const std::string CHEERLEADER_EFFECTS(
 //{
 constexpr const char* ARMS_SMUGGLER_NAME = "Arms Smuggler";
 constexpr const char* ARMS_SMUGGLER_DESCRIPTION =
-    "Deal 25 damage to one of your opponent's fighters.\n"
-    "Attacks deal 25 more damage this turn.\n"
-    "Shuffle this card into your deck instead of discarding it.\n"
-    "Draw a card at the start of your turn."
+    "Your attacks deal 50 more damage for the rest of the duel.\n"
+    "You can play 1 less card next turn."
 ;
 const std::string ARMS_SMUGGLER_EFFECTS(
-    std::string(SNIPE_EFFECT)  // snipe
-    + EFFECT_SEPARATOR         //
-    + "25"                     // 25
+    std::string(POWER_AURA_EFFECT) // power_aura
+    + EFFECT_SEPARATOR             //
+    + "50"                         // 50
     + EFFECT_TERMINATOR
-    + POWER_EFFECT             // power
-    + EFFECT_SEPARATOR         //
-    + "25"                     // 25
-    + EFFECT_TERMINATOR
-    + RECYCLE_EFFECT           // recycle
-    + EFFECT_TERMINATOR
-    + END_DRAW_EFFECT          // end_draw
-    + EFFECT_SEPARATOR         //
-    + "1"                      // 1
+    + OVERLOAD_EFFECT              // overload
+    + EFFECT_SEPARATOR             //
+    + "1"                          // 1
 );
 //}
 
@@ -4970,20 +5000,20 @@ const std::string MANIAC_EFFECTS(
 constexpr const char* PEACEMAKER_NAME = "Peacemaker";
 constexpr const char* PEACEMAKER_DESCRIPTION =
     "If you haven't attacked this turn, both players' attacks "
-    "deal 1000 less damage until the start of your next turn."
+    "deal 10000 less damage until the start of your next turn."
 ;
 const std::string PEACEMAKER_EFFECTS(
     std::string(ATTACKLESS_EFFECT) // attackless
     + EFFECT_TERMINATOR
     + POWER_EFFECT                 // power
     + EFFECT_SEPARATOR             //
-    + "-1000"                      // -1000
+    + "-10000"                      // -10000
     + EFFECT_TERMINATOR
     + POWER_EFFECT                 // power
     + EFFECT_SEPARATOR             //
     + OPPONENT_EFFECT              // opponent
     + EFFECT_SEPARATOR             //
-    + "-1000"                      // -1000
+    + "-10000"                      // -10000
 );
 //}
 
@@ -11973,6 +12003,18 @@ class Player: public Affectable {
                         opponent->fighters[0].defeat();
                     }
                 }
+            
+                // Increases the damage dealt by attacks for the rest of the duel.
+                else if (effects[i][0] == POWER_AURA_EFFECT) {
+                    affect(
+                        effects[i][0]
+                        + EFFECT_SEPARATOR
+                        + effects[i][1]
+                    );
+                    
+                    const std::string& power = effects[i][1];
+                    announce(POWER_AURA_ANNOUNCEMENT);
+                }
             }
             
             // The supporter card is moved to the trash (usually).
@@ -12552,10 +12594,14 @@ class Player: public Affectable {
         /**
          * Ranks up a fighter at the given index using the given rank up card.
          */
-        void rank_up(Fighter new_rank, int index) noexcept {
+        void rank_up(Fighter new_rank, int index, bool to_life = false) noexcept {
             fighters[index].rank_up(new_rank);
             
-            if (new_rank.energy_effect_search(BOND_EFFECT)) {
+            if (to_life) {
+                life_cards.store(fighters[index]);
+            }
+            
+            else if (new_rank.energy_effect_search(BOND_EFFECT)) {
                 hand.store(fighters[index]);
             }
             
@@ -14358,13 +14404,14 @@ class Player: public Affectable {
                                         ]
                                     )
                                 ),
-                                index
+                                index,
+                                true
                             );
                         }
                     }
                 }
             
-                // The supporter card banishes cards.
+                // The ability banishes cards.
                 else if (effects[i][0] == BANISH_EFFECT) {
                     int banishes = std::stoi(effects[i][1]);
                     
@@ -14413,6 +14460,37 @@ class Player: public Affectable {
                     }
                     
                     announce(BANISH_ANNOUNCEMENT);
+                }
+            
+                // The ability ranks up the user into a fighter in hand.
+                else if (effects[i][0] == ASCENSION_EFFECT) {
+                    // The indices of the rank up cards.
+                    std::vector<int> indices;
+                    
+                    // The indices are found.
+                    for (int j = 0; j < hand.size<Fighter>(); ++j) {
+                        if (
+                            hand.get_fighters()[j].get_old_rank()
+                            == fighters[index].get_name()
+                        ) {
+                            indices.push_back(j);
+                        }
+                    }
+                    
+                    // The rank up only occurs if there is a valid rank up card in hand.
+                    if (indices.size()) {
+                        // The active fighter is ranked up.
+                        rank_up(
+                            static_cast<Fighter&>(
+                                *hand.remove(
+                                    indices[
+                                        Random::get_int(generator, 0, indices.size() - 1)
+                                    ]
+                                )
+                            ),
+                            index
+                        );
+                    }
                 }
             }
         }
@@ -14682,7 +14760,8 @@ class Player: public Affectable {
             
             // The power boost is calculated.
             int power =
-                effect_count(POWER_EFFECT)
+                effect_count(POWER_AURA_EFFECT)
+                + effect_count(POWER_EFFECT)
                 + fighters[0].effect_count(POWER_EFFECT)
             ;
             
@@ -15507,6 +15586,11 @@ class Player: public Affectable {
                         announce(DAMAGE_DISTRIBUTION_ANNOUNCEMENT);
                         last_draws += damage[i];
                     }
+                }
+            
+                // Removes the boost from the attack.
+                else if (effects[i][0] == DEPOWER_EFFECT) {
+                    boost = 0;
                 }
             }
             
@@ -16940,10 +17024,10 @@ const DeckCode TEST_DECK(
         0, // BANSHEE
         0, // CULTIST
         
-        0, // APPRENTICE
-        0, // SENSEI'S CHOSEN
-        0, // NINJA
-        0, // SAMURAI
+        4, // APPRENTICE
+        4, // SENSEI'S CHOSEN
+        4, // NINJA
+        4, // SAMURAI
         
         0, // FIRE ELEMENTAL
         0, // AIR ELEMENTAL
@@ -16985,7 +17069,7 @@ const DeckCode TEST_DECK(
         0, // SNIPER
         
         0, // CHEERLEADER
-        0, // ARMS SMUGGLER
+        4, // ARMS SMUGGLER
         0, // MANIAC
         
         0, // PEACEMAKER
@@ -17004,9 +17088,9 @@ const DeckCode TEST_DECK(
         0, // EARTH ENERGY
         
         0, // UNIVERSAL ENERGY
-        0, // ALPHA ENERGY
+        5, // ALPHA ENERGY
         0, // OMEGA ENERGY
-        0  // BOND ENERGY
+        5  // BOND ENERGY
     }
 );
 
@@ -17122,8 +17206,8 @@ const DeckCode AGGRO_DECK(
     "This is an aggressive deck that uses Hot Rodder and "
     "Pyrotechnician to deal high amounts of damage every turn!\n\n"
     "Hydromancer helps to force out key targets and lock them in the active position!\n\n"
-    "Assassin, Sniper, Cheerleader, Bounty Hunter, and Matchmaker can be used "
-    "to make quick work of the opponent's important or unranked fighters.",
+    "Various supporter cards in the deck can be used to make quick "
+    "work of the opponent's important or unranked fighters.",
     {
         // Fighter Cards
         1, // DRIVER
@@ -17567,8 +17651,7 @@ const DeckCode MILL_DECK(
     "This is a mill deck that focuses on emptying the opponent's "
     "deck, in order to make them draw life cards.\n\n"
     "Lost Soul is a tutor card that is used to draw Mage and Pyromancer.\n\n"
-    "Pyromancer can discard random cards from both "
-    "decks, so both decks can be emptied quickly.\n\n"
+    "Pyromancer can discard random cards from your opponent's deck.\n\n"
     "Glutton shuffles discarded energy cards back into the deck, "
     "so you don't draw life cards while your opponent does!\n\n"
     "Lost Soul, Miller, and Arsonist also help to mill the opponent.\n\n"
@@ -17799,7 +17882,8 @@ const DeckCode AGGRO_COMBO_DECK(
     "Ninja and Samurai both rank up from the same "
     "fighter, so Bond Energy can help to get them "
     "both in play without dicarding their old ranks.\n\n"
-    "Lost Soul and Personal Trainer can help to get the fighters in play quickly.",
+    "Lost Soul, Personal Trainer, and Ascension can "
+    "help to get the combo attackers in play quickly.",
     {
         // Fighter Cards
         0, // DRIVER
@@ -17906,14 +17990,13 @@ const DeckCode AGGRO_COMBO_DECK(
 
 const DeckCode CONTROL_COMBO_DECK(
     "Control Combo",
-    "This is a combo-oriented defensive deck that uses elementals.\n\n"
-    "The 4 basic elementals, Fire, Air, Water, and "
-    "Earth elemental, are weak unranked fighters.\n\n"
-    "However, if 3 are in play simultaneously, "
-    "they can fuse into Omega Elemental!\n\n"
-    "Omega Elemental is an exceptionally powerful fighter "
-    "that can deal a lot of damage and heal itself!\n\n"
-    "Its ability allows one to draw a copy of a card chosen from the opponent's hand!",
+    "This is a combo-oriented, defensive deck that uses elementals.\n\n"
+    "The 4 basic elementals are weak unranked fighters.\n\n"
+    "However, if all of them are in play simultaneously, "
+    "they can fuse into the Omega Elemental!\n\n"
+    "The Omega Elemental is an exceptionally powerful fighter that can "
+    "heal itself and generate copies of your opponent's cards!\n\n"
+    "Omega Elemental is also capable of using the OTK Combo!",
     {
         // Fighter Cards
         0, // DRIVER
@@ -22220,6 +22303,23 @@ int main(int argc, char** argv) noexcept {
 //}
 
 /* CHANGELOG:
+     v1.11:
+       Void Pact's scaling was decreased from 25 to 20.
+       Void Pact's cap was decreased from 375 to 300.
+       Shadow Bond's cost was decreased from 3000 to 2000.
+       Earth Affinity and Air Affinity were replaced with Ascension.
+       Ascension allows for a rank up into a card in hand.
+       Shuriken Storm was replaced with Infiltrate.
+       Infiltrate deals 400 to 600 damage in a single snipe (depending on coin flips).
+       Subjugate's damage was decreased from 275 to 250.
+       Omega Fusion's defeat requirement was increased from 2 to 3.
+       Omega Fusion now stores the user in the life cards (if successful).
+       Omega Elemental's health was increased from 1750 to 2000.
+       Assimilate's damage was decreased from 700 to 500.
+       Assimilate's healing ratio was increased from 0.5 to 0.8.
+       Arms Smuggler's effect was changed to a permanent power boost of 50 (overload 1).
+       Peacemaker's damage reduction was increased from 1000 to 10000.
+       Improved decklist descriptions.
      v1.10.1.1:
        The mobile version's Duel Song was changed to the Record Keeper remix.
        Audio Constants were separated from the Universal Constants.

@@ -952,9 +952,9 @@ constexpr const char* CULTIST_OLD_RANK = NO_OLD_RANK;
 constexpr const char* CULTIST_ABILITY_NAME = "Void Pact";
 constexpr const char* CULTIST_ABILITY_DESCRIPTION =
     "Once a turn, you may banish a card in your hand "
-    "and heal 25 damage from one "
+    "and heal 20 damage from one "
     "of your fighters, for each card in the void, "
-    "for a maximum of 375 healing."
+    "for a maximum of 300 healing."
 ;
 const std::string CULTIST_ABILITY_EFFECTS(
     std::string(BANISH_EFFECT) // banish
@@ -965,9 +965,9 @@ const std::string CULTIST_ABILITY_EFFECTS(
     + EFFECT_SEPARATOR         //
     + VOID_EFFECT              // void
     + EFFECT_SEPARATOR         //
-    + "25"                     // 25
+    + "20"                     // 20
     + EFFECT_SEPARATOR         //
-    + "375"                    // 375
+    + "300"                    // 300
 );
 constexpr bool CULTIST_ABILITY_PASSIVE = false;
 constexpr int CULTIST_ABILITY_USES = 1;
@@ -982,12 +982,23 @@ const std::string CULTIST_ATTACK_EFFECTS(
     + VOID_EFFECT             // void
 );
 constexpr int CULTIST_ATTACK_DAMAGE = 0;
-constexpr int CULTIST_ATTACK_COST = 3000;
+constexpr int CULTIST_ATTACK_COST = 2000;
 //}
 //}
 
 // Apprentice Family
 //{
+// Universal Apprentice Rank Ability Constants
+//{
+constexpr const char* APPRENTICE_RANK_ABILITY_NAME = "Ascension";
+constexpr const char* APPRENTICE_RANK_ABILITY_DESCRIPTION =
+    "Once a turn, you may rank this fighter up into a random fighter in your hand."
+;
+constexpr const char* APPRENTICE_RANK_ABILITY_EFFECTS = ASCENSION_EFFECT; // ascension
+constexpr bool APPRENTICE_RANK_ABILITY_PASSIVE = false;
+constexpr int APPRENTICE_RANK_ABILITY_USES = 1;
+//}
+
 // Universal Apprentice Final Rank Ability Constants
 //{
 constexpr const char* APPRENTICE_FINAL_RANK_ABILITY_NAME = "Combo Attack";
@@ -1007,17 +1018,11 @@ constexpr const char* APPRENTICE_ELEMENT = AIR_ELEMENT;
 constexpr int APPRENTICE_HEALTH = 1000;
 constexpr int APPRENTICE_RETREAT_COST = 1000;
 constexpr const char* APPRENTICE_OLD_RANK = NO_OLD_RANK;
-constexpr const char* APPRENTICE_ABILITY_NAME = "Earth Affinity";
-constexpr const char* APPRENTICE_ABILITY_DESCRIPTION =
-    "This fighter can use energy of the Earth element."
-;
-const std::string APPRENTICE_ABILITY_EFFECTS(
-    std::string(AFFINITY_EFFECT) // affinity
-    + EFFECT_SEPARATOR           //
-    + EARTH_ELEMENT              // Earth
-);
-constexpr bool APPRENTICE_ABILITY_PASSIVE = true;
-constexpr int APPRENTICE_ABILITY_USES = PASSIVE_USES;
+constexpr const char* APPRENTICE_ABILITY_NAME = APPRENTICE_RANK_ABILITY_NAME;
+constexpr const char* APPRENTICE_ABILITY_DESCRIPTION = APPRENTICE_RANK_ABILITY_DESCRIPTION;
+constexpr const char* APPRENTICE_ABILITY_EFFECTS = APPRENTICE_RANK_ABILITY_EFFECTS;
+constexpr bool APPRENTICE_ABILITY_PASSIVE = APPRENTICE_RANK_ABILITY_PASSIVE;
+constexpr int APPRENTICE_ABILITY_USES = APPRENTICE_RANK_ABILITY_USES;
 constexpr const char* APPRENTICE_ATTACK_NAME = "Fist Flurry";
 constexpr const char* APPRENTICE_ATTACK_DESCRIPTION =
     "Deal 250 damage to your opponent's active fighter."
@@ -1034,17 +1039,11 @@ constexpr const char* SENSEIS_CHOSEN_ELEMENT = EARTH_ELEMENT;
 constexpr int SENSEIS_CHOSEN_HEALTH = 1200;
 constexpr int SENSEIS_CHOSEN_RETREAT_COST = 1000;
 constexpr const char* SENSEIS_CHOSEN_OLD_RANK = APPRENTICE_NAME;
-constexpr const char* SENSEIS_CHOSEN_ABILITY_NAME = "Air Affinity";
-constexpr const char* SENSEIS_CHOSEN_ABILITY_DESCRIPTION =
-    "This fighter can use energy of the Air element."
-;
-const std::string SENSEIS_CHOSEN_ABILITY_EFFECTS(
-    std::string(AFFINITY_EFFECT) // affinity
-    + EFFECT_SEPARATOR           //
-    + AIR_ELEMENT                // Air
-);
-constexpr bool SENSEIS_CHOSEN_ABILITY_PASSIVE = true;
-constexpr int SENSEIS_CHOSEN_ABILITY_USES = PASSIVE_USES;
+constexpr const char* SENSEIS_CHOSEN_ABILITY_NAME = APPRENTICE_RANK_ABILITY_NAME;
+constexpr const char* SENSEIS_CHOSEN_ABILITY_DESCRIPTION = APPRENTICE_RANK_ABILITY_DESCRIPTION;
+constexpr const char* SENSEIS_CHOSEN_ABILITY_EFFECTS = APPRENTICE_RANK_ABILITY_EFFECTS;
+constexpr bool SENSEIS_CHOSEN_ABILITY_PASSIVE = APPRENTICE_RANK_ABILITY_PASSIVE;
+constexpr int SENSEIS_CHOSEN_ABILITY_USES = APPRENTICE_RANK_ABILITY_USES;
 constexpr const char* SENSEIS_CHOSEN_ATTACK_NAME = "Flying Kick";
 constexpr const char* SENSEIS_CHOSEN_ATTACK_DESCRIPTION =
     "Deal 400 damage to your opponent's active fighter.\n"
@@ -1078,31 +1077,38 @@ constexpr const char* NINJA_ABILITY_DESCRIPTION = APPRENTICE_FINAL_RANK_ABILITY_
 constexpr const char* NINJA_ABILITY_EFFECTS = APPRENTICE_FINAL_RANK_ABILITY_EFFECTS;
 constexpr bool NINJA_ABILITY_PASSIVE = APPRENTICE_FINAL_RANK_ABILITY_PASSIVE;
 constexpr int NINJA_ABILITY_USES = APPRENTICE_FINAL_RANK_ABILITY_USES;
-constexpr const char* NINJA_ATTACK_NAME = "Shuriken Storm";
+constexpr const char* NINJA_ATTACK_NAME = "Infiltrate";
 constexpr const char* NINJA_ATTACK_DESCRIPTION =
+    "Deal 400 damage to one of your opponent's fighters.\n"
     "Flip 2 coins.\n"
-    "Deal 350 damage in 175 damage bursts to your opponent's "
-    "fighters in a distribution of your choosing.\n"
-    "For each heads, deal another 175 damage burst."
+    "Deal 100 more damage for each heads."
 ;
 const std::string NINJA_ATTACK_EFFECTS(
     std::string(FLIP_EFFECT) // flip
     + EFFECT_SEPARATOR       //
-    + "2"                    // 2
+    + "1"                    // 1
+    + EFFECT_TERMINATOR
+    + HEADS_EFFECT           // heads
+    + EFFECT_SEPARATOR       //
+    + POWER_EFFECT           // power
+    + EFFECT_SEPARATOR       //
+    + "100"                  // 100
+    + EFFECT_TERMINATOR
+    + FLIP_EFFECT            // flip
+    + EFFECT_SEPARATOR       //
+    + "1"                    // 1
+    + EFFECT_TERMINATOR
+    + HEADS_EFFECT           // heads
+    + EFFECT_SEPARATOR       //
+    + POWER_EFFECT           // power
+    + EFFECT_SEPARATOR       //
+    + "100"                  // 100
     + EFFECT_TERMINATOR
     + SNIPE_EFFECT           // snipe
     + EFFECT_SEPARATOR       //
-    + HEADS_COUNT_EFFECT     // heads_count
-    + EFFECT_SEPARATOR       //
-    + "175"                  // 175
+    + "400"                  // 400
     + EFFECT_TERMINATOR
-    + SNIPE_EFFECT           // snipe
-    + EFFECT_SEPARATOR       //
-    + "175"                  // 175
-    + EFFECT_TERMINATOR
-    + SNIPE_EFFECT           // snipe
-    + EFFECT_SEPARATOR       //
-    + "175"                  // 175
+    + DEPOWER_EFFECT         // depower
 );
 constexpr int NINJA_ATTACK_DAMAGE = 0;
 constexpr int NINJA_ATTACK_COST = 1000;
@@ -1122,7 +1128,7 @@ constexpr bool SAMURAI_ABILITY_PASSIVE = APPRENTICE_FINAL_RANK_ABILITY_PASSIVE;
 constexpr int SAMURAI_ABILITY_USES = APPRENTICE_FINAL_RANK_ABILITY_USES;
 constexpr const char* SAMURAI_ATTACK_NAME = "Subjugate";
 constexpr const char* SAMURAI_ATTACK_DESCRIPTION =
-    "Deal 275 damage to your opponent's active fighter.\n"
+    "Deal 250 damage to your opponent's active fighter.\n"
     "Flip 2 coins.\n"
     "Your opponent's active fighter can't attack if the first flip gives heads.\n"
     "Your opponent's active fighter can't retreat if the second flip gives heads."
@@ -1144,7 +1150,7 @@ const std::string SAMURAI_ATTACK_EFFECTS(
     + EFFECT_SEPARATOR       //
     + CRIPPLE_EFFECT         // cripple
 );
-constexpr int SAMURAI_ATTACK_DAMAGE = 275;
+constexpr int SAMURAI_ATTACK_DAMAGE = 250;
 constexpr int SAMURAI_ATTACK_COST = 1000;
 //}
 //}
@@ -1160,13 +1166,14 @@ constexpr const char* ELEMENTAL_ABILITY_NAME = "Omega Fusion";
 constexpr const char* ELEMENTAL_ABILITY_DESCRIPTION =
     "If this fighter is your active fighter, you may defeat "
     "the fighters on your bench with this ability.\n"
-    "If you defeat at least 2, rank this fighter up into a random "
-    "fighter card in your hand that ranks up from this ability."
+    "If you defeat at least 3, rank this fighter up into a random "
+    "fighter card in your hand that ranks up from this ability.\n"
+    "Store this fighter card with your life cards."
 ;
 const std::string ELEMENTAL_ABILITY_EFFECTS(
     std::string(FUSION_EFFECT) // fusion
     + EFFECT_SEPARATOR         //
-    + "2"                      // 2
+    + "3"                      // 3
 );
 constexpr bool ELEMENTAL_ABILITY_PASSIVE = false;
 constexpr int ELEMENTAL_ABILITY_USES = 1;
@@ -1269,7 +1276,7 @@ constexpr int EARTH_ELEMENTAL_ATTACK_COST = ELEMENTAL_ATTACK_COST;
 //{
 constexpr const char* OMEGA_ELEMENTAL_NAME = "Omega Elemental";
 constexpr const char* OMEGA_ELEMENTAL_ELEMENT = NO_ELEMENT;
-constexpr int OMEGA_ELEMENTAL_HEALTH = 1750;
+constexpr int OMEGA_ELEMENTAL_HEALTH = 2000;
 constexpr int OMEGA_ELEMENTAL_RETREAT_COST = 0;
 constexpr const char* OMEGA_ELEMENTAL_OLD_RANK = ELEMENTAL_ABILITY_NAME;
 constexpr const char* OMEGA_ELEMENTAL_ABILITY_NAME = "Synthesise";
@@ -1289,13 +1296,13 @@ constexpr bool OMEGA_ELEMENTAL_ABILITY_PASSIVE = false;
 constexpr int OMEGA_ELEMENTAL_ABILITY_USES = 1;
 constexpr const char* OMEGA_ELEMENTAL_ATTACK_NAME = "Assimilate";
 constexpr const char* OMEGA_ELEMENTAL_ATTACK_DESCRIPTION =
-    "Randomly distribute 700 damage between your opponent's fighters.\n"
-    "Heal 0.5 damage from this fighter multiplied by the damage dealt."
+    "Randomly distribute 500 damage between your opponent's fighters.\n"
+    "Heal 0.8 damage from this fighter multiplied by the damage dealt."
 ;
 const std::string OMEGA_ELEMENTAL_ATTACK_EFFECTS(
     std::string(DISTRIBUTE_EFFECT) // distribute
     + EFFECT_SEPARATOR             //
-    + "700"                        // 700
+    + "500"                        // 500
     + EFFECT_TERMINATOR
     + HEAL_EFFECT                  // heal
     + EFFECT_SEPARATOR             //
@@ -1303,7 +1310,7 @@ const std::string OMEGA_ELEMENTAL_ATTACK_EFFECTS(
     + EFFECT_SEPARATOR             //
     + DAMAGE_EFFECT                // damage
     + EFFECT_SEPARATOR             //
-    + "0.5"                        // 0.5
+    + "0.8"                        // 0.8
 );
 constexpr int OMEGA_ELEMENTAL_ATTACK_DAMAGE = 0;
 constexpr int OMEGA_ELEMENTAL_ATTACK_COST = 2000;
@@ -1849,25 +1856,17 @@ const std::string CHEERLEADER_EFFECTS(
 //{
 constexpr const char* ARMS_SMUGGLER_NAME = "Arms Smuggler";
 constexpr const char* ARMS_SMUGGLER_DESCRIPTION =
-    "Deal 25 damage to one of your opponent's fighters.\n"
-    "Attacks deal 25 more damage this turn.\n"
-    "Shuffle this card into your deck instead of discarding it.\n"
-    "Draw a card at the start of your turn."
+    "Your attacks deal 50 more damage for the rest of the duel.\n"
+    "You can play 1 less card next turn."
 ;
 const std::string ARMS_SMUGGLER_EFFECTS(
-    std::string(SNIPE_EFFECT)  // snipe
-    + EFFECT_SEPARATOR         //
-    + "25"                     // 25
+    std::string(POWER_AURA_EFFECT) // power_aura
+    + EFFECT_SEPARATOR             //
+    + "50"                         // 50
     + EFFECT_TERMINATOR
-    + POWER_EFFECT             // power
-    + EFFECT_SEPARATOR         //
-    + "25"                     // 25
-    + EFFECT_TERMINATOR
-    + RECYCLE_EFFECT           // recycle
-    + EFFECT_TERMINATOR
-    + END_DRAW_EFFECT          // end_draw
-    + EFFECT_SEPARATOR         //
-    + "1"                      // 1
+    + OVERLOAD_EFFECT              // overload
+    + EFFECT_SEPARATOR             //
+    + "1"                          // 1
 );
 //}
 
@@ -1899,20 +1898,20 @@ const std::string MANIAC_EFFECTS(
 constexpr const char* PEACEMAKER_NAME = "Peacemaker";
 constexpr const char* PEACEMAKER_DESCRIPTION =
     "If you haven't attacked this turn, both players' attacks "
-    "deal 1000 less damage until the start of your next turn."
+    "deal 10000 less damage until the start of your next turn."
 ;
 const std::string PEACEMAKER_EFFECTS(
     std::string(ATTACKLESS_EFFECT) // attackless
     + EFFECT_TERMINATOR
     + POWER_EFFECT                 // power
     + EFFECT_SEPARATOR             //
-    + "-1000"                      // -1000
+    + "-10000"                      // -10000
     + EFFECT_TERMINATOR
     + POWER_EFFECT                 // power
     + EFFECT_SEPARATOR             //
     + OPPONENT_EFFECT              // opponent
     + EFFECT_SEPARATOR             //
-    + "-1000"                      // -1000
+    + "-10000"                      // -10000
 );
 //}
 
