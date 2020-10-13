@@ -619,15 +619,15 @@ const DeckCode MIDRANGE_DECK(
         1, // RECRUITER
         
         1, // CHEF
-        0, // TRADER
+        1, // TRADER
         1, // LIBRARIAN
         1, // EXPERIMENTER
         0, // PERSONAL TRAINER
-        0, // SCAPEGOAT
+        1, // SCAPEGOAT
         
         1, // ELECTRICIAN
         0, // ALCHEMIST
-        1, // TIME TRAVELLER
+        0, // TIME TRAVELLER
         0, // BANKER
         0, // GLUTTON
         
@@ -651,7 +651,7 @@ const DeckCode MIDRANGE_DECK(
         1, // MATCHMAKER
         1, // PLUMBER
         1, // LOCKSMITH
-        1, // LOCK PICKER
+        0, // LOCK PICKER
         0, // GATEKEEPER
         0, // MILLER
         1, // ARSONIST
@@ -730,13 +730,13 @@ const DeckCode AGGRO_COMBO_DECK(
         0, // PROFESSOR
         1, // LECTURER
         1, // INVESTOR
-        0, // RESEARCHER
-        0, // GAMBLER
+        1, // RESEARCHER
+        1, // GAMBLER
         0, // RECRUITER
         
         1, // CHEF
         1, // TRADER
-        0, // LIBRARIAN
+        1, // LIBRARIAN
         0, // EXPERIMENTER
         1, // PERSONAL TRAINER
         0, // SCAPEGOAT
@@ -756,8 +756,8 @@ const DeckCode AGGRO_COMBO_DECK(
         0, // DOCTOR
         0, // ESCAPE ARTIST
         
-        1, // ASSASSIN
-        1, // SNIPER
+        0, // ASSASSIN
+        0, // SNIPER
         
         1, // CHEERLEADER
         1, // ARMS SMUGGLER
@@ -767,7 +767,7 @@ const DeckCode AGGRO_COMBO_DECK(
         1, // MATCHMAKER
         1, // PLUMBER
         1, // LOCKSMITH
-        1, // LOCK PICKER
+        0, // LOCK PICKER
         1, // GATEKEEPER
         0, // MILLER
         0, // ARSONIST
@@ -1010,4 +1010,4 @@ const DeckCode OTK_COMBO_DECK(
         0, // OMEGA ENERGY
         0  // BOND ENERGY
     }
-);
+);c

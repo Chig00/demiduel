@@ -1610,8 +1610,7 @@ const std::string ALCHEMIST_EFFECTS(
 constexpr const char* TIME_TRAVELLER_NAME = "Time Traveller";
 constexpr const char* TIME_TRAVELLER_DESCRIPTION =
     "Search your trash for a card and draw it.\n"
-    "You can play 1 more card this turn.\n"
-    "You can play 2 fewer cards next turn."
+    "You can play 1 less card next turn."
 ;
 const std::string TIME_TRAVELLER_EFFECTS(
     std::string(SEARCH_EFFECT) // search
@@ -1620,13 +1619,9 @@ const std::string TIME_TRAVELLER_EFFECTS(
     + EFFECT_SEPARATOR         //
     + "1"                      // 1
     + EFFECT_TERMINATOR
-    + EXTRA_PLAY_EFFECT        // extra_play
-    + EFFECT_SEPARATOR         //
-    + "1"                      // 1
-    + EFFECT_TERMINATOR
     + OVERLOAD_EFFECT          // overload
     + EFFECT_SEPARATOR         //
-    + "2"                      // 2
+    + "1"                      // 1
 );
 //}
 
@@ -1856,15 +1851,20 @@ const std::string CHEERLEADER_EFFECTS(
 //{
 constexpr const char* ARMS_SMUGGLER_NAME = "Arms Smuggler";
 constexpr const char* ARMS_SMUGGLER_DESCRIPTION =
-    "Your attacks deal 50 more damage for the rest of the duel.\n"
-    "You can play 1 less card next turn."
+    "Attacks deal 100 more damage for the rest of the duel.\n"
+    "Draw a card.\n"
+    "You can play 1 more card this turn."
 ;
 const std::string ARMS_SMUGGLER_EFFECTS(
     std::string(POWER_AURA_EFFECT) // power_aura
     + EFFECT_SEPARATOR             //
-    + "50"                         // 50
+    + "100"                        // 100
     + EFFECT_TERMINATOR
-    + OVERLOAD_EFFECT              // overload
+    + DRAW_EFFECT                  // draw
+    + EFFECT_SEPARATOR             //
+    + "1"                          // 1
+    + EFFECT_TERMINATOR
+    + EXTRA_PLAY_EFFECT            // extra_play
     + EFFECT_SEPARATOR             //
     + "1"                          // 1
 );

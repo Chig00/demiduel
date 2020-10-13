@@ -1,4 +1,13 @@
 /* CHANGELOG:
+     v1.11.1:
+       Time Traveller no longer gives an extra play.
+       Time Traveller's overload was decreased from 2 to 1.
+       Arms Smuggler's power aura was increased from 50 to 100.
+       Arms Sumggler's power aura is now symmetrical.
+       Arms Smuggler's overload was decreased from 1 to 0.
+       Arms Smuggler now gives an extra play.
+       Arms Smuggler now draws a card.
+       Changes to some of the decklists.
      v1.11:
        Void Pact's scaling was decreased from 25 to 20.
        Void Pact's cap was decreased from 375 to 300.

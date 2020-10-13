@@ -9,7 +9,7 @@
 // System Constants
 //{
 // The current version of the program.
-constexpr int VERSION[] = {1, 11, 0, 0};
+constexpr int VERSION[] = {1, 11, 1, 0};
 
 // The title of the game in string form.
 constexpr const char* TITLE_STRING = "Demi Duel";
@@ -1979,12 +1979,11 @@ constexpr Renderer::Justification ANNOUNCEMENT_JUSTIFICATION = Renderer::CENTRE_
 
 // Announcement to declare permanent player empowerment.
 //{
-#define POWER_AURA_ANNOUNCEMENT (                      \
-    std::string(opposing ? "Your opponent's" : "Your") \
-    + " fighters' attacks deal "                       \
-    + std::to_string(abs(std::stoi(power)))            \
-    + (std::stoi(power) < 0 ? " less" : " more")       \
-    + " damage for the rest of the duel!"              \
+#define POWER_AURA_ANNOUNCEMENT (                \
+    "Attacks deal "                              \
+    + std::to_string(abs(std::stoi(power)))      \
+    + (std::stoi(power) < 0 ? " less" : " more") \
+    + " damage for the rest of the duel!"        \
 )
 //}
 
@@ -4714,8 +4713,7 @@ const std::string ALCHEMIST_EFFECTS(
 constexpr const char* TIME_TRAVELLER_NAME = "Time Traveller";
 constexpr const char* TIME_TRAVELLER_DESCRIPTION =
     "Search your trash for a card and draw it.\n"
-    "You can play 1 more card this turn.\n"
-    "You can play 2 fewer cards next turn."
+    "You can play 1 less card next turn."
 ;
 const std::string TIME_TRAVELLER_EFFECTS(
     std::string(SEARCH_EFFECT) // search
@@ -4724,13 +4722,9 @@ const std::string TIME_TRAVELLER_EFFECTS(
     + EFFECT_SEPARATOR         //
     + "1"                      // 1
     + EFFECT_TERMINATOR
-    + EXTRA_PLAY_EFFECT        // extra_play
-    + EFFECT_SEPARATOR         //
-    + "1"                      // 1
-    + EFFECT_TERMINATOR
     + OVERLOAD_EFFECT          // overload
     + EFFECT_SEPARATOR         //
-    + "2"                      // 2
+    + "1"                      // 1
 );
 //}
 
@@ -4960,15 +4954,20 @@ const std::string CHEERLEADER_EFFECTS(
 //{
 constexpr const char* ARMS_SMUGGLER_NAME = "Arms Smuggler";
 constexpr const char* ARMS_SMUGGLER_DESCRIPTION =
-    "Your attacks deal 50 more damage for the rest of the duel.\n"
-    "You can play 1 less card next turn."
+    "Attacks deal 100 more damage for the rest of the duel.\n"
+    "Draw a card.\n"
+    "You can play 1 more card this turn."
 ;
 const std::string ARMS_SMUGGLER_EFFECTS(
     std::string(POWER_AURA_EFFECT) // power_aura
     + EFFECT_SEPARATOR             //
-    + "50"                         // 50
+    + "100"                        // 100
     + EFFECT_TERMINATOR
-    + OVERLOAD_EFFECT              // overload
+    + DRAW_EFFECT                  // draw
+    + EFFECT_SEPARATOR             //
+    + "1"                          // 1
+    + EFFECT_TERMINATOR
+    + EXTRA_PLAY_EFFECT            // extra_play
     + EFFECT_SEPARATOR             //
     + "1"                          // 1
 );
@@ -12046,6 +12045,12 @@ class Player: public Affectable {
                         + effects[i][1]
                     );
                     
+                    opponent->affect(
+                        effects[i][0]
+                        + EFFECT_SEPARATOR
+                        + effects[i][1]
+                    );
+                    
                     const std::string& power = effects[i][1];
                     announce(POWER_AURA_ANNOUNCEMENT);
                 }
@@ -17856,15 +17861,15 @@ const DeckCode MIDRANGE_DECK(
         1, // RECRUITER
         
         1, // CHEF
-        0, // TRADER
+        1, // TRADER
         1, // LIBRARIAN
         1, // EXPERIMENTER
         0, // PERSONAL TRAINER
-        0, // SCAPEGOAT
+        1, // SCAPEGOAT
         
         1, // ELECTRICIAN
         0, // ALCHEMIST
-        1, // TIME TRAVELLER
+        0, // TIME TRAVELLER
         0, // BANKER
         0, // GLUTTON
         
@@ -17888,7 +17893,7 @@ const DeckCode MIDRANGE_DECK(
         1, // MATCHMAKER
         1, // PLUMBER
         1, // LOCKSMITH
-        1, // LOCK PICKER
+        0, // LOCK PICKER
         0, // GATEKEEPER
         0, // MILLER
         1, // ARSONIST
@@ -17967,13 +17972,13 @@ const DeckCode AGGRO_COMBO_DECK(
         0, // PROFESSOR
         1, // LECTURER
         1, // INVESTOR
-        0, // RESEARCHER
-        0, // GAMBLER
+        1, // RESEARCHER
+        1, // GAMBLER
         0, // RECRUITER
         
         1, // CHEF
         1, // TRADER
-        0, // LIBRARIAN
+        1, // LIBRARIAN
         0, // EXPERIMENTER
         1, // PERSONAL TRAINER
         0, // SCAPEGOAT
@@ -17993,8 +17998,8 @@ const DeckCode AGGRO_COMBO_DECK(
         0, // DOCTOR
         0, // ESCAPE ARTIST
         
-        1, // ASSASSIN
-        1, // SNIPER
+        0, // ASSASSIN
+        0, // SNIPER
         
         1, // CHEERLEADER
         1, // ARMS SMUGGLER
@@ -18004,7 +18009,7 @@ const DeckCode AGGRO_COMBO_DECK(
         1, // MATCHMAKER
         1, // PLUMBER
         1, // LOCKSMITH
-        1, // LOCK PICKER
+        0, // LOCK PICKER
         1, // GATEKEEPER
         0, // MILLER
         0, // ARSONIST
@@ -22407,6 +22412,15 @@ int main(int argc, char** argv) noexcept {
 //}
 
 /* CHANGELOG:
+     v1.11.1:
+       Time Traveller no longer gives an extra play.
+       Time Traveller's overload was decreased from 2 to 1.
+       Arms Smuggler's power aura was increased from 50 to 100.
+       Arms Sumggler's power aura is now symmetrical.
+       Arms Smuggler's overload was decreased from 1 to 0.
+       Arms Smuggler now gives an extra play.
+       Arms Smuggler now draws a card.
+       Changes to some of the decklists.
      v1.11:
        Void Pact's scaling was decreased from 25 to 20.
        Void Pact's cap was decreased from 375 to 300.
