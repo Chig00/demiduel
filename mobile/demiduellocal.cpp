@@ -9,7 +9,7 @@
 // System Constants
 //{
 // The current version of the program.
-constexpr int VERSION[] = {1, 12, 0, 1};
+constexpr int VERSION[] = {1, 12, 0, 2};
 
 // The title of the game in string form.
 constexpr const char* TITLE_STRING = "Demi Duel";
@@ -14542,7 +14542,8 @@ class Player: public Affectable {
          * If the active fighter is rooted, this function has no effect.
          */
         void switch_in(int index, bool clear = true) noexcept {
-            if (!fighters[0].effect_search(ROOT_EFFECT).size()) {
+            // Combo Attack switches still work when rooted.
+            if (!clear || !fighters[0].effect_search(ROOT_EFFECT).size()) {
                 Fighter temporary(fighters[index]);
                 fighters[index] = fighters[0];
                 fighters[0] = temporary;
@@ -22413,6 +22414,8 @@ int main(int argc, char** argv) noexcept {
 //}
 
 /* CHANGELOG:
+     v1.12.0.2:
+       Rooting no longer affects Combo Attack.
      v1.12.0.1:
        Replaced Chef in Midrange with Electrician.
      v1.12:

@@ -1,4 +1,6 @@
 /* CHANGELOG:
+     v1.12.0.2:
+       Rooting no longer affects Combo Attack.
      v1.12.0.1:
        Replaced Chef in Midrange with Electrician.
      v1.12:
