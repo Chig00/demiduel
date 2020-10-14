@@ -1,4 +1,6 @@
 /* CHANGELOG:
+     v1.12.0.1:
+       Replaced Chef in Midrange with Electrician.
      v1.12:
        Banisher's retreat cost was decreased from 2000 to 0.
        Burnt Offering was renamed to Void Servant.

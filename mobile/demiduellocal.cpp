@@ -9,7 +9,7 @@
 // System Constants
 //{
 // The current version of the program.
-constexpr int VERSION[] = {1, 12, 0, 0};
+constexpr int VERSION[] = {1, 12, 0, 1};
 
 // The title of the game in string form.
 constexpr const char* TITLE_STRING = "Demi Duel";
@@ -17861,14 +17861,14 @@ const DeckCode MIDRANGE_DECK(
         0, // GAMBLER
         1, // RECRUITER
         
-        1, // CHEF
+        0, // CHEF
         1, // TRADER
         1, // LIBRARIAN
         1, // EXPERIMENTER
         0, // PERSONAL TRAINER
         1, // SCAPEGOAT
         
-        0, // ELECTRICIAN
+        1, // ELECTRICIAN
         0, // ALCHEMIST
         0, // TIME TRAVELLER
         0, // BANKER
@@ -22413,6 +22413,8 @@ int main(int argc, char** argv) noexcept {
 //}
 
 /* CHANGELOG:
+     v1.12.0.1:
+       Replaced Chef in Midrange with Electrician.
      v1.12:
        Banisher's retreat cost was decreased from 2000 to 0.
        Burnt Offering was renamed to Void Servant.

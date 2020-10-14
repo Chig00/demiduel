@@ -618,14 +618,14 @@ const DeckCode MIDRANGE_DECK(
         0, // GAMBLER
         1, // RECRUITER
         
-        1, // CHEF
+        0, // CHEF
         1, // TRADER
         1, // LIBRARIAN
         1, // EXPERIMENTER
         0, // PERSONAL TRAINER
         1, // SCAPEGOAT
         
-        0, // ELECTRICIAN
+        1, // ELECTRICIAN
         0, // ALCHEMIST
         0, // TIME TRAVELLER
         0, // BANKER
