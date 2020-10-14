@@ -9,7 +9,7 @@
 // System Constants
 //{
 // The current version of the program.
-constexpr int VERSION[] = {1, 11, 1, 0};
+constexpr int VERSION[] = {1, 12, 0, 0};
 
 // The title of the game in string form.
 constexpr const char* TITLE_STRING = "Demi Duel";
@@ -3973,37 +3973,46 @@ constexpr int LOST_SOUL_ATTACK_COST = 0;
 
 // Void Family
 //{
+// Void Servant Ability Constants
+//{
+constexpr const char* VOID_SERVANT_ABILITY_NAME = "Void Servant";
+constexpr const char* VOID_SERVANT_ABILITY_DESCRIPTION =
+    "At the end of your turn, banish all of the cards in your trash."
+;
+constexpr const char* VOID_SERVANT_ABILITY_EFFECTS = BANISHMENT_EFFECT; // banishment
+constexpr bool VOID_SERVANT_ABILITY_PASSIVE = true;
+constexpr int VOID_SERVANT_ABILITY_USES = PASSIVE_USES;
+//}
+
 // Banisher
 //{
 constexpr const char* BANISHER_NAME = "Banisher";
 constexpr const char* BANISHER_ELEMENT = FIRE_ELEMENT;
 constexpr int BANISHER_HEALTH = 1100;
-constexpr int BANISHER_RETREAT_COST = 2000;
+constexpr int BANISHER_RETREAT_COST = 0;
 constexpr const char* BANISHER_OLD_RANK = NO_OLD_RANK;
-constexpr const char* BANISHER_ABILITY_NAME = "Burnt Offering";
-constexpr const char* BANISHER_ABILITY_DESCRIPTION =
-    "At the end of your turn, banish all of the cards in your trash."
-;
-constexpr const char* BANISHER_ABILITY_EFFECTS = BANISHMENT_EFFECT; // banishment
-constexpr bool BANISHER_ABILITY_PASSIVE = true;
-constexpr int BANISHER_ABILITY_USES = PASSIVE_USES;
+constexpr const char* BANISHER_ABILITY_NAME = VOID_SERVANT_ABILITY_NAME;
+constexpr const char* BANISHER_ABILITY_DESCRIPTION = VOID_SERVANT_ABILITY_DESCRIPTION;
+constexpr const char* BANISHER_ABILITY_EFFECTS = VOID_SERVANT_ABILITY_EFFECTS;
+constexpr bool BANISHER_ABILITY_PASSIVE = VOID_SERVANT_ABILITY_PASSIVE;
+constexpr int BANISHER_ABILITY_USES = VOID_SERVANT_ABILITY_USES;
 constexpr const char* BANISHER_ATTACK_NAME = "Shadow Flame";
 constexpr const char* BANISHER_ATTACK_DESCRIPTION =
-    "Your opponent's active fighter takes 40 damage at "
+    "Your opponent's active fighter takes 50 damage at "
     "the end of each turn, for each card in the void, "
-    "for a maximum of 600 damage."
+    "for a maximum of 500 damage."
 ;
 const std::string BANISHER_ATTACK_EFFECTS(
     std::string(CURSE_EFFECT) // curse
     + EFFECT_SEPARATOR        //
     + VOID_EFFECT             // void
     + EFFECT_SEPARATOR        //
-    + "40"                    // 40
+    + "50"                    // 50
     + EFFECT_SEPARATOR        //
-    + "600"                   // 600
+    + "500"                   // 500
 );
 constexpr int BANISHER_ATTACK_DAMAGE = 0;
-constexpr int BANISHER_ATTACK_COST = 2000;
+constexpr int BANISHER_ATTACK_COST = 0;
 //}
 
 // Banshee
@@ -4011,38 +4020,30 @@ constexpr int BANISHER_ATTACK_COST = 2000;
 constexpr const char* BANSHEE_NAME = "Banshee";
 constexpr const char* BANSHEE_ELEMENT = WATER_ELEMENT;
 constexpr int BANSHEE_HEALTH = 1100;
-constexpr int BANSHEE_RETREAT_COST = 2000;
+constexpr int BANSHEE_RETREAT_COST = 0;
 constexpr const char* BANSHEE_OLD_RANK = NO_OLD_RANK;
-constexpr const char* BANSHEE_ABILITY_NAME = "Forbidden Fuel";
-constexpr const char* BANSHEE_ABILITY_DESCRIPTION =
-    "This fighter can attack and retreat for 250 less energy for each card in the void."
-;
-const std::string BANSHEE_ABILITY_EFFECTS(
-    std::string(FUEL_EFFECT) // fuel
-    + EFFECT_SEPARATOR       //
-    + VOID_EFFECT            // void
-    + EFFECT_SEPARATOR       //
-    + "250"                  // 250
-);
-constexpr bool BANSHEE_ABILITY_PASSIVE = true;
-constexpr int BANSHEE_ABILITY_USES = PASSIVE_USES;
+constexpr const char* BANSHEE_ABILITY_NAME = VOID_SERVANT_ABILITY_NAME;
+constexpr const char* BANSHEE_ABILITY_DESCRIPTION = VOID_SERVANT_ABILITY_DESCRIPTION;
+constexpr const char* BANSHEE_ABILITY_EFFECTS = VOID_SERVANT_ABILITY_EFFECTS;
+constexpr bool BANSHEE_ABILITY_PASSIVE = VOID_SERVANT_ABILITY_PASSIVE;
+constexpr int BANSHEE_ABILITY_USES = VOID_SERVANT_ABILITY_USES;
 constexpr const char* BANSHEE_ATTACK_NAME = "Screech";
 constexpr const char* BANSHEE_ATTACK_DESCRIPTION =
-    "Deal 60 damage to your opponent's active fighter, "
+    "Deal 75 damage to your opponent's active fighter, "
     "for each card in the void, "
-    "for a maximum of 900 damage."
+    "for a maximum of 750 damage."
 ;
 const std::string BANSHEE_ATTACK_EFFECTS(
     std::string(POWER_EFFECT) // power
     + EFFECT_SEPARATOR        //
     + VOID_EFFECT             // void
     + EFFECT_SEPARATOR        //
-    + "60"                    // 60
+    + "75"                    // 75
     + EFFECT_SEPARATOR        //
-    + "900"                   // 900
+    + "750"                   // 750
 );
 constexpr int BANSHEE_ATTACK_DAMAGE = 0;
-constexpr int BANSHEE_ATTACK_COST = 2000;
+constexpr int BANSHEE_ATTACK_COST = 0;
 //}
 
 // Cultist
@@ -4055,7 +4056,7 @@ constexpr const char* CULTIST_OLD_RANK = NO_OLD_RANK;
 constexpr const char* CULTIST_ABILITY_NAME = "Void Pact";
 constexpr const char* CULTIST_ABILITY_DESCRIPTION =
     "Once a turn, you may banish a card in your hand "
-    "and heal 20 damage from one "
+    "and heal 30 damage from one "
     "of your fighters, for each card in the void, "
     "for a maximum of 300 healing."
 ;
@@ -4068,7 +4069,7 @@ const std::string CULTIST_ABILITY_EFFECTS(
     + EFFECT_SEPARATOR         //
     + VOID_EFFECT              // void
     + EFFECT_SEPARATOR         //
-    + "20"                     // 20
+    + "30"                     // 30
     + EFFECT_SEPARATOR         //
     + "300"                    // 300
 );
@@ -17867,7 +17868,7 @@ const DeckCode MIDRANGE_DECK(
         0, // PERSONAL TRAINER
         1, // SCAPEGOAT
         
-        1, // ELECTRICIAN
+        0, // ELECTRICIAN
         0, // ALCHEMIST
         0, // TIME TRAVELLER
         0, // BANKER
@@ -17880,7 +17881,7 @@ const DeckCode MIDRANGE_DECK(
         1, // INNKEEPER
         1, // MIRACLE WORKER
         0, // DOCTOR
-        0, // ESCAPE ARTIST
+        1, // ESCAPE ARTIST
         
         1, // ASSASSIN
         1, // SNIPER
@@ -17893,8 +17894,8 @@ const DeckCode MIDRANGE_DECK(
         1, // MATCHMAKER
         1, // PLUMBER
         1, // LOCKSMITH
-        0, // LOCK PICKER
-        0, // GATEKEEPER
+        1, // LOCK PICKER
+        1, // GATEKEEPER
         0, // MILLER
         1, // ARSONIST
         
@@ -17904,7 +17905,7 @@ const DeckCode MIDRANGE_DECK(
         0, // WATER ENERGY
         0, // EARTH ENERGY
         
-        2, // UNIVERSAL ENERGY
+        0, // UNIVERSAL ENERGY
         0, // ALPHA ENERGY
         2, // OMEGA ENERGY
         0  // BOND ENERGY
@@ -22412,6 +22413,19 @@ int main(int argc, char** argv) noexcept {
 //}
 
 /* CHANGELOG:
+     v1.12:
+       Banisher's retreat cost was decreased from 2000 to 0.
+       Burnt Offering was renamed to Void Servant.
+       Shadow Flame's scaling was increased from 40 to 50.
+       Shadow Flame's cap was decreased from 600 to 500.
+       Shadow Flame's cost was decreased from 2000 to 0.
+       Banshee's retreat cost was decreased from 2000 to 0.
+       Forbidden Fuel was replaced with Void Servant.
+       Screech's scaling was increased from 60 to 75.
+       Screech's cap was decreased from 900 to 750.
+       Screech's cost was decreased from 2000 to 0.
+       Void Pact's scaling was increased from 20 to 30.
+       Changes to the Midrange Decklist.
      v1.11.1:
        Time Traveller no longer gives an extra play.
        Time Traveller's overload was decreased from 2 to 1.

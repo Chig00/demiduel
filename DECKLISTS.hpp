@@ -625,7 +625,7 @@ const DeckCode MIDRANGE_DECK(
         0, // PERSONAL TRAINER
         1, // SCAPEGOAT
         
-        1, // ELECTRICIAN
+        0, // ELECTRICIAN
         0, // ALCHEMIST
         0, // TIME TRAVELLER
         0, // BANKER
@@ -638,7 +638,7 @@ const DeckCode MIDRANGE_DECK(
         1, // INNKEEPER
         1, // MIRACLE WORKER
         0, // DOCTOR
-        0, // ESCAPE ARTIST
+        1, // ESCAPE ARTIST
         
         1, // ASSASSIN
         1, // SNIPER
@@ -651,8 +651,8 @@ const DeckCode MIDRANGE_DECK(
         1, // MATCHMAKER
         1, // PLUMBER
         1, // LOCKSMITH
-        0, // LOCK PICKER
-        0, // GATEKEEPER
+        1, // LOCK PICKER
+        1, // GATEKEEPER
         0, // MILLER
         1, // ARSONIST
         
@@ -662,7 +662,7 @@ const DeckCode MIDRANGE_DECK(
         0, // WATER ENERGY
         0, // EARTH ENERGY
         
-        2, // UNIVERSAL ENERGY
+        0, // UNIVERSAL ENERGY
         0, // ALPHA ENERGY
         2, // OMEGA ENERGY
         0  // BOND ENERGY
@@ -1010,4 +1010,4 @@ const DeckCode OTK_COMBO_DECK(
         0, // OMEGA ENERGY
         0  // BOND ENERGY
     }
-);c
+);

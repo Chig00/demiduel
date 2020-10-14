@@ -1,4 +1,17 @@
 /* CHANGELOG:
+     v1.12:
+       Banisher's retreat cost was decreased from 2000 to 0.
+       Burnt Offering was renamed to Void Servant.
+       Shadow Flame's scaling was increased from 40 to 50.
+       Shadow Flame's cap was decreased from 600 to 500.
+       Shadow Flame's cost was decreased from 2000 to 0.
+       Banshee's retreat cost was decreased from 2000 to 0.
+       Forbidden Fuel was replaced with Void Servant.
+       Screech's scaling was increased from 60 to 75.
+       Screech's cap was decreased from 900 to 750.
+       Screech's cost was decreased from 2000 to 0.
+       Void Pact's scaling was increased from 20 to 30.
+       Changes to the Midrange Decklist.
      v1.11.1:
        Time Traveller no longer gives an extra play.
        Time Traveller's overload was decreased from 2 to 1.
