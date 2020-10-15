@@ -7,7 +7,7 @@
 // System Constants
 //{
 // The current version of the program.
-constexpr int VERSION[] = {1, 12, 1, 0};
+constexpr int VERSION[] = {1, 12, 2, 0};
 
 // The title of the game in string form.
 constexpr const char* TITLE_STRING = "Demi Duel";
@@ -241,6 +241,8 @@ constexpr const char* ASSASSINATE_EFFECT = "assassinate";
 constexpr const char* ASCENSION_EFFECT = "ascension";
 constexpr const char* POWER_AURA_EFFECT = "power_aura";
 constexpr const char* DEPOWER_EFFECT = "depower";
+constexpr const char* INVISIBLE_EFFECT = "invisible";
+constexpr const char* LOST_EFFECT = "lost";
 //}
 
 // The constants for effect explanations.
@@ -668,10 +670,33 @@ constexpr const char* ROOT_REPRESENTATION = "Rooted";
     + "next turn."                                          \
 )
 //}
+
+// The constants for the invisible explanation.
+//{
+#define INVISIBLE_CONDITION (health == max_health && (value = effect_count(INVISIBLE_EFFECT)))
+constexpr const char* INVISIBLE_REPRESENTATION = "Invisible";
+#define INVISIBLE_VALUE std::to_string(value)
+#define INVISIBLE_EXPLANATION (             \
+    "If this fighter is damaged, it takes " \
+    + effect_value                          \
+    + " damage instead."                    \
+)
+//}
+
+// The constants for the lost explanation.
+//{
+#define LOST_CONDITION effect_search(LOST_EFFECT).size()
+constexpr const char* LOST_REPRESENTATION = "Lost";
+constexpr const char* LOST_VALUE = "";
+constexpr const char* LOST_EXPLANATION =
+    "When this fighter is defeated, it and its attached "
+    "energy cards are returned to its player's hand."
+;
+//}
 //}
 
 // The total number of fighter-specific explainable effects.
-constexpr int EXPLANATION_COUNT = 14;
+constexpr int EXPLANATION_COUNT = 16;
 
 // All of the fighter-specific explainable effect conditions.
 //{
@@ -681,14 +706,16 @@ constexpr int EXPLANATION_COUNT = 14;
     : X == 2 ? static_cast<bool>(AFFINITY_CONDITION)       \
     : X == 3 ? static_cast<bool>(COMBO_CONDITION)          \
     : X == 4 ? static_cast<bool>(FORSAKEN_CONDITION)       \
-    : X == 5 ? static_cast<bool>(AGGRESSIVE_CONDITION)     \
-    : X == 6 ? static_cast<bool>(INVINCIBILITY_CONDITION)  \
-    : X == 7 ? static_cast<bool>(ROOT_CONDITION)           \
-    : X == 8 ? static_cast<bool>(CRIPPLE_CONDITION)        \
-    : X == 9 ? static_cast<bool>(IMPAIR_CONDITION)         \
-    : X == 10 ? static_cast<bool>(FIGHTER_POWER_CONDITION) \
-    : X == 11 ? static_cast<bool>(AGILITY_CONDITION)       \
-    : X == 12 ? static_cast<bool>(CURSE_CONDITION)         \
+    : X == 5 ? static_cast<bool>(LOST_CONDITION)           \
+    : X == 6 ? static_cast<bool>(AGGRESSIVE_CONDITION)     \
+    : X == 7 ? static_cast<bool>(INVINCIBILITY_CONDITION)  \
+    : X == 8 ? static_cast<bool>(INVISIBLE_CONDITION)      \
+    : X == 9 ? static_cast<bool>(ROOT_CONDITION)           \
+    : X == 10 ? static_cast<bool>(CRIPPLE_CONDITION)        \
+    : X == 11 ? static_cast<bool>(IMPAIR_CONDITION)        \
+    : X == 12 ? static_cast<bool>(FIGHTER_POWER_CONDITION) \
+    : X == 13 ? static_cast<bool>(AGILITY_CONDITION)       \
+    : X == 14 ? static_cast<bool>(CURSE_CONDITION)         \
     : static_cast<bool>(RANK_BOND_CONDITION)               \
 )
 //}
@@ -700,8 +727,10 @@ constexpr const char* EFFECT_REPRESENTATIONS[EXPLANATION_COUNT] = {
     AFFINITY_REPRESENTATION,
     COMBO_REPRESENTATION,
     FORSAKEN_REPRESENTATION,
+    LOST_REPRESENTATION,
     AGGRESSIVE_REPRESENTATION,
     INVINCIBILITY_REPRESENTATION,
+    INVISIBLE_REPRESENTATION,
     ROOT_REPRESENTATION,
     CRIPPLE_REPRESENTATION,
     IMPAIR_REPRESENTATION,
@@ -719,14 +748,16 @@ constexpr const char* EFFECT_REPRESENTATIONS[EXPLANATION_COUNT] = {
     : X == 2 ? AFFINITY_VALUE       \
     : X == 3 ? COMBO_VALUE          \
     : X == 4 ? FORSAKEN_VALUE       \
-    : X == 5 ? AGGRESSIVE_VALUE     \
-    : X == 6 ? INVINCIBILITY_VALUE  \
-    : X == 7 ? ROOT_VALUE           \
-    : X == 8 ? CRIPPLE_VALUE        \
-    : X == 9 ? IMPAIR_VALUE         \
-    : X == 10 ? FIGHTER_POWER_VALUE \
-    : X == 11 ? AGILITY_VALUE       \
-    : X == 12 ? CURSE_VALUE         \
+    : X == 5 ? LOST_VALUE           \
+    : X == 6 ? AGGRESSIVE_VALUE     \
+    : X == 7 ? INVINCIBILITY_VALUE  \
+    : X == 8 ? INVISIBLE_VALUE      \
+    : X == 9 ? ROOT_VALUE           \
+    : X == 10 ? CRIPPLE_VALUE       \
+    : X == 11 ? IMPAIR_VALUE        \
+    : X == 12 ? FIGHTER_POWER_VALUE \
+    : X == 13 ? AGILITY_VALUE       \
+    : X == 14 ? CURSE_VALUE         \
     : RANK_BOND_VALUE               \
 )
 //}
@@ -739,14 +770,16 @@ constexpr const char* EFFECT_REPRESENTATIONS[EXPLANATION_COUNT] = {
     : X == 2 ? AFFINITY_EXPLANATION       \
     : X == 3 ? COMBO_EXPLANATION          \
     : X == 4 ? FORSAKEN_EXPLANATION       \
-    : X == 5 ? AGGRESSIVE_EXPLANATION     \
-    : X == 6 ? INVINCIBILITY_EXPLANATION  \
-    : X == 7 ? ROOT_EXPLANATION           \
-    : X == 8 ? CRIPPLE_EXPLANATION        \
-    : X == 9 ? IMPAIR_EXPLANATION         \
-    : X == 10 ? FIGHTER_POWER_EXPLANATION \
-    : X == 11 ? AGILITY_EXPLANATION       \
-    : X == 12 ? CURSE_EXPLANATION         \
+    : X == 5 ? LOST_EXPLANATION           \
+    : X == 6 ? AGGRESSIVE_EXPLANATION     \
+    : X == 7 ? INVINCIBILITY_EXPLANATION  \
+    : X == 8 ? INVISIBLE_EXPLANATION      \
+    : X == 9 ? ROOT_EXPLANATION           \
+    : X == 10 ? CRIPPLE_EXPLANATION       \
+    : X == 11 ? IMPAIR_EXPLANATION        \
+    : X == 12 ? FIGHTER_POWER_EXPLANATION \
+    : X == 13 ? AGILITY_EXPLANATION       \
+    : X == 14 ? CURSE_EXPLANATION         \
     : RANK_BOND_EXPLANATION               \
 )
 //}
@@ -3933,16 +3966,11 @@ constexpr const char* LOST_SOUL_ELEMENT = AIR_ELEMENT;
 constexpr int LOST_SOUL_HEALTH = 1000;
 constexpr int LOST_SOUL_RETREAT_COST = 0;
 constexpr const char* LOST_SOUL_OLD_RANK = NO_OLD_RANK;
-constexpr const char* LOST_SOUL_ABILITY_NAME = "Forsaken";
+constexpr const char* LOST_SOUL_ABILITY_NAME = "Lost";
 constexpr const char* LOST_SOUL_ABILITY_DESCRIPTION =
-    "When this fighter is defeated, banish it, its energy cards, "
-    "its life card, and the top card of each player's deck."
+    "When this fighter is defeated, return it and its attached energy cards to your hand."
 ;
-const std::string LOST_SOUL_ABILITY_EFFECTS(
-    std::string(FORSAKEN_EFFECT) // forsaken
-    + EFFECT_SEPARATOR           //
-    + "1"                        // 1
-);
+constexpr const char* LOST_SOUL_ABILITY_EFFECTS = LOST_EFFECT; // lost
 constexpr bool LOST_SOUL_ABILITY_PASSIVE = true;
 constexpr int LOST_SOUL_ABILITY_USES = PASSIVE_USES;
 constexpr const char* LOST_SOUL_ATTACK_NAME = "Wander";
@@ -15683,12 +15711,19 @@ class Player: public Affectable {
                     // Non-zero if the fighter has the forsaken effect.
                     int forsaken = fighters[i].effect_count(FORSAKEN_EFFECT);
                     
+                    // True if the fighter has the lost effect.
+                    bool lost = fighters[i].effect_search(LOST_EFFECT).size();
+                    
                     // The defeat is announced.
                     announce(DEFEAT_ANNOUNCEMENT);
                     
                     // The energy attached to the fighter is discarded.
                     if (forsaken) {
                         the_void.store(fighters[i].get_energy());
+                    }
+                    
+                    else if (lost) {
+                        hand.store(fighters[i].get_energy());
                     }
                     
                     else {
@@ -15702,6 +15737,10 @@ class Player: public Affectable {
                         
                         if (forsaken) {
                             the_void.store(fighters[i]);
+                        }
+                        
+                        else if (lost) {
+                            hand.store(fighters[i]);
                         }
                         
                         else {
@@ -16070,6 +16109,11 @@ class Player: public Affectable {
             // Forsaken fighters are banished.
             if (fighters[0].effect_count(FORSAKEN_EFFECT)) {
                 the_void.store(fighters[0]);
+            }
+            
+            // Lost fighters are returned to hand.
+            else if (fighters[0].effect_search(LOST_EFFECT).size()) {
+                hand.store(fighters[0]);
             }
             
             // Fighters are usually discarded.
@@ -17681,7 +17725,7 @@ const DeckCode MILL_DECK(
     "Pyromancer can discard random cards from your opponent's deck.\n\n"
     "Glutton shuffles discarded energy cards back into the deck, "
     "so you don't draw life cards while your opponent does!\n\n"
-    "Lost Soul, Miller, and Arsonist also help to mill the opponent.\n\n"
+    "Miller and Arsonist also help to mill the opponent.\n\n"
     "Boxer can protect Pyromancer from being forced into the active position.",
     {
         // Fighter Cards
@@ -22329,6 +22373,10 @@ int main(int argc, char** argv) noexcept {
 //}
 
 /* CHANGELOG:
+     v1.12.2:
+       Forsaken was replaced with Lost.
+       Lost returns the fighter and its energy to hand upon defeat.
+       Updated Mill's description to no longer mention Lost Soul's milling ability.
      v1.12.1:
        Super Nitro's damage was decreased from 650 to 600.
        Super Nitro's cost was decreased from 2000 to 1000.

@@ -451,7 +451,7 @@ const DeckCode MILL_DECK(
     "Pyromancer can discard random cards from your opponent's deck.\n\n"
     "Glutton shuffles discarded energy cards back into the deck, "
     "so you don't draw life cards while your opponent does!\n\n"
-    "Lost Soul, Miller, and Arsonist also help to mill the opponent.\n\n"
+    "Miller and Arsonist also help to mill the opponent.\n\n"
     "Boxer can protect Pyromancer from being forced into the active position.",
     {
         // Fighter Cards

@@ -832,16 +832,11 @@ constexpr const char* LOST_SOUL_ELEMENT = AIR_ELEMENT;
 constexpr int LOST_SOUL_HEALTH = 1000;
 constexpr int LOST_SOUL_RETREAT_COST = 0;
 constexpr const char* LOST_SOUL_OLD_RANK = NO_OLD_RANK;
-constexpr const char* LOST_SOUL_ABILITY_NAME = "Forsaken";
+constexpr const char* LOST_SOUL_ABILITY_NAME = "Lost";
 constexpr const char* LOST_SOUL_ABILITY_DESCRIPTION =
-    "When this fighter is defeated, banish it, its energy cards, "
-    "its life card, and the top card of each player's deck."
+    "When this fighter is defeated, return it and its attached energy cards to your hand."
 ;
-const std::string LOST_SOUL_ABILITY_EFFECTS(
-    std::string(FORSAKEN_EFFECT) // forsaken
-    + EFFECT_SEPARATOR           //
-    + "1"                        // 1
-);
+constexpr const char* LOST_SOUL_ABILITY_EFFECTS = LOST_EFFECT; // lost
 constexpr bool LOST_SOUL_ABILITY_PASSIVE = true;
 constexpr int LOST_SOUL_ABILITY_USES = PASSIVE_USES;
 constexpr const char* LOST_SOUL_ATTACK_NAME = "Wander";

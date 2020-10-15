@@ -1,4 +1,8 @@
 /* CHANGELOG:
+     v1.12.2:
+       Forsaken was replaced with Lost.
+       Lost returns the fighter and its energy to hand upon defeat.
+       Updated Mill's description to no longer mention Lost Soul's milling ability.
      v1.12.1:
        Super Nitro's damage was decreased from 650 to 600.
        Super Nitro's cost was decreased from 2000 to 1000.
