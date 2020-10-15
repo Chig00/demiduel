@@ -7,7 +7,7 @@
 // System Constants
 //{
 // The current version of the program.
-constexpr int VERSION[] = {1, 12, 0, 2};
+constexpr int VERSION[] = {1, 12, 1, 0};
 
 // The title of the game in string form.
 constexpr const char* TITLE_STRING = "Demi Duel";
@@ -3186,11 +3186,11 @@ constexpr bool HOT_RODDER_ABILITY_PASSIVE = false;
 constexpr int HOT_RODDER_ABILITY_USES = 1;
 constexpr const char* HOT_RODDER_ATTACK_NAME = "Super Nitro";
 constexpr const char* HOT_RODDER_ATTACK_DESCRIPTION =
-    "Deal 650 damage to your opponent's active fighter."
+    "Deal 600 damage to your opponent's active fighter."
 ;
 constexpr const char* HOT_RODDER_ATTACK_EFFECTS = NO_EFFECTS;
-constexpr int HOT_RODDER_ATTACK_DAMAGE = 650;
-constexpr int HOT_RODDER_ATTACK_COST = 2000;
+constexpr int HOT_RODDER_ATTACK_DAMAGE = 600;
+constexpr int HOT_RODDER_ATTACK_COST = 1000;
 //}
 //}
 
@@ -3232,7 +3232,7 @@ constexpr int SAILOR_ATTACK_COST = 1000;
 constexpr const char* PIRATE_NAME = "Pirate";
 constexpr const char* PIRATE_ELEMENT = WATER_ELEMENT;
 constexpr int PIRATE_HEALTH = 1300;
-constexpr int PIRATE_RETREAT_COST = 2000;
+constexpr int PIRATE_RETREAT_COST = 1000;
 constexpr const char* PIRATE_OLD_RANK = SAILOR_NAME;
 constexpr const char* PIRATE_ABILITY_NAME = "Plundered";
 constexpr const char* PIRATE_ABILITY_DESCRIPTION =
@@ -3298,14 +3298,14 @@ constexpr int DIRT_BIKER_ABILITY_USES = 1;
 constexpr const char* DIRT_BIKER_ATTACK_NAME = "Shred";
 constexpr const char* DIRT_BIKER_ATTACK_DESCRIPTION =
     "Deal 400 damage to your opponent's active fighter.\n"
-    "Deal 8 more damage for each card in your trash."
+    "Deal 10 more damage for each card in your trash."
 ;
 const std::string DIRT_BIKER_ATTACK_EFFECTS(
     std::string(POWER_EFFECT) // power
     + EFFECT_SEPARATOR        //
     + TRASH_EFFECT            // trash
     + EFFECT_SEPARATOR        //
-    + "8"                     // 8
+    + "10"                    // 10
 );
 constexpr int DIRT_BIKER_ATTACK_DAMAGE = 400;
 constexpr int DIRT_BIKER_ATTACK_COST = 1000;
@@ -3316,7 +3316,7 @@ constexpr int DIRT_BIKER_ATTACK_COST = 1000;
 constexpr const char* MONSTER_TRUCKER_NAME = "Monster Trucker";
 constexpr const char* MONSTER_TRUCKER_ELEMENT = EARTH_ELEMENT;
 constexpr int MONSTER_TRUCKER_HEALTH = 1500;
-constexpr int MONSTER_TRUCKER_RETREAT_COST = 2000;
+constexpr int MONSTER_TRUCKER_RETREAT_COST = 1000;
 constexpr const char* MONSTER_TRUCKER_OLD_RANK = DIRT_BIKER_NAME;
 constexpr const char* MONSTER_TRUCKER_ABILITY_NAME = "Scrap Metal";
 constexpr const char* MONSTER_TRUCKER_ABILITY_DESCRIPTION =
@@ -3341,17 +3341,17 @@ constexpr int MONSTER_TRUCKER_ABILITY_USES = 1;
 constexpr const char* MONSTER_TRUCKER_ATTACK_NAME = "Crush";
 constexpr const char* MONSTER_TRUCKER_ATTACK_DESCRIPTION =
     "Deal 500 damage to your opponent's active fighter.\n"
-    "Deal 15 more damage for each card in your trash."
+    "Deal 10 more damage for each card in your trash."
 ;
 const std::string MONSTER_TRUCKER_ATTACK_EFFECTS(
     std::string(POWER_EFFECT) // power
     + EFFECT_SEPARATOR        //
     + TRASH_EFFECT            // trash
     + EFFECT_SEPARATOR        //
-    + "15"                    // 15
+    + "10"                    // 10
 );
 constexpr int MONSTER_TRUCKER_ATTACK_DAMAGE = 500;
-constexpr int MONSTER_TRUCKER_ATTACK_COST = 2000;
+constexpr int MONSTER_TRUCKER_ATTACK_COST = 1000;
 //}
 //}
 
@@ -3377,7 +3377,7 @@ constexpr bool PILOT_ABILITY_PASSIVE = true;
 constexpr int PILOT_ABILITY_USES = PASSIVE_USES;
 constexpr const char* PILOT_ATTACK_NAME = "Divebomb";
 constexpr const char* PILOT_ATTACK_DESCRIPTION =
-    "Deal 375 damage to your opponent's active fighter.\n"
+    "Deal 350 damage to your opponent's active fighter.\n"
     "It needs 1000 more energy to retreat next turn."
 ;
 const std::string PILOT_ATTACK_EFFECTS(
@@ -3385,7 +3385,7 @@ const std::string PILOT_ATTACK_EFFECTS(
     + EFFECT_SEPARATOR          //
     + "-1000"                   // -1000
 );
-constexpr int PILOT_ATTACK_DAMAGE = 375;
+constexpr int PILOT_ATTACK_DAMAGE = 350;
 constexpr int PILOT_ATTACK_COST = 1000;
 //}
 
@@ -3394,7 +3394,7 @@ constexpr int PILOT_ATTACK_COST = 1000;
 constexpr const char* ASTRONAUT_NAME = "Astronaut";
 constexpr const char* ASTRONAUT_ELEMENT = AIR_ELEMENT;
 constexpr int ASTRONAUT_HEALTH = 1600;
-constexpr int ASTRONAUT_RETREAT_COST = 2000;
+constexpr int ASTRONAUT_RETREAT_COST = 1000;
 constexpr const char* ASTRONAUT_OLD_RANK = PILOT_NAME;
 constexpr const char* ASTRONAUT_ABILITY_NAME = "Zero Gravity";
 constexpr const char* ASTRONAUT_ABILITY_DESCRIPTION =
@@ -3412,15 +3412,15 @@ constexpr bool ASTRONAUT_ABILITY_PASSIVE = true;
 constexpr int ASTRONAUT_ABILITY_USES = PASSIVE_USES;
 constexpr const char* ASTRONAUT_ATTACK_NAME = "Gravity Flip";
 constexpr const char* ASTRONAUT_ATTACK_DESCRIPTION =
-    "Deal 500 damage to your opponent's active fighter.\n"
-    "It needs 2000 more energy to retreat next turn."
+    "Deal 450 damage to your opponent's active fighter.\n"
+    "It needs 1000 more energy to retreat next turn."
 ;
 const std::string ASTRONAUT_ATTACK_EFFECTS(
     std::string(AGILITY_EFFECT) // agility
     + EFFECT_SEPARATOR          //
-    + "-2000"                   // -2000
+    + "-1000"                   // -1000
 );
-constexpr int ASTRONAUT_ATTACK_DAMAGE = 500;
+constexpr int ASTRONAUT_ATTACK_DAMAGE = 450;
 constexpr int ASTRONAUT_ATTACK_COST = 1000;
 //}
 //}
@@ -4049,42 +4049,38 @@ constexpr int BANSHEE_ATTACK_COST = 0;
 constexpr const char* CULTIST_NAME = "Cultist";
 constexpr const char* CULTIST_ELEMENT = EARTH_ELEMENT;
 constexpr int CULTIST_HEALTH = 1100;
-constexpr int CULTIST_RETREAT_COST = 2000;
+constexpr int CULTIST_RETREAT_COST = 0;
 constexpr const char* CULTIST_OLD_RANK = NO_OLD_RANK;
-constexpr const char* CULTIST_ABILITY_NAME = "Void Pact";
-constexpr const char* CULTIST_ABILITY_DESCRIPTION =
-    "Once a turn, you may banish a card in your hand "
-    "and heal 30 damage from one "
-    "of your fighters, for each card in the void, "
-    "for a maximum of 300 healing."
-;
-const std::string CULTIST_ABILITY_EFFECTS(
-    std::string(BANISH_EFFECT) // banish
-    + EFFECT_SEPARATOR         //
-    + "1"                      // 1
-    + EFFECT_TERMINATOR
-    + HEAL_EFFECT              // heal
-    + EFFECT_SEPARATOR         //
-    + VOID_EFFECT              // void
-    + EFFECT_SEPARATOR         //
-    + "30"                     // 30
-    + EFFECT_SEPARATOR         //
-    + "300"                    // 300
-);
-constexpr bool CULTIST_ABILITY_PASSIVE = false;
-constexpr int CULTIST_ABILITY_USES = 1;
-constexpr const char* CULTIST_ATTACK_NAME = "Shadow Bond";
+constexpr const char* CULTIST_ABILITY_NAME = VOID_SERVANT_ABILITY_NAME;
+constexpr const char* CULTIST_ABILITY_DESCRIPTION = VOID_SERVANT_ABILITY_DESCRIPTION;
+constexpr const char* CULTIST_ABILITY_EFFECTS = VOID_SERVANT_ABILITY_EFFECTS;
+constexpr bool CULTIST_ABILITY_PASSIVE = VOID_SERVANT_ABILITY_PASSIVE;
+constexpr int CULTIST_ABILITY_USES = VOID_SERVANT_ABILITY_USES;
+constexpr const char* CULTIST_ATTACK_NAME = "Ancient Power";
 constexpr const char* CULTIST_ATTACK_DESCRIPTION =
-    "Choose a fighter in the void.\n"
-    "Use its attack."
+    "Randomly distribute 50 damage between your opponent's fighters, "
+    "for each card in the void, for a maximum of 500 damage.\n"
+    "Heal 0.8 damage from this fighter multiplied by the damage dealt."
 ;
 const std::string CULTIST_ATTACK_EFFECTS(
-    std::string(MIMIC_EFFECT) // mimic
-    + EFFECT_SEPARATOR        //
-    + VOID_EFFECT             // void
+    std::string(DISTRIBUTE_EFFECT) // distribute
+    + EFFECT_SEPARATOR             //
+    + VOID_EFFECT                  // void
+    + EFFECT_SEPARATOR             //
+    + "50"                         // 50
+    + EFFECT_SEPARATOR             //
+    + "500"                        // 500
+    + EFFECT_TERMINATOR
+    + HEAL_EFFECT                  // heal
+    + EFFECT_SEPARATOR             //
+    + SELF_EFFECT                  // self
+    + EFFECT_SEPARATOR             //
+    + DAMAGE_EFFECT                // damage
+    + EFFECT_SEPARATOR             //
+    + "0.8"                        // 0.8
 );
 constexpr int CULTIST_ATTACK_DAMAGE = 0;
-constexpr int CULTIST_ATTACK_COST = 2000;
+constexpr int CULTIST_ATTACK_COST = 0;
 //}
 //}
 
@@ -15547,7 +15543,31 @@ class Player: public Affectable {
                 // Randomly distributes the damage for all fighters.
                 else if (effects[i][0] == DISTRIBUTE_EFFECT) {
                     // The total damage is extracted.
-                    int total_damage = std::stoi(effects[i][1]) + boost + power;
+                    int total_damage;
+                    
+                    // Powered by the Void.
+                    if (effects[i][1] == VOID_EFFECT) {
+                        total_damage = the_void.size() * std::stoi(effects[i][2]);
+                        int max_damage = std::stoi(effects[i][3]);
+                        
+                        // Damage cannot exceed the cap.
+                        if (total_damage > max_damage) {
+                            total_damage = max_damage;
+                        }
+                    }
+                    
+                    // The base damage is constant.
+                    else {
+                        total_damage = std::stoi(effects[i][1]);
+                    }
+                    
+                    // Boost is applied to the damage.
+                    total_damage += boost;
+                    
+                    // Power is only applied to an already damaging attack.
+                    if (total_damage > 0) {
+                        total_damage += power;
+                    }
                     
                     // A vector storing how much damage each
                     //   fighter should receive is initialised.
@@ -17312,9 +17332,9 @@ const DeckCode AGGRO_DECK(
         2, // WATER ENERGY
         0, // EARTH ENERGY
         
-        0, // UNIVERSAL ENERGY
+        1, // UNIVERSAL ENERGY
         0, // ALPHA ENERGY
-        1, // OMEGA ENERGY
+        0, // OMEGA ENERGY
         0  // BOND ENERGY
     }
 );
@@ -17533,9 +17553,9 @@ const DeckCode BLEND_DECK(
         2, // WATER ENERGY
         2, // EARTH ENERGY
         
-        0, // UNIVERSAL ENERGY
+        1, // UNIVERSAL ENERGY
         0, // ALPHA ENERGY
-        1, // OMEGA ENERGY
+        0, // OMEGA ENERGY
         0  // BOND ENERGY
     }
 );
@@ -17770,10 +17790,9 @@ const DeckCode MILL_DECK(
 const DeckCode MIDRANGE_DECK(
     "Midrange",
     "This is a midrange deck that is powered up with the size of the Void.\n\n"
-    "Banisher sends cards in your trash to the Void to empower your fighters!\n\n"
-    "Banshee is the deck's main big hitter and is energised and empowered by the Void!\n\n"
-    "Cultist can use the attack of any banished fighter and heal any friendly fighter!\n\n"
-    "Omega Elemental is a fighter that can be banished, so Cultist can use its attack.\n\n"
+    "The fighter cards in the deck have the Void Servant ability, which "
+    "banishes all of the cards in your trash at the end of your turn!\n\n"
+    "The fighters in this deck don't use energy - the Void energises its servants!\n\n"
     "Arsonist is a disruptive supporter card that also strengthens your fighters.",
     {
         // Fighter Cards
@@ -17818,14 +17837,14 @@ const DeckCode MIDRANGE_DECK(
         0, // AIR ELEMENTAL
         0, // WATER ELEMENTAL
         0, // EARTH ELEMENTAL
-        1, // OMEGA ELEMENTAL
+        0, // OMEGA ELEMENTAL
         
         // Supporter Cards
         1, // PROFESSOR
         1, // LECTURER
         1, // INVESTOR
-        0, // RESEARCHER
-        0, // GAMBLER
+        1, // RESEARCHER
+        1, // GAMBLER
         1, // RECRUITER
         
         0, // CHEF
@@ -17835,7 +17854,7 @@ const DeckCode MIDRANGE_DECK(
         0, // PERSONAL TRAINER
         1, // SCAPEGOAT
         
-        1, // ELECTRICIAN
+        0, // ELECTRICIAN
         0, // ALCHEMIST
         0, // TIME TRAVELLER
         0, // BANKER
@@ -17853,8 +17872,8 @@ const DeckCode MIDRANGE_DECK(
         1, // ASSASSIN
         1, // SNIPER
         
-        0, // CHEERLEADER
-        0, // ARMS SMUGGLER
+        1, // CHEERLEADER
+        1, // ARMS SMUGGLER
         0, // MANIAC
         
         1, // PEACEMAKER
@@ -17874,7 +17893,7 @@ const DeckCode MIDRANGE_DECK(
         
         0, // UNIVERSAL ENERGY
         0, // ALPHA ENERGY
-        2, // OMEGA ENERGY
+        0, // OMEGA ENERGY
         0  // BOND ENERGY
     }
 );
@@ -22310,6 +22329,23 @@ int main(int argc, char** argv) noexcept {
 //}
 
 /* CHANGELOG:
+     v1.12.1:
+       Super Nitro's damage was decreased from 650 to 600.
+       Super Nitro's cost was decreased from 2000 to 1000.
+       Pirate's retreat cost was decreased from 2000 to 1000.
+       Shred's scaling was increased from 8 to 10.
+       Monster Trucker's retreat cost was decreased from 2000 to 1000.
+       Crush's scaling was decreased from 15 to 10.
+       Crush's cost was decreased from 2000 to 1000.
+       Divebomb's damage was decreased from 375 to 350.
+       Astronaut's retreat cost was decreased from 2000 to 1000.
+       Gravity Flip's damage was decreased from 500 to 450.
+       Gravity Flip's agility decreased was decreased from 2000 to 1000.
+       Cultist's retreat cost was decreased from 2000 to 0.
+       Void Pact was replaced with Void Servant.
+       Shadow Bond was replaced with Ancient Power (void-powered Assimilate).
+       Ancient Power's cost is 0.
+       Changes to the decklists.
      v1.12.0.2:
        Rooting no longer affects Combo Attack.
      v1.12.0.1:

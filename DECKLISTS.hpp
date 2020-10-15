@@ -102,9 +102,9 @@ const DeckCode AGGRO_DECK(
         2, // WATER ENERGY
         0, // EARTH ENERGY
         
-        0, // UNIVERSAL ENERGY
+        1, // UNIVERSAL ENERGY
         0, // ALPHA ENERGY
-        1, // OMEGA ENERGY
+        0, // OMEGA ENERGY
         0  // BOND ENERGY
     }
 );
@@ -323,9 +323,9 @@ const DeckCode BLEND_DECK(
         2, // WATER ENERGY
         2, // EARTH ENERGY
         
-        0, // UNIVERSAL ENERGY
+        1, // UNIVERSAL ENERGY
         0, // ALPHA ENERGY
-        1, // OMEGA ENERGY
+        0, // OMEGA ENERGY
         0  // BOND ENERGY
     }
 );
@@ -560,10 +560,9 @@ const DeckCode MILL_DECK(
 const DeckCode MIDRANGE_DECK(
     "Midrange",
     "This is a midrange deck that is powered up with the size of the Void.\n\n"
-    "Banisher sends cards in your trash to the Void to empower your fighters!\n\n"
-    "Banshee is the deck's main big hitter and is energised and empowered by the Void!\n\n"
-    "Cultist can use the attack of any banished fighter and heal any friendly fighter!\n\n"
-    "Omega Elemental is a fighter that can be banished, so Cultist can use its attack.\n\n"
+    "The fighter cards in the deck have the Void Servant ability, which "
+    "banishes all of the cards in your trash at the end of your turn!\n\n"
+    "The fighters in this deck don't use energy - the Void energises its servants!\n\n"
     "Arsonist is a disruptive supporter card that also strengthens your fighters.",
     {
         // Fighter Cards
@@ -608,14 +607,14 @@ const DeckCode MIDRANGE_DECK(
         0, // AIR ELEMENTAL
         0, // WATER ELEMENTAL
         0, // EARTH ELEMENTAL
-        1, // OMEGA ELEMENTAL
+        0, // OMEGA ELEMENTAL
         
         // Supporter Cards
         1, // PROFESSOR
         1, // LECTURER
         1, // INVESTOR
-        0, // RESEARCHER
-        0, // GAMBLER
+        1, // RESEARCHER
+        1, // GAMBLER
         1, // RECRUITER
         
         0, // CHEF
@@ -625,7 +624,7 @@ const DeckCode MIDRANGE_DECK(
         0, // PERSONAL TRAINER
         1, // SCAPEGOAT
         
-        1, // ELECTRICIAN
+        0, // ELECTRICIAN
         0, // ALCHEMIST
         0, // TIME TRAVELLER
         0, // BANKER
@@ -643,8 +642,8 @@ const DeckCode MIDRANGE_DECK(
         1, // ASSASSIN
         1, // SNIPER
         
-        0, // CHEERLEADER
-        0, // ARMS SMUGGLER
+        1, // CHEERLEADER
+        1, // ARMS SMUGGLER
         0, // MANIAC
         
         1, // PEACEMAKER
@@ -664,7 +663,7 @@ const DeckCode MIDRANGE_DECK(
         
         0, // UNIVERSAL ENERGY
         0, // ALPHA ENERGY
-        2, // OMEGA ENERGY
+        0, // OMEGA ENERGY
         0  // BOND ENERGY
     }
 );

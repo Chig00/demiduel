@@ -1,4 +1,21 @@
 /* CHANGELOG:
+     v1.12.1:
+       Super Nitro's damage was decreased from 650 to 600.
+       Super Nitro's cost was decreased from 2000 to 1000.
+       Pirate's retreat cost was decreased from 2000 to 1000.
+       Shred's scaling was increased from 8 to 10.
+       Monster Trucker's retreat cost was decreased from 2000 to 1000.
+       Crush's scaling was decreased from 15 to 10.
+       Crush's cost was decreased from 2000 to 1000.
+       Divebomb's damage was decreased from 375 to 350.
+       Astronaut's retreat cost was decreased from 2000 to 1000.
+       Gravity Flip's damage was decreased from 500 to 450.
+       Gravity Flip's agility decreased was decreased from 2000 to 1000.
+       Cultist's retreat cost was decreased from 2000 to 0.
+       Void Pact was replaced with Void Servant.
+       Shadow Bond was replaced with Ancient Power (void-powered Assimilate).
+       Ancient Power's cost is 0.
+       Changes to the decklists.
      v1.12.0.2:
        Rooting no longer affects Combo Attack.
      v1.12.0.1:
