@@ -1,4 +1,11 @@
 /* CHANGELOG:
+     v1.12.3:
+       Pirate's health was decreased from 1300 to 1200.
+       Primed Payload's base was increased from 0 to 250.
+       Primed Payload's scaling was decreased from 0.25 to 0.2.
+       Primed Payload's cap was decreased from 700 to 650.
+       End Discard only discards one copy of the card to be discarded.
+       Removal of Universal Energy from decks containing Pyrotechnician.
      v1.12.2:
        Forsaken was replaced with Lost.
        Lost returns the fighter and its energy to hand upon defeat.

@@ -76,7 +76,7 @@ const DeckCode AGGRO_DECK(
         
         1, // NURSE
         0, // INNKEEPER
-        0, // MIRACLE WORKER
+        1, // MIRACLE WORKER
         0, // DOCTOR
         0, // ESCAPE ARTIST
         
@@ -102,7 +102,7 @@ const DeckCode AGGRO_DECK(
         2, // WATER ENERGY
         0, // EARTH ENERGY
         
-        1, // UNIVERSAL ENERGY
+        0, // UNIVERSAL ENERGY
         0, // ALPHA ENERGY
         0, // OMEGA ENERGY
         0  // BOND ENERGY
@@ -162,7 +162,7 @@ const DeckCode TEMPO_DECK(
         0, // OMEGA ELEMENTAL
         
         // Supporter Cards
-        0, // PROFESSOR
+        1, // PROFESSOR
         1, // LECTURER
         1, // INVESTOR
         0, // RESEARCHER
@@ -213,7 +213,7 @@ const DeckCode TEMPO_DECK(
         2, // WATER ENERGY
         0, // EARTH ENERGY
         
-        1, // UNIVERSAL ENERGY
+        0, // UNIVERSAL ENERGY
         0, // ALPHA ENERGY
         0, // OMEGA ENERGY
         0  // BOND ENERGY

@@ -9,7 +9,7 @@
 // System Constants
 //{
 // The current version of the program.
-constexpr int VERSION[] = {1, 12, 2, 0};
+constexpr int VERSION[] = {1, 12, 3, 0};
 
 // The title of the game in string form.
 constexpr const char* TITLE_STRING = "Demi Duel";
@@ -3266,7 +3266,7 @@ constexpr int SAILOR_ATTACK_COST = 1000;
 //{
 constexpr const char* PIRATE_NAME = "Pirate";
 constexpr const char* PIRATE_ELEMENT = WATER_ELEMENT;
-constexpr int PIRATE_HEALTH = 1300;
+constexpr int PIRATE_HEALTH = 1200;
 constexpr int PIRATE_RETREAT_COST = 1000;
 constexpr const char* PIRATE_OLD_RANK = SAILOR_NAME;
 constexpr const char* PIRATE_ABILITY_NAME = "Plundered";
@@ -3847,20 +3847,20 @@ constexpr bool PYROTECHNICIAN_ABILITY_PASSIVE = true;
 constexpr int PYROTECHNICIAN_ABILITY_USES = PASSIVE_USES;
 constexpr const char* PYROTECHNICIAN_ATTACK_NAME = "Primed Payload";
 constexpr const char* PYROTECHNICIAN_ATTACK_DESCRIPTION =
-    "Deal 0.25 damage to your opponent's active fighter "
-    "multiplied by this fighter's total energy value "
-    "for a maximum of 700 damage."
+    "Deal 250 damage to your opponent's active fighter.\n"
+    "Deal 0.2 extra damage multiplied by this fighter's "
+    "total energy value for a maximum of 400 extra damage."
 ;
 const std::string PYROTECHNICIAN_ATTACK_EFFECTS(
     std::string(POWER_EFFECT) // power
     + EFFECT_SEPARATOR        //
     + ENERGY_TYPE             // Energy
     + EFFECT_SEPARATOR        //
-    + "0.25"                  // 0.25
+    + "0.2"                   // 0.2
     + EFFECT_SEPARATOR        //
-    + "700"                   // 700
+    + "400"                   // 400
 );
-constexpr int PYROTECHNICIAN_ATTACK_DAMAGE = 0;
+constexpr int PYROTECHNICIAN_ATTACK_DAMAGE = 250;
 constexpr int PYROTECHNICIAN_ATTACK_COST = 0;
 //} 
 //}
@@ -16778,6 +16778,7 @@ class Player: public Affectable {
                     if (hand[index].get_name() == name) {
                         announce(DISCARD_PEEK_ANNOUNCEMENT);
                         trash.store(hand.remove(index));
+                        break;
                     }
                 }
             }
@@ -17384,7 +17385,7 @@ const DeckCode AGGRO_DECK(
         
         1, // NURSE
         0, // INNKEEPER
-        0, // MIRACLE WORKER
+        1, // MIRACLE WORKER
         0, // DOCTOR
         0, // ESCAPE ARTIST
         
@@ -17410,7 +17411,7 @@ const DeckCode AGGRO_DECK(
         2, // WATER ENERGY
         0, // EARTH ENERGY
         
-        1, // UNIVERSAL ENERGY
+        0, // UNIVERSAL ENERGY
         0, // ALPHA ENERGY
         0, // OMEGA ENERGY
         0  // BOND ENERGY
@@ -17470,7 +17471,7 @@ const DeckCode TEMPO_DECK(
         0, // OMEGA ELEMENTAL
         
         // Supporter Cards
-        0, // PROFESSOR
+        1, // PROFESSOR
         1, // LECTURER
         1, // INVESTOR
         0, // RESEARCHER
@@ -17521,7 +17522,7 @@ const DeckCode TEMPO_DECK(
         2, // WATER ENERGY
         0, // EARTH ENERGY
         
-        1, // UNIVERSAL ENERGY
+        0, // UNIVERSAL ENERGY
         0, // ALPHA ENERGY
         0, // OMEGA ENERGY
         0  // BOND ENERGY
@@ -22477,6 +22478,13 @@ int main(int argc, char** argv) noexcept {
 //}
 
 /* CHANGELOG:
+     v1.12.3:
+       Pirate's health was decreased from 1300 to 1200.
+       Primed Payload's base was increased from 0 to 250.
+       Primed Payload's scaling was decreased from 0.25 to 0.2.
+       Primed Payload's cap was decreased from 700 to 650.
+       End Discard only discards one copy of the card to be discarded.
+       Removal of Universal Energy from decks containing Pyrotechnician.
      v1.12.2:
        Forsaken was replaced with Lost.
        Lost returns the fighter and its energy to hand upon defeat.

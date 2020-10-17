@@ -130,7 +130,7 @@ constexpr int SAILOR_ATTACK_COST = 1000;
 //{
 constexpr const char* PIRATE_NAME = "Pirate";
 constexpr const char* PIRATE_ELEMENT = WATER_ELEMENT;
-constexpr int PIRATE_HEALTH = 1300;
+constexpr int PIRATE_HEALTH = 1200;
 constexpr int PIRATE_RETREAT_COST = 1000;
 constexpr const char* PIRATE_OLD_RANK = SAILOR_NAME;
 constexpr const char* PIRATE_ABILITY_NAME = "Plundered";
@@ -711,20 +711,20 @@ constexpr bool PYROTECHNICIAN_ABILITY_PASSIVE = true;
 constexpr int PYROTECHNICIAN_ABILITY_USES = PASSIVE_USES;
 constexpr const char* PYROTECHNICIAN_ATTACK_NAME = "Primed Payload";
 constexpr const char* PYROTECHNICIAN_ATTACK_DESCRIPTION =
-    "Deal 0.25 damage to your opponent's active fighter "
-    "multiplied by this fighter's total energy value "
-    "for a maximum of 700 damage."
+    "Deal 250 damage to your opponent's active fighter.\n"
+    "Deal 0.2 extra damage multiplied by this fighter's "
+    "total energy value for a maximum of 400 extra damage."
 ;
 const std::string PYROTECHNICIAN_ATTACK_EFFECTS(
     std::string(POWER_EFFECT) // power
     + EFFECT_SEPARATOR        //
     + ENERGY_TYPE             // Energy
     + EFFECT_SEPARATOR        //
-    + "0.25"                  // 0.25
+    + "0.2"                   // 0.2
     + EFFECT_SEPARATOR        //
-    + "700"                   // 700
+    + "400"                   // 400
 );
-constexpr int PYROTECHNICIAN_ATTACK_DAMAGE = 0;
+constexpr int PYROTECHNICIAN_ATTACK_DAMAGE = 250;
 constexpr int PYROTECHNICIAN_ATTACK_COST = 0;
 //} 
 //}
