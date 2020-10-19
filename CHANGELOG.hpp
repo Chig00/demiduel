@@ -1,4 +1,9 @@
 /* CHANGELOG:
+     v1.12.4:
+       Haymaker's minimum damage was increased from 0 to 200.
+       Ancient Power's damage boost is now displayed.
+       Updated the End Discard explanation to match the new mechanics.
+       The Random deck was swapped with the Clear deck.
      v1.12.3:
        Pirate's health was decreased from 1300 to 1200.
        Primed Payload's base was increased from 0 to 250.

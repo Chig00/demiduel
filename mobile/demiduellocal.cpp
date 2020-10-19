@@ -9,7 +9,7 @@
 // System Constants
 //{
 // The current version of the program.
-constexpr int VERSION[] = {1, 12, 3, 0};
+constexpr int VERSION[] = {1, 12, 4, 0};
 
 // The title of the game in string form.
 constexpr const char* TITLE_STRING = "Demi Duel";
@@ -594,7 +594,7 @@ constexpr const char* BOOST_REPRESENTATION = "Boost";
 //{
 constexpr const char* END_DISCARD_REPRESENTATION = "End Discard";
 #define END_DISCARD_EXPLANATION (                 \
-    "This player discards all cards named "       \
+    "This player discards a card named "          \
     + effect_value                                \
     + " from their hand at the end of this turn." \
 )
@@ -3948,7 +3948,8 @@ constexpr int BOXER_ABILITY_USES = PASSIVE_USES;
 constexpr const char* BOXER_ATTACK_NAME = "Haymaker";
 constexpr const char* BOXER_ATTACK_DESCRIPTION =
     "Deal 600 damage to your opponent's active fighter. "
-    "Deal 50 less damage for each card in your hand."
+    "Deal 50 less damage for each card in your hand, "
+    "for a maximum of 400 less damage."
 ;
 const std::string BOXER_ATTACK_EFFECTS(
     std::string(POWER_EFFECT) // power
@@ -3956,6 +3957,8 @@ const std::string BOXER_ATTACK_EFFECTS(
     + HAND_EFFECT             // hand
     + EFFECT_SEPARATOR        //
     + "-50"                   // -50
+    + EFFECT_SEPARATOR        //
+    + "-400"                  // -400
 );
 constexpr int BOXER_ATTACK_DAMAGE = 600;
 constexpr int BOXER_ATTACK_COST = 0;
@@ -14962,7 +14965,14 @@ class Player: public Affectable {
                     
                     // The damage is boosted by the number of cards in the hand.
                     else if (effects[i][1] == HAND_EFFECT) {
-                        boost += hand.size() * std::stoi(effects[i][2]);
+                        int proto_boost = hand.size() * std::stoi(effects[i][2]);
+                        int max_boost = std::stoi(effects[i][3]);
+                        
+                        if (proto_boost < max_boost) {
+                            proto_boost = max_boost;
+                        }
+                        
+                        boost += proto_boost;
                     }
                 }
 
@@ -16953,7 +16963,14 @@ class Player: public Affectable {
                     
                     // The damage is boosted by the number of cards in the hand.
                     else if (effects[i][1] == HAND_EFFECT) {
-                        boost += hand.size() * std::stoi(effects[i][2]);
+                        int proto_boost = hand.size() * std::stoi(effects[i][2]);
+                        int max_boost = std::stoi(effects[i][3]);
+                        
+                        if (proto_boost < max_boost) {
+                            proto_boost = max_boost;
+                        }
+                        
+                        boost += proto_boost;
                     }
                 }
             
@@ -16970,6 +16987,25 @@ class Player: public Affectable {
                         
                         boost += curse_value;
                     }
+                }
+            
+                // Randomly distributes the damage for all fighters.
+                else if (effects[i][0] == DISTRIBUTE_EFFECT) {
+                    // The total damage is extracted.
+                    int total_damage = 0;
+                    
+                    // Powered by the Void.
+                    if (effects[i][1] == VOID_EFFECT) {
+                        total_damage = the_void.size() * std::stoi(effects[i][2]);
+                        int max_damage = std::stoi(effects[i][3]);
+                        
+                        // Damage cannot exceed the cap.
+                        if (total_damage > max_damage) {
+                            total_damage = max_damage;
+                        }
+                    }
+                    
+                    boost = total_damage;
                 }
             }
             
@@ -17200,9 +17236,9 @@ const DeckCode TEST_DECK(
     }
 );
 
-const DeckCode CLEAR_DECK(
-    "Clear Deck",
-    "Clears the deck currently being built.",
+const DeckCode RANDOM_DECK(
+    "Random",
+    "Generates a deck, randomly chosen from the available decklists.",
     {
         // Fighter Cards
         0, // DRIVER
@@ -18320,9 +18356,9 @@ const DeckCode OTK_COMBO_DECK(
     }
 );
 
-const DeckCode RANDOM_DECK(
-    "Random",
-    "Generates a deck, randomly chosen from the available decklists.",
+const DeckCode CLEAR_DECK(
+    "Clear Deck",
+    "Clears the deck currently being built.",
     {
         // Fighter Cards
         0, // DRIVER
@@ -18432,7 +18468,7 @@ const DeckCode RANDOM_DECK(
 constexpr int DECK_CODE_COUNT = 11;
 const DeckCode* const ALL_DECK_CODES[DECK_CODE_COUNT] = {
 //  &TEST_DECK,
-    &CLEAR_DECK,
+    &RANDOM_DECK,
     &AGGRO_DECK,
     &TEMPO_DECK,
     &BLEND_DECK,
@@ -18442,7 +18478,7 @@ const DeckCode* const ALL_DECK_CODES[DECK_CODE_COUNT] = {
     &AGGRO_COMBO_DECK,
     &CONTROL_COMBO_DECK,
     &OTK_COMBO_DECK,
-    &RANDOM_DECK
+    &CLEAR_DECK
 };
 //}
 
@@ -21253,7 +21289,7 @@ void generate(
 						int index = page * PAGE_COUNT + i;
 						
 						// The random deck was chosen.
-						if (index == DECK_CODE_COUNT - 1) {
+						if (!index) {
 							// RNG is initialised using the current time.
 							std::mt19937 generator(
 								Timer::current()
@@ -22478,6 +22514,11 @@ int main(int argc, char** argv) noexcept {
 //}
 
 /* CHANGELOG:
+     v1.12.4:
+       Haymaker's minimum damage was increased from 0 to 200.
+       Ancient Power's damage boost is now displayed.
+       Updated the End Discard explanation to match the new mechanics.
+       The Random deck was swapped with the Clear deck.
      v1.12.3:
        Pirate's health was decreased from 1300 to 1200.
        Primed Payload's base was increased from 0 to 250.

@@ -812,7 +812,8 @@ constexpr int BOXER_ABILITY_USES = PASSIVE_USES;
 constexpr const char* BOXER_ATTACK_NAME = "Haymaker";
 constexpr const char* BOXER_ATTACK_DESCRIPTION =
     "Deal 600 damage to your opponent's active fighter. "
-    "Deal 50 less damage for each card in your hand."
+    "Deal 50 less damage for each card in your hand, "
+    "for a maximum of 400 less damage."
 ;
 const std::string BOXER_ATTACK_EFFECTS(
     std::string(POWER_EFFECT) // power
@@ -820,6 +821,8 @@ const std::string BOXER_ATTACK_EFFECTS(
     + HAND_EFFECT             // hand
     + EFFECT_SEPARATOR        //
     + "-50"                   // -50
+    + EFFECT_SEPARATOR        //
+    + "-400"                  // -400
 );
 constexpr int BOXER_ATTACK_DAMAGE = 600;
 constexpr int BOXER_ATTACK_COST = 0;
