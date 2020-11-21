@@ -2023,22 +2023,12 @@ const std::string MILLER_EFFECTS(
 //{
 constexpr const char* ARSONIST_NAME = "Arsonist";
 constexpr const char* ARSONIST_DESCRIPTION =
-    "Banish the top 2 cards of both players' decks."
+    "Banish all of the cards in both players' trash."
 ;
 const std::string ARSONIST_EFFECTS(
-    std::string(MILL_EFFECT) // mill
-    + EFFECT_SEPARATOR       //
-    + BANISH_EFFECT          // banish
-    + EFFECT_SEPARATOR       //
-    + "2"                    // 2
-    + EFFECT_TERMINATOR
-    + MILL_EFFECT            // mill
-    + EFFECT_SEPARATOR       //
-    + SELF_EFFECT            // self
-    + EFFECT_SEPARATOR       //
-    + BANISH_EFFECT          // banish
-    + EFFECT_SEPARATOR       //
-    + "2"                    // 2
+    std::string(BANISH_EFFECT) // banish
+    + EFFECT_SEPARATOR         //
+    + TRASH_EFFECT             // trash
 );
 //}
 //}

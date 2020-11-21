@@ -7,7 +7,7 @@
 // System Constants
 //{
 // The current version of the program.
-constexpr int VERSION[] = {1, 12, 4, 0};
+constexpr int VERSION[] = {1, 12, 5, 0};
 
 // The title of the game in string form.
 constexpr const char* TITLE_STRING = "Demi Duel";
@@ -3113,6 +3113,13 @@ constexpr const char* BANISH_LIFE_ANNOUNCEMENT = "Choose a life card to banish."
     + " deck!"                                      \
 )
 //}
+
+// Announcement for a trash banish.
+//{
+constexpr const char* BANISH_TRASH_ANNOUNCEMENT =
+    "Both players' discarded cards were banished!"
+;
+//}
 //}
 
 // Universal Effect Explanation Constants
@@ -5157,22 +5164,12 @@ const std::string MILLER_EFFECTS(
 //{
 constexpr const char* ARSONIST_NAME = "Arsonist";
 constexpr const char* ARSONIST_DESCRIPTION =
-    "Banish the top 2 cards of both players' decks."
+    "Banish all of the cards in both players' trash."
 ;
 const std::string ARSONIST_EFFECTS(
-    std::string(MILL_EFFECT) // mill
-    + EFFECT_SEPARATOR       //
-    + BANISH_EFFECT          // banish
-    + EFFECT_SEPARATOR       //
-    + "2"                    // 2
-    + EFFECT_TERMINATOR
-    + MILL_EFFECT            // mill
-    + EFFECT_SEPARATOR       //
-    + SELF_EFFECT            // self
-    + EFFECT_SEPARATOR       //
-    + BANISH_EFFECT          // banish
-    + EFFECT_SEPARATOR       //
-    + "2"                    // 2
+    std::string(BANISH_EFFECT) // banish
+    + EFFECT_SEPARATOR         //
+    + TRASH_EFFECT             // trash
 );
 //}
 //}
@@ -10419,53 +10416,62 @@ class Player: public Affectable {
                 
                 // The supporter card banishes cards.
                 else if (effects[i][0] == BANISH_EFFECT) {
-                    int banishes = std::stoi(effects[i][1]);
-                    
-                    if (banishes > hand.size()) {
-                        banishes = hand.size();
+                    // The supporter card banishes all discarded cards.
+                    if (effects[i][1] == TRASH_EFFECT) {
+                        the_void.store(trash);
+                        the_void.store(opponent->trash);
+                        announce(BANISH_TRASH_ANNOUNCEMENT);
                     }
                     
-                    // The player chooses cards to banish.
-                    for (int i = 0; i < banishes; ++i) {
-                        int index;
+                    else {
+                        int banishes = std::stoi(effects[i][1]);
                         
-                        if (hand.size() == 1) {
-                            index = 0;
+                        if (banishes > hand.size()) {
+                            banishes = hand.size();
                         }
                         
-                        else if (!opposing) {
-                            announce(TO_BANISH_ANNOUNCEMENT);
+                        // The player chooses cards to banish.
+                        for (int i = 0; i < banishes; ++i) {
+                            int index;
                             
-                            index = hand.choose(
-                                display,
-                                renderer,
-                                back_button
-                            );
+                            if (hand.size() == 1) {
+                                index = 0;
+                            }
                             
-                            messenger.send(std::to_string(index));
+                            else if (!opposing) {
+                                announce(TO_BANISH_ANNOUNCEMENT);
+                                
+                                index = hand.choose(
+                                    display,
+                                    renderer,
+                                    back_button
+                                );
+                                
+                                messenger.send(std::to_string(index));
+                            }
+                            
+                            else {
+                                announce(TO_BANISH_ANNOUNCEMENT, false);
+                                
+                                index = std::stoi(message);
+                                
+                                // A message is waited for in another thread.
+                                message = EMPTY_MESSAGE;
+                                messenger_thread.new_thread(
+                                    MessengerPackage::get_message,
+                                    &messenger_package
+                                );
+                            }
+                            
+                            if (opposing) {
+                                announce(BANISH_PEEK_ANNOUNCEMENT);
+                            }
+                            
+                            the_void.store(hand.remove(index));
                         }
                         
-                        else {
-                            announce(TO_BANISH_ANNOUNCEMENT, false);
-                            
-                            index = std::stoi(message);
-                            
-                            // A message is waited for in another thread.
-                            message = EMPTY_MESSAGE;
-                            messenger_thread.new_thread(
-                                MessengerPackage::get_message,
-                                &messenger_package
-                            );
-                        }
-                        
-                        if (opposing) {
-                            announce(BANISH_PEEK_ANNOUNCEMENT);
-                        }
-                        
-                        the_void.store(hand.remove(index));
+                        announce(BANISH_ANNOUNCEMENT);
                     }
-                    
-                    announce(BANISH_ANNOUNCEMENT);
                 }
                 
                 // The supporter card shuffles cards into the deck.
@@ -22259,7 +22265,7 @@ int main(int argc, char** argv) noexcept {
             sources[i] += 'a' + i;
         }
         
-        // The uppercase letters are set.
+        //     The uppercase letters are set.
         for (int i = 0; i < LETTERS; i++) {
             characters[LETTERS + i] = 'A' + i;
             sources[LETTERS + i] += 'a' + i;
@@ -22410,6 +22416,9 @@ int main(int argc, char** argv) noexcept {
 //}
 
 /* CHANGELOG:
+     v1.12.5:
+       Arsonist no longer mills.
+       Arsonist now banishes all discarded cards.
      v1.12.4:
        Haymaker's minimum damage was increased from 0 to 200.
        Ancient Power's damage boost is now displayed.

@@ -1,4 +1,7 @@
 /* CHANGELOG:
+     v1.12.5:
+       Arsonist no longer mills.
+       Arsonist now banishes all discarded cards.
      v1.12.4:
        Haymaker's minimum damage was increased from 0 to 200.
        Ancient Power's damage boost is now displayed.
