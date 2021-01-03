@@ -7,7 +7,7 @@
 // System Constants
 //{
 // The current version of the program.
-constexpr int VERSION[] = {1, 12, 5, 0};
+constexpr int VERSION[] = {2, 0, 0, 0};
 
 // The title of the game in string form.
 constexpr const char* TITLE_STRING = "Demi Duel";
@@ -2620,7 +2620,7 @@ constexpr const char* DRAW_LIFE_ANNOUNCEMENT = "Choose a life card to draw.";
             : last_drawn->get_type() == SUPPORTER_TYPE ? "a supporter" \
             : "an energy"                                              \
         )                                                              \
-        + " card to draw from your deck."                                \
+        + " card to draw from your deck."                              \
 )
 //}
 
@@ -3108,7 +3108,7 @@ constexpr const char* BANISH_LIFE_ANNOUNCEMENT = "Choose a life card to banish."
 //{
 #define DRAW_UNRANKED_ANNOUNCEMENT (                \
     std::string(opposing ? "Your opponent" : "You") \
-    + " draw all of the unranked fighters in "      \
+    + " drew all of the unranked fighters in "      \
     + (opposing ? "their" : "your")                 \
     + " deck!"                                      \
 )
@@ -4265,9 +4265,9 @@ constexpr int SAMURAI_ABILITY_USES = APPRENTICE_FINAL_RANK_ABILITY_USES;
 constexpr const char* SAMURAI_ATTACK_NAME = "Subjugate";
 constexpr const char* SAMURAI_ATTACK_DESCRIPTION =
     "Deal 250 damage to your opponent's active fighter.\n"
-    "Flip 2 coins.\n"
-    "Your opponent's active fighter can't attack if the first flip gives heads.\n"
-    "Your opponent's active fighter can't retreat if the second flip gives heads."
+    "Flip a coin.\n"
+    "If heads, your opponent's active fighter can't attack.\n"
+    "If tails, your opponent's active fighter can't retreat."
 ;
 const std::string SAMURAI_ATTACK_EFFECTS(
     std::string(FLIP_EFFECT) // flip
@@ -4278,11 +4278,7 @@ const std::string SAMURAI_ATTACK_EFFECTS(
     + EFFECT_SEPARATOR       //
     + IMPAIR_EFFECT          // impair
     + EFFECT_TERMINATOR
-    + FLIP_EFFECT            // flip
-    + EFFECT_SEPARATOR       //
-    + "1"                    // 1
-    + EFFECT_TERMINATOR
-    + HEADS_EFFECT           // heads
+    + TAILS_EFFECT           // tails
     + EFFECT_SEPARATOR       //
     + CRIPPLE_EFFECT         // cripple
 );
@@ -5319,6 +5315,118 @@ constexpr int BOND_ENERGY_VALUE = 750;
 //}
 //}
 //}
+
+// AUTO
+//{
+// General
+//{
+// True while Demi Duel: AUTO is in use.
+bool AUTO = false;
+
+// The deck code that Demi Duel: AUTO is using.
+int AUTO_DECK;
+
+// The first port to connect to Demi Duel: AUTO.
+constexpr int AUTO_BASE = 80700;
+
+// The address for Demi Duel: AUTO to connect to (localhost).
+constexpr const char* AUTO_ADDRESS = "127.0.0.1";
+
+// The number of messages that can be sent uninterrupted.
+constexpr int AUTO_WAIT = 2;
+
+// The number of decks that AUTO can randomly select.
+constexpr int AUTO_DECK_COUNT = 1;
+
+// The decks that AUTO can randomly select.
+constexpr int AUTO_DECKS[AUTO_DECK_COUNT] = {
+    2
+};
+//}
+
+// Alerts
+//{
+// A string that informs AUTO that it is its turn.
+constexpr const char* AUTO_TURN = "auto_turn";
+
+// A string that informs AUTO that the current duel has ended.
+constexpr const char* AUTO_TERMINATOR = "auto_terminator";
+
+// A string that informs AUTO that a new active fighter must be chosen.
+constexpr const char* AUTO_NEW_ACTIVE = "auto_new_active";
+
+// A string that informs AUTO that a life card must be drawn.
+constexpr const char* AUTO_DRAW_LIFE = "auto_draw_life";
+
+// A string that informs AUTO that a life card must be banished.
+constexpr const char* AUTO_BANISH_LIFE = "auto_banish_life";
+//}
+
+// Card Specific Modifiers
+//{
+/* The value of switching in Swimmer when a Scuba Diver pivot is possible.
+   A Scuba Diver pivot is performed by attacking with the active fighter, switching
+     in a Swimmer from the bench, and ranking up the Swimmer into a Scuba Diver.
+   This allows for an attack during the user's turn and rooted invincibility
+     during the opponent's next turn, which can provide a good advantage.
+ */
+constexpr int SCUBA_DIVER_PIVOT_EVALUATION = 10000;
+
+// The value of switching in Swimmer normally.
+constexpr int SWIMMER_SWITCH_IN_EVALUATION = -10000;
+
+// The cost of a maximum damage Primed Payload.
+constexpr int PYROTECHNICIAN_COST_FIX = 2000;
+
+// The minimum number of cards in the deck necessary to use Professor.
+constexpr int PROFESSOR_THRESHOLD = 12;
+
+// The minimum number of cards in the deck and hand necessary to use Lecturer.
+constexpr int LECTURER_THRESHOLD = 12;
+
+// The minimum number of cards in the deck and hand necessary to use Investor.
+constexpr int INVESTOR_THRESHOLD = 14;
+
+// The minimum number of cards in the deck necessary to use Librarian.
+constexpr int LIBRARIAN_THRESHOLD = 6;
+
+// The amount of healing provided by Nurse.
+constexpr int NURSE_HEALING = 600;
+
+// The amount of healing provided by Miracle Worker.
+constexpr int MIRACLE_WORKER_HEALING = 800;
+
+// The health threshold for a successful assassination.
+constexpr double ASSASSINATION_THRESHOLD = 0.2;
+
+// The damage dealt by Sniper.
+constexpr int SNIPER_DAMAGE = 150;
+
+// The power boost from Cheerleader.
+constexpr int CHEER_BOOST = 100;
+//}
+
+// Attack Evaluation
+//{
+// The number of attack evaluation criteria.
+constexpr int ATTACK_VALUES = 2;
+
+// The index of active damage.
+constexpr int ATTACK_DAMAGE_INDEX = 0;
+
+// The index of miscellaneous value.
+constexpr int ATTACK_VALUE_INDEX = 1;
+
+// Conversion from agility modification to damage.
+constexpr double AGILITY_MODIFIER = 0.1;
+
+// The value of crippling the opponent's active fighter.
+constexpr int CRIPPLE_ATTACK_VALUE = 300;
+
+// The value of impairing the opponent's active fighter.
+constexpr int IMPAIR_ATTACK_VALUE = 250;
+//}
+//}
 //}
 
 // PC Constants
@@ -5341,6 +5449,158 @@ constexpr double DUEL_SONG_LENGTH = Timer::to_seconds(0, 1, 55);
 
 // Basic Classes
 //{
+/**
+ * A class that defines an evaluation.
+ * An evaluation has a type, index, and value that determine an action to take.
+ * An evaluation can update itself to match a superior option or inferior option.
+ */
+class Evaluation {
+    public:
+        // An enumeration of option types.
+        enum Option {
+            END,
+            ATTACK,
+            RETREAT,
+            ABILITY,
+            CARD
+        };
+        
+        // An enumeration of choice priorities.
+        enum Priority {
+            END_EVALUATION, // End Turn.
+            ATTACK_EVALUATION, // Attack.
+            PROFESSOR_EVALUATION, // Play Professor.
+            SNIPER_EVALUATION, // Play Sniper without a kill.
+            MIRACLE_WORKER_HALF_EVALUATION, // Play Miracle Worker for half value.
+            NURSE_HALF_EVALUATION, // Play Nurse for half value.
+            INVESTOR_EVALUATION, // Play Investor.
+            LECTURER_EVALUATION, // Play Lecturer.
+            TRADER_ENERGY_EVALUATION, // Play Trader for an energy card.
+            ENERGY_RANK_BENCH_EVALUATION, // Attach energy to bench for future ranks.
+            RETREAT_EVALUATION, // Retreat when optimal.
+            ENERGY_RANK_ACTIVE_EVALUATION, // Attach energy to active for future ranks.
+            LIBRARIAN_EVALUATION, // Play Librarian.
+            ALCHEMIST_EVALUATION, // Play Alchemist.
+            TIME_TRAVELLER_EVALUATION, // Play Time Traveller.
+            TRADER_SUPPORTER_EVALUATION, // Play Trader for a supporter card.
+            TRADER_FIGHTER_EVALUATION, // Play Trader for a fighter card.
+            INVESTOR_FINISH_EVALUATION, // Play Investor as the final card of the turn.
+            BASIC_EVALUATION, // Play an unranked fighter onto the bench.
+            ENERGY_BENCH_EVALUATION, // Attach energy to bench for attacks.
+            RANK_BENCH_EVALUATION, // Rank up a benched fighter.
+            MATCHMAKER_EVALUATION, // Play Matchmaker to root a suboptimal fighter.
+            BOUNTY_HUNTER_EVALUATION, // Play Bounty Hunter to switch in a suboptimal fighter.
+            RECRUITER_EVALUATION, // Play Recruiter to draw one fighter.
+            CHEERLEADER_EVALUATION, // Play Cheerleader for an attack.
+            GATEKEEPER_EVALUATION, // Play Gatekeeper to lock out the opponent.
+            ELECTRICIAN_HALF_EVALUATION, // Play Electrician for half value.
+            MIRACLE_WORKER_EVALUATION, // Play Miracle Worker for full value.
+            NURSE_EVALUATION, // Play Nurse for full value.
+            LIBRARIAN_GOOD_EVALUATION, // Play Librarian for good value.
+            ALCHEMIST_GOOD_EVALUATION, // Play Alchemist for good value.
+            TIME_TRAVELLER_GOOD_EVALUATION, // Play Time Traveller for good value.
+            TRADER_SUPPORTER_GOOD_EVALUATION, // Play Trader for a valuable supporter card.
+            TRADER_FIGHTER_GOOD_EVALUATION, // Play Trader for a valuable fighter card.
+            GOOD, // Threshold for high priority moves.
+            RANKER_PLAY_EVALUATION, // Play a fighter with Energy Acceleration.
+            MULTI_RECRUITER_EVALUATION, // Play Recruiter to draw multiple fighters.
+            ELECTRICIAN_EVALUATION, // Play Electrician for full value.
+            RANK_ACTIVE_EVALUATION, // Rank up the active fighter.
+            ENERGY_ACTIVE_EVALUATION, // Attach energy to the active fighter for attacks.
+            ASSASSIN_ATTACK_EVALUATION, // Attack for an Assasin follow-up.
+            ASSASSIN_EVALUATION, // Play Assassin when effective.
+            SNIPE_EVALUATION, // Play Sniper when it kills.
+            CHEER_LETHAL_EVALUATION, // Play Cheerleader for lethal damage.
+            PIVOT_EVALUATION, // The value of performing a Scuba Diver pivot.
+            ARMS_SMUGGLER_EVALUATION, // Play Arms Smuggler when an attack can follow.
+            ENERGY_ACCELERATION_EVALUATION // Use Energy Acceleration.
+        };
+        
+        /**
+         * Constructed to the default evaluation.
+         * The default action ends AUTO's turn and has a value of zero.
+         */
+        Evaluation() noexcept:
+            option(),
+            value(),
+            indices()
+        {}
+        
+        /**
+         * A custom evaluation is initialised.
+         */
+        Evaluation(Option option, Priority value, int index) noexcept:
+            option(option),
+            value(value),
+            indices({index})
+        {}
+        
+        /**
+         * A custom evaluation with multiple indices is initialised.
+         */
+        template<unsigned N>
+        Evaluation(Option option, Priority value, const std::array<int, N>& indices) noexcept:
+            option(option),
+            value(value),
+            indices(indices.cbegin(), indices.cend())
+        {}
+        
+        /**
+         * Returns the optimal option.
+         */
+        Option get_option() const noexcept {
+            return option;
+        }
+        
+        /**
+         * Returns the value of the option.
+         */
+        Priority get_value() const noexcept {
+            return value;
+        }
+        
+        /**
+         * Returns the index of the option.
+         */
+        int get_index(int i = 0) const noexcept {
+            return indices[i];
+        }
+        
+        /**
+         * Updates the evaluation to match the given one if the value would increase.
+         */
+        void improve(const Evaluation& evaluation) noexcept {
+            if (evaluation.value > value) {
+                *this = evaluation;
+            }
+        }
+        
+        /**
+         * Updates the evaluation to match the given one if the value would increase.
+         */
+        void improve(Option option, Priority value, int index) noexcept {
+            improve(Evaluation(option, value, index));
+        }
+        
+        /**
+         * Updates the evaluation to match the given one if the value would increase.
+         */
+        template<unsigned N>
+        void improve(
+            Option option,
+            Priority value,
+            const std::array<int, N>& indices
+        ) noexcept {
+            improve(Evaluation(option, value, indices));
+        }
+        
+        
+    private:
+        Option option;
+        Priority value;
+        std::vector<int> indices;
+};
+
 /**
  * An abstract base class for objects
  *   that can be affected to inherit from.
@@ -6690,6 +6950,16 @@ class Fighter: public Card {
                 // The maximum energy value is returned.
                 return max_energy;
             }
+        }
+        
+        /**
+         * Returns the value that would be provided by the given energy card.
+         */
+        int energy_value(const Energy& e) const noexcept {
+            Fighter clone(*this);
+            clone.attach(e);
+            
+            return clone.energy_value(energy.size());
         }
         
         /**
@@ -8332,6 +8602,24 @@ class CardStore {
         }
         
         /**
+         * Stores all of the fighter cards in the vector.
+         */
+        void store(const std::vector<Fighter>& f) noexcept {
+            for (int i = 0; i < f.size(); ++i) {
+                fighters.push_back(f[i]);
+            }
+        }
+        
+        /**
+         * Stores all of the supporter cards in the vector.
+         */
+        void store(const std::vector<Supporter>& s) noexcept {
+            for (int i = 0; i < s.size(); ++i) {
+                supporters.push_back(s[i]);
+            }
+        }
+        
+        /**
          * Stores all of the energy cards in the vector.
          */
         void store(const std::vector<Energy>& e) noexcept {
@@ -9369,6 +9657,8 @@ class CardStore {
  */
 class Player: public Affectable {
     public:
+        // Initialisation
+        //{
         /**
          * Constructs a player with their deck, an empty hand, an empty trash,
          *   an empty store of life cards, and an empty board of fighters.
@@ -9683,7 +9973,10 @@ class Player: public Affectable {
         void set_active(const std::string& choice) noexcept {
             fighters.push_back(static_cast<Fighter&>(*hand.remove(std::stoi(choice))));
         }
-    
+        //}
+        
+        // Main Game Menu
+        //{
         /**
          * Returns true if the player can draw from their deck.
          */
@@ -9970,7 +10263,10 @@ class Player: public Affectable {
                 }
             }
         }
-    
+        //}
+        
+        // Card Plays
+        //{
         /**
          * Allows the player to play a card from their hand.
          */
@@ -9990,16 +10286,19 @@ class Player: public Affectable {
             
             // The chosen card is checked.
             if (index >= 0) {
+                // The chosen card is a fighter card.
                 if (hand[index].get_type() == FIGHTER_TYPE) {
                     Fighter& f = static_cast<Fighter&>(hand[index]);
                     
+                    // The chosen card is a rank up with no valid old rank.
                     if (!f.basic() && !rank_search(f)) {
                         announce(UNRANKABLE_ANNOUNCEMENT);
                         
                         return;
                     }
                 }
-                        
+                
+                // The opponent is informed of the choice.
                 if (!opposing) {
                     messenger.send(PLAY_MESSAGE);
                     messenger.send(std::to_string(index));
@@ -10925,6 +11224,7 @@ class Player: public Affectable {
                     
                     // The trash is searched for a card to draw.
                     else if (effects[i][1] == TRASH_EFFECT) {
+                        // The trash is searched for energy.
                         if (effects[i][2] == ENERGY_TYPE) {
                             int searches = std::stoi(effects[i][3]);
                             
@@ -12651,7 +12951,10 @@ class Player: public Affectable {
             announce(RANK_UP_ANNOUNCEMENT);
             fighters[index] = new_rank;
         }
+        //}
         
+        // Fighter Use
+        //{
         /**
          * Allows the player to use their active fighter.
          */
@@ -13273,6 +13576,11 @@ class Player: public Affectable {
             
             // The player proceeds when the opponent takes an action.
             else {
+                // The player informs AUTO to make a move.
+                if (AUTO) {
+                    messenger.send(AUTO_TURN);
+                }
+                
                 while (message == EMPTY_MESSAGE) {
                     Events::update();
                 }
@@ -15361,6 +15669,15 @@ class Player: public Affectable {
                     }
                 }
             
+                // The effect is only resolved if heads was flipped.
+                else if (effects[i][0] == TAILS_EFFECT && coin_flips[0] == TAILS) {
+                    // Cripples the opponent's active fighter (no retreat).
+                    if (effects[i][1] == CRIPPLE_EFFECT) {
+                        opponent->fighters[0].affect(effects[i][1]);
+                        announce(CRIPPLE_ANNOUNCEMENT);
+                    }
+                }
+            
                 // The attack deals damage over time.
                 else if (effects[i][0] == CURSE_EFFECT) {
                     // The damage is dependent on the void's size.
@@ -15708,7 +16025,10 @@ class Player: public Affectable {
                 }
             }
         }
+        //}
         
+        // Miscellaneous
+        //{
         /**
          * Checks for defeated fighters.
          * Also performs end of action effects.
@@ -15867,6 +16187,11 @@ class Player: public Affectable {
                     
                     // The new active fighter is awaited.
                     else {
+                        // AUTO is informed that it must choose a new active fighter.
+                        if (AUTO) {
+                            messenger.send(AUTO_NEW_ACTIVE);
+                        }
+                        
                         announce(NEW_ACTIVE_ANNOUNCEMENT, false);
                         
                         int index = std::stoi(message);
@@ -16603,6 +16928,12 @@ class Player: public Affectable {
             
             // The opponent sees the number of life cards drawn.
             if (opposing && life_draws) {
+                // AUTO is informed that it must choose a life card to draw.
+                if (AUTO) {
+                    messenger.send(AUTO_DRAW_LIFE);
+                    messenger.send(std::to_string(life_draws));
+                }
+                    
                 announce(LIFE_DRAW_ANNOUNCEMENT, false);
             }
             
@@ -16673,6 +17004,12 @@ class Player: public Affectable {
             
             // The opponent sees the number of life cards banished.
             if (opposing && life_banishes) {
+                // AUTO is informed that it must choose a life card to banish.
+                if (AUTO) {
+                    messenger.send(AUTO_BANISH_LIFE);
+                    messenger.send(std::to_string(life_banishes));
+                }
+                
                 announce(LIFE_BANISH_ANNOUNCEMENT, false);
             }
             
@@ -17006,6 +17343,2425 @@ class Player: public Affectable {
                 }
             }
         }
+        //}
+        
+        // Demi Duel: AUTO
+        //{
+        // Turn Evaluation
+        //{
+        /**
+         * Demi Duel: AUTO's main method for action evaluation and performance.
+         * Whenever a choice can be made, the options are evaluated and the
+         *   best option is taken (according to the evaluation functions).
+         * Returns true if the game ended.
+         */
+        bool automate(const Messenger& messenger) const noexcept {
+            // Loop to choose an option.
+            while (true) {
+                // An evaluation is initialised to end the turn.
+                Evaluation evaluation;
+                
+                // The evaluation considers an attack.
+                evaluation.improve(evaluate_attack());
+                
+                // The evaluation considers retreating.
+                evaluation.improve(evaluate_retreat());
+                
+                // The evaluation considers an ability use.
+                evaluation.improve(evaluate_ability());
+                
+                // The evaluation considers a card play.
+                evaluation.improve(evaluate_store(hand));
+                
+                // A vector of strings is used to store the messages to be sent.
+                // This ensures that no changes occur during checks.
+                std::vector<std::string> messages;
+                
+                // Ending the turn has the greatest value.
+                if (evaluation.get_option() == Evaluation::END) {
+                    messenger.send(END_TURN_STRING);
+                    break;
+                }
+                
+                // Using an attack has the greatest value.
+                else if (evaluation.get_option() == Evaluation::ATTACK) {
+                    messages.push_back(ATTACK_MESSAGE);
+                }
+                
+                // Retreating has the greatest value.
+                else if (evaluation.get_option() == Evaluation::RETREAT) {
+                    messages.push_back(RETREAT_MESSAGE);
+                    messages.push_back(std::to_string(evaluation.get_index()));
+                }
+                
+                // Using an ability has the greatest value.
+                else if (evaluation.get_option() == Evaluation::ABILITY) {
+                    messages.push_back(ABILITY_MESSAGE);
+                    messages.push_back(std::to_string(evaluation.get_index()));
+                }
+                
+                // Playing a card has the greatest value.
+                else {
+                    // The opponent is informed that a card is to be played.
+                    messages.push_back(PLAY_MESSAGE);
+                    messages.push_back(std::to_string(evaluation.get_index()));
+                    
+                    // An energy card must have its recipient specified
+                    //   when there a multiple friendly fighters in play.
+                    if (
+                        hand[evaluation.get_index()].get_type() == ENERGY_TYPE
+                        && fighters.size() > 1
+                    ) {
+                        // Sends the second index.
+                        messages.push_back(
+                            std::to_string(
+                                evaluation.get_index(1)
+                            )
+                        );
+                    }
+                    
+                    // Nurse must have its recipient specified when
+                    //   there are multiple friendly fighters in play.
+                    else if (
+                        hand[evaluation.get_index()].get_name() == NURSE_NAME
+                        && fighters.size() > 1
+                    ) {
+                        // Sends the second index.
+                        messages.push_back(
+                            std::to_string(
+                                evaluation.get_index(1)
+                            )
+                        );
+                    }
+                    
+                    // Bounty Hunter must specify a target, if the
+                    //   opponent has multiple benched fighters.
+                    else if (
+                        hand[evaluation.get_index()].get_name() == BOUNTY_HUNTER_NAME
+                        && opponent->fighters.size() > 2
+                    ) {
+                        // Sends the second index.
+                        messages.push_back(
+                            std::to_string(
+                                evaluation.get_index(1)
+                            )
+                        );
+                    }
+                    
+                    // Sniper must specify a target, if the
+                    //   opponent has multiple fighters.
+                    else if (
+                        hand[evaluation.get_index()].get_name() == SNIPER_NAME
+                        && opponent->fighters.size() > 1
+                    ) {
+                        // Sends the second index.
+                        messages.push_back(
+                            std::to_string(
+                                evaluation.get_index(1)
+                            )
+                        );
+                    }
+                    
+                    // Time Traveller must specify a card to draw,
+                    //   if there are multiple cards in the trash.
+                    else if (
+                        hand[evaluation.get_index()].get_name()
+                        == TIME_TRAVELLER_NAME
+                        && trash.size() > 1
+                    ) {
+                        // Sends the second index.
+                        messages.push_back(
+                            std::to_string(
+                                evaluation.get_index(1)
+                            )
+                        );
+                    }
+                    
+                    // AUTO chose Electrician.
+                    else if (hand[evaluation.get_index()].get_name() == ELECTRICIAN_NAME) {
+                        // AUTO has at least three energy cards in the trash.
+                        if (trash.get_energy().size() > 2) {
+                            // Sends the second index.
+                            messages.push_back(
+                                std::to_string(
+                                    evaluation.get_index(1)
+                                )
+                            );
+                            
+                            // Sends the third index.
+                            messages.push_back(
+                                std::to_string(
+                                    evaluation.get_index(2)
+                                )
+                            );
+                        }
+                        
+                        // AUTO has two energy cards in the trash.
+                        else if (trash.get_energy().size() == 2) {
+                            // Sends the second index.
+                            messages.push_back(
+                                std::to_string(
+                                    evaluation.get_index(1)
+                                )
+                            );
+                        }
+                    }
+                    
+                    // AUTO chose Librarian.
+                    else if (hand[evaluation.get_index()].get_name() == LIBRARIAN_NAME) {
+                        // The hand is empty besides Librarian.
+                        if (hand.size() == 1) {
+                            // The deck contains multiple cards.
+                            if (deck.size() > 1) {
+                                // Sends the second index.
+                                messages.push_back(
+                                    std::to_string(
+                                        evaluation.get_index(1)
+                                    )
+                                );
+                            }
+                        }
+                        
+                        // The hand contains one card other than Librarian.
+                        else if (hand.size() == 2) {
+                            // The deck contains multiple cards.
+                            if (deck.size() > 1) {
+                                // Sends the third index.
+                                messages.push_back(
+                                    std::to_string(
+                                        evaluation.get_index(2)
+                                    )
+                                );
+                            }
+                        }
+                        
+                        // The hand contains multiple cards other than Librarian.
+                        else {
+                            // Sends the second index.
+                            messages.push_back(
+                                std::to_string(
+                                    evaluation.get_index(1)
+                                )
+                            );
+                            
+                            // The deck contains multiple cards.
+                            if (deck.size() > 1) {
+                                // Sends the third index.
+                                messages.push_back(
+                                    std::to_string(
+                                        evaluation.get_index(2)
+                                    )
+                                );
+                            }
+                        }
+                    }
+                    
+                    // AUTO chose Alchemist.
+                    else if (hand[evaluation.get_index()].get_name() == ALCHEMIST_NAME) {
+                        // The hand is empty besides Alchemist.
+                        if (hand.size() == 1) {
+                            // The trash contains multiple cards.
+                            if (trash.size() > 1) {
+                                // Sends the second index.
+                                messages.push_back(
+                                    std::to_string(
+                                        evaluation.get_index(1)
+                                    )
+                                );
+                            }
+                        }
+                        
+                        // The hand contains one card other than Alchemist.
+                        else if (hand.size() == 2) {
+                            // The trash contains multiple cards.
+                            if (trash.size() > 1) {
+                                // Sends the third index.
+                                messages.push_back(
+                                    std::to_string(
+                                        evaluation.get_index(2)
+                                    )
+                                );
+                            }
+                        }
+                        
+                        // The hand contains multiple cards other than Alchemist.
+                        else {
+                            // Sends the second index.
+                            messages.push_back(
+                                std::to_string(
+                                    evaluation.get_index(1)
+                                )
+                            );
+                            
+                            // The trash contains multiple cards.
+                            if (trash.size() > 1) {
+                                // Sends the third index.
+                                messages.push_back(
+                                    std::to_string(
+                                        evaluation.get_index(2)
+                                    )
+                                );
+                            }
+                        }
+                    }
+                    
+                    // AUTO chose Trader.
+                    else if (hand[evaluation.get_index()].get_name() == TRADER_NAME) {
+                        // The hand contains multiple cards other than Trader.
+                        if (hand.size() > 2) {
+                            // Sends the second index.
+                            messages.push_back(
+                                std::to_string(
+                                    evaluation.get_index(1)
+                                )
+                            );
+                        }
+                        
+                        // Sends the third index.
+                        messages.push_back(
+                            std::to_string(
+                                evaluation.get_index(2)
+                            )
+                        );
+                    }
+                }
+                
+                // The choices are sent.
+                for (int i = 0; i < messages.size(); ++i) {
+                    // Waits for the opponent to read before sending choices.
+                    // Only applies to choices with an announcement.
+                    if (i >= AUTO_WAIT) {
+                        messenger.read();
+                    }
+                    
+                    messenger.send(messages[i]);
+                }
+            
+                // Waits for a message from the opponent.
+                while (true) {
+                    // A message is read.
+                    std::string message(messenger.read());
+                    
+                    // AUTO should continue its turn (synchronisation).
+                    if (message == AUTO_TURN) {
+                        break;
+                    }
+                    
+                    // The game has ended.
+                    else if (message == AUTO_TERMINATOR) {
+                        return true;
+                    }
+                }
+            }
+            
+            return false;
+        }
+        
+        /**
+         * Returns an evaluation of attacking.
+         */
+        Evaluation evaluate_attack() const noexcept {
+            // A defualt evaluation is initialised.
+            Evaluation evaluation;
+            
+            // The energy discount effects are extracted from the active fighter.
+            std::vector<std::vector<std::string>> filtered(
+                fighters[0].effect_search(FUEL_EFFECT)
+            );
+            
+            // The total energy discount.
+            int discount = 0;
+            
+            // The discount effects are resolved.
+            for (int i = 0; i < filtered.size(); ++i) {
+                // Discounted by the number of cards in the void.
+                if (filtered[i][1] == VOID_EFFECT) {
+                    discount += the_void.size() * std::stoi(filtered[i][2]);
+                }
+            }
+            
+            // An attack is possible.
+            if (
+                !effect_search(PREPARATION_EFFECT).size()
+                && !attacked
+                && fighters[0].attack_usable(discount)
+            ) {
+                // The value provided by the attack.
+                std::array<int, ATTACK_VALUES> value(attack_value(fighters[0]));
+                
+                // The total value provided by the attack.
+                int total_value = 0;
+                
+                // The total attack value is calculated.
+                for (int v : value) {
+                    total_value += v;
+                }
+                
+                // The damage dealt by the active fighter's attack is extracted.
+                int damage = value[0];
+                
+                // True if the attack can be followed by Assassin for lethal.
+                bool assassinable = false;
+                
+                // Attacking takes the opposing active fighter into assassination range.
+                if (
+                    plays
+                    && opponent->fighters[0].get_health() - damage > 0
+                    && opponent->fighters[0].get_health() - damage
+                    <= round(
+                        ASSASSINATION_THRESHOLD
+                        * opponent->fighters[0].get_max_health()
+                    )
+                ) {
+                    // Search for Assassin in hand.
+                    for (const Supporter& s : hand.get_supporters()) {
+                        if (s.get_name() == ASSASSIN_NAME) {
+                            assassinable = true;
+                            break;
+                        }
+                    }
+                }
+                
+                // An attack is prioritised when Assassin can follow for lethal.
+                if (assassinable) {
+                    evaluation.improve(
+                        Evaluation::ATTACK,
+                        Evaluation::ASSASSIN_ATTACK_EVALUATION,
+                        0
+                    );
+                }
+                
+                // Assassin cannot be used for a lethal follow-up.
+                // Attacks should not be used if they don't provide value.
+                else if (total_value > 0) {
+                    evaluation.improve(
+                        Evaluation::ATTACK,
+                        Evaluation::ATTACK_EVALUATION,
+                        0
+                    );
+                }
+            }
+            
+            // The attack evaluation is returned.
+            return evaluation;
+        }
+        
+        /**
+         * Returns an evaluation of retreating.
+         */
+        Evaluation evaluate_retreat() const noexcept {
+            // A defualt evaluation is initialised.
+            Evaluation evaluation;
+            
+            // The energy discount effects are extracted from the active fighter.
+            std::vector<std::vector<std::string>> filtered(
+                fighters[0].effect_search(FUEL_EFFECT)
+            );
+            
+            // The total energy discount.
+            int discount = 0;
+            
+            // The discount effects are resolved.
+            for (int i = 0; i < filtered.size(); ++i) {
+                // Discounted by the number of cards in the void.
+                if (filtered[i][1] == VOID_EFFECT) {
+                    discount += the_void.size() * std::stoi(filtered[i][2]);
+                }
+            }
+            
+            // A retreat is possible.
+            if (
+                fighters.size() > 1
+                && (!retreated || fighter_effect_search(FREEDOM_EFFECT))
+                && fighters[0].retreat_usable(
+                    fighter_effect_count(
+                        AGILITY_AURA_EFFECT
+                    )
+                    + discount
+                )
+            ) {
+                // The index of the fighter to switch in.
+                int index;
+                
+                // The value of the switch.
+                int value = 0;
+                
+                // The value of switching the active fighter out.
+                int out_value = -switch_in_value(fighters[0]);
+                
+                // All of the benched fighters are considered.
+                for (int i = 1; i < fighters.size(); ++i) {
+                    // The value of the switch in is calculated.
+                    int in_value = switch_in_value(fighters[i]);
+                    
+                    // A better switch is found.
+                    if (in_value + out_value > value) {
+                        value = in_value + out_value;
+                        index = i;
+                    }
+                }
+                
+                // A good retreat option was found.
+                if (value) {
+                    // The optimal retreat option is used.
+                    evaluation.improve(
+                        Evaluation::RETREAT,
+                        Evaluation::RETREAT_EVALUATION,
+                        index
+                    );
+                }
+            }
+            
+            // The optimal retreat evaluation is returned.
+            return evaluation;
+        }
+        
+        /**
+         * Returns the evaluation of an ability use.
+         */
+        Evaluation evaluate_ability() const noexcept {
+            // A defualt evaluation is initialised.
+            Evaluation evaluation;
+            
+            // Loop to find the optimal ability to use.
+            for (int i = 0; i < fighters.size(); ++i) {
+                // The ability is extracted.
+                const Ability& ability = fighters[i].get_ability();
+                
+                // If the ability is not usable, it cannot be evaluated.
+                if (ability.usable()) {
+                    // The ability's name is extracted.
+                    const std::string& name = ability.get_name();
+                    
+                    // Energy Acceleration.
+                    if (name == RANKER_ABILITY_NAME) {
+                        // True if there are any energy cards in the deck that
+                        //   match elements with the fighter in question.
+                        bool accelerable = false;
+                        
+                        // Loop to find accelerable energy.
+                        for (int j = 0; j < deck.get_energy().size(); ++j) {
+                            if (
+                                deck.get_energy()[j].get_element()
+                                == fighters[i].get_element()
+                            ) {
+                                accelerable = true;
+                                break;
+                            }
+                        }
+                        
+                        // Energy Acceleration should always be used if it can.
+                        if (accelerable) {
+                            evaluation.improve(
+                                Evaluation::ABILITY,
+                                Evaluation::ENERGY_ACCELERATION_EVALUATION,
+                                i
+                            );
+                        }
+                    }
+                }
+            }
+            
+            // The optimal ability evaluation is returned.
+            return evaluation;
+        }
+        
+        /**
+         * Returns the evaluation of a card in the given store.
+         * Whether the card will be played with the current number
+         *   of remaining card plays or not can be specified.
+         */
+        Evaluation evaluate_store(
+            const CardStore& store,
+            bool deferred = false
+        ) const noexcept {
+            // A default evaluation is initialised.
+            Evaluation evaluation;
+            
+            // An evaluation request was made for a card play, but no plays are available.
+            if (!plays && !deferred) {
+                return evaluation;
+            }
+            
+            // Fighter Cards
+            //{
+            // Loop to find the optimal fighter card.
+            for (int i = 0; i < store.get_fighters().size(); ++i) {
+                // The fighter card can be played directly onto the bench.
+                // Unranked fighters are not valuable from the trash or life cards.
+                if (
+                    store.get_fighters()[i].basic()
+                    && &store != &trash
+                    && &store != &life_cards
+                ) {
+                    // The fighter card has the energy acceleration ability.
+                    if (
+                        store.get_fighters()[i].get_ability().get_name()
+                        == RANKER_ABILITY_NAME
+                    ) {
+                        evaluation.improve(
+                            Evaluation::CARD,
+                            Evaluation::RANKER_PLAY_EVALUATION,
+                            i
+                        );
+                    }
+                    
+                    // The fighter card does not have the energy acceleration ability.
+                    else {
+                        evaluation.improve(
+                            Evaluation::CARD,
+                            Evaluation::BASIC_EVALUATION,
+                            i
+                        );
+                    }
+                }
+                
+                // The fighter needs to rank up from another.
+                else {
+                    // Cloud Surfer should only be played after an attack.
+                    if (
+                        store.get_fighters()[i].get_name() != CLOUD_SURFER_NAME
+                        || attacked
+                    ) {
+                        // A valid rank up is searched for.
+                        for (int j = 0; j < fighters.size(); ++j) {
+                            // A valid rank up is found.
+                            // Scuba Diver should not be ranked up into on the bench.
+                            if (
+                                fighters[j].get_name()
+                                == store.get_fighters()[i].get_old_rank()
+                                && (
+                                    !j
+                                    ||
+                                    store.get_fighters()[i].get_name() != SCUBA_DIVER_NAME
+                                )
+                            ) {
+                                // The rank up will have enough energy to attack.
+                                if (
+                                    fighters[j].energy_value()
+                                    >=
+                                    store
+                                    .get_fighters()[i]
+                                    .get_attack()
+                                    .get_cost()
+                                    + (
+                                        store.get_fighters()[i].get_name()
+                                        == PYROTECHNICIAN_NAME
+                                        ? PYROTECHNICIAN_COST_FIX
+                                        : 0
+                                    )
+                                ) {
+                                    // The old rank is in the active position.
+                                    if (!j) {
+                                        // A Scuba Diver pivot is possible.
+                                        if (
+                                            attacked && 
+                                            store.get_fighters()[i].get_name()
+                                            != SCUBA_DIVER_NAME
+                                        ) {
+                                            evaluation.improve(
+                                                Evaluation::CARD,
+                                                Evaluation::PIVOT_EVALUATION,
+                                                i
+                                            );
+                                        }
+                                        
+                                        // A normal rank up is possible.
+                                        else {
+                                            evaluation.improve(
+                                                Evaluation::CARD,
+                                                Evaluation::RANK_ACTIVE_EVALUATION,
+                                                i
+                                            );
+                                        }
+                                    }
+                                    
+                                    // The old rank is benched.
+                                    else {
+                                        evaluation.improve(
+                                            Evaluation::CARD,
+                                            Evaluation::RANK_BENCH_EVALUATION,
+                                            i
+                                        );
+                                    }
+                                }
+                                
+                                // If the old rank can still perform energy
+                                //   acceleration, ranking up should not be performed.
+                                else if (
+                                    fighters[j].get_ability().get_name()
+                                    == RANKER_ABILITY_NAME
+                                ) {
+                                    // True if there are any energy cards
+                                    //   in the deck that match elements
+                                    //   with the fighter in question.
+                                    bool accelerable = false;
+                                    
+                                    // Loop to find accelerable energy.
+                                    for (int k = 0; k < deck.get_energy().size(); ++k) {
+                                        if (
+                                            deck.get_energy()[k].get_element()
+                                            == fighters[j].get_element()
+                                        ) {
+                                            accelerable = true;
+                                            break;
+                                        }
+                                    }
+                                    
+                                    // Energy Acceleration can no longer be used.
+                                    if (!accelerable) {
+                                        // The fighter is on the bench, 
+                                        //   so energy is not a concern.
+                                        if (j) {
+                                            evaluation.improve(
+                                                Evaluation::CARD,
+                                                Evaluation::RANK_BENCH_EVALUATION,
+                                                i
+                                            );
+                                        }
+                                        
+                                        // An attack is possible with sufficient energy.
+                                        else if (
+                                            !effect_search(PREPARATION_EFFECT).size()
+                                            && !attacked
+                                        ) {
+                                            // The rank up can have a sufficient
+                                            //   amount of energy this turn.
+                                            if (
+                                                energisable(
+                                                    fighters[j],
+                                                    store.get_fighters()[i],
+                                                    deferred
+                                                )
+                                            ) {
+                                                evaluation.improve(
+                                                    Evaluation::CARD,
+                                                    Evaluation::RANK_ACTIVE_EVALUATION,
+                                                    i
+                                                );
+                                            }
+                                        }
+                                        
+                                        // No attack is possible, so ranking up is fine.
+                                        else {
+                                            // A Scuba Diver pivot is possible.
+                                            if (
+                                                attacked && 
+                                                store.get_fighters()[i].get_name()
+                                                != SCUBA_DIVER_NAME
+                                            ) {
+                                                evaluation.improve(
+                                                    Evaluation::CARD,
+                                                    Evaluation::PIVOT_EVALUATION,
+                                                    i
+                                                );
+                                            }
+                                            
+                                            // A normal rank up is possible.
+                                            else {
+                                                evaluation.improve(
+                                                    Evaluation::CARD,
+                                                    Evaluation::RANK_ACTIVE_EVALUATION,
+                                                    i
+                                                );
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            //}
+            
+            // Supporter Cards
+            //{
+            // Setup
+            //{
+            // The energy discount effects are extracted from the active fighter.
+            std::vector<std::vector<std::string>> filtered(
+                fighters[0].effect_search(FUEL_EFFECT)
+            );
+            
+            // The total energy discount.
+            int discount = 0;
+            
+            // The discount effects are resolved.
+            for (int i = 0; i < filtered.size(); ++i) {
+                // Discounted by the number of cards in the void.
+                if (filtered[i][1] == VOID_EFFECT) {
+                    discount += the_void.size() * std::stoi(filtered[i][2]);
+                }
+            }
+            
+            // True if the active fighter can attack right now.
+            bool attackable = false;
+            
+            // An attack is possible.
+            if (
+                !effect_search(PREPARATION_EFFECT).size()
+                && !attacked
+                && fighters[0].attack_usable(discount)
+            ) {
+                attackable = true;
+            }
+            
+            // The damage dealt by the active fighter's attack is calculated.
+            int damage = attack_value(fighters[0])[0];
+            //}
+            
+            // Loop to find the optimal supporter card.
+            for (int i = 0; i < store.get_supporters().size(); ++i) {
+                // Professor
+                if (store.get_supporters()[i].get_name() == PROFESSOR_NAME) {
+                    // Professor only holds value if the deck contains enough cards.
+                    if (deck.size() >= PROFESSOR_THRESHOLD) {
+                        evaluation.improve(
+                            Evaluation::CARD,
+                            Evaluation::PROFESSOR_EVALUATION,
+                            store.get_fighters().size() + i
+                        );
+                    }
+                }
+                
+                // Lecturer
+                else if (store.get_supporters()[i].get_name() == LECTURER_NAME) {
+                    // Lecturer only holds value if the deck and hand hold enough cards.
+                    if (hand.size() + deck.size() >= LECTURER_THRESHOLD) {
+                        evaluation.improve(
+                            Evaluation::CARD,
+                            Evaluation::LECTURER_EVALUATION,
+                            store.get_fighters().size() + i
+                        );
+                    }
+                }
+                
+                // Investor
+                else if (store.get_supporters()[i].get_name() == INVESTOR_NAME) {
+                    // Investor only holds value if the deck and hand hold enough cards.
+                    if (hand.size() + deck.size() >= INVESTOR_THRESHOLD) {
+                        // Investor is valuable as the last play of the turn.
+                        if (!deferred && plays == 1) {
+                            evaluation.improve(
+                                Evaluation::CARD,
+                                Evaluation::INVESTOR_FINISH_EVALUATION,
+                                store.get_fighters().size() + i
+                            );
+                        }
+                        
+                        // Investor holds normal value.
+                        else {
+                            evaluation.improve(
+                                Evaluation::CARD,
+                                Evaluation::INVESTOR_EVALUATION,
+                                store.get_fighters().size() + i
+                            );
+                        }
+                    }
+                }
+                
+                // Recruiter
+                else if (store.get_supporters()[i].get_name() == RECRUITER_NAME) {
+                    // The number of unranked fighters in the deck.
+                    int unranked = 0;
+                    
+                    // The number of unranked fighters in the deck is calculated.
+                    for (int j = 0; j < deck.get_fighters().size(); ++j) {
+                        // The fighter is unranked.
+                        if (deck.get_fighters()[j].basic()) {
+                            ++unranked;
+                        }
+                    }
+                    
+                    // Recruiter has some value if it draws 1 fighter.
+                    if (unranked == 1) {
+                        evaluation.improve(
+                            Evaluation::CARD,
+                            Evaluation::RECRUITER_EVALUATION,
+                            store.get_fighters().size() + i
+                        );
+                    }
+                    
+                    // Recruiter is more valuable if it draws multiple fighters.
+                    else if (unranked > 1) {
+                        evaluation.improve(
+                            Evaluation::CARD,
+                            Evaluation::MULTI_RECRUITER_EVALUATION,
+                            store.get_fighters().size() + i
+                        );
+                    }
+                }
+                
+                // Trader
+                else if (store.get_supporters()[i].get_name() == TRADER_NAME) {
+                    // Trader holds value if the deck and hand contain fighters.
+                    if (deck.get_fighters().size() && hand.get_fighters().size()) {
+                        // The optimal indices are not calculated
+                        //   (to avoid infinite loops).
+                        if (deferred) {
+                            evaluation.improve(
+                                Evaluation::CARD,
+                                Evaluation::TRADER_FIGHTER_EVALUATION,
+                                store.get_fighters().size() + i
+                            );
+                        }
+                        
+                        // The optimal deck fighter index is calculated.
+                        else {
+                            // A temporary deck fighter store is created.
+                            CardStore deck_fighters;
+                            deck_fighters.store(deck.get_supporters());
+                            
+                            // The store is evaluated.
+                            Evaluation deck_evaluation(
+                                evaluate_store(deck_fighters, true)
+                            );
+                            
+                            // The store contains a card with value.
+                            if (deck_evaluation.get_value()) {
+                                // The Priority of playing Trader.
+                                Evaluation::Priority priority =
+                                    Evaluation::TRADER_FIGHTER_EVALUATION
+                                ;
+                                
+                                // The deck contains a card with high value.
+                                // Only considered when the card can be played this turn.
+                                if (
+                                    plays > 1
+                                    && deck_evaluation.get_value() > Evaluation::GOOD
+                                ) {
+                                    priority = Evaluation::TRADER_FIGHTER_GOOD_EVALUATION;
+                                }
+                                
+                                // The index of the worst fighter card in hand.
+                                int index = 0;
+                                
+                                // A singleton card store is instantiated.
+                                CardStore singleton;
+                                singleton.store(hand.get_fighters()[index]);
+                                
+                                // The value of the worst fighter card in hand.
+                                Evaluation::Priority value =
+                                    evaluate_store(singleton, deferred).get_value()
+                                ;
+                                
+                                // The worst fighter card in
+                                //   hand is searched for.
+                                // A card without value is the worst.
+                                for (
+                                    int j = 1;
+                                    j < hand.get_fighters().size() && value;
+                                    ++j
+                                ) {
+                                    // The singleton card store is cleared.
+                                    singleton.remove();
+                                    
+                                    // The card to be tested is stored.
+                                    singleton.store(
+                                        hand.get_fighters()[j]
+                                    );
+                                    
+                                    // The card is evaluated.
+                                    Evaluation::Priority new_value =
+                                        evaluate_store(
+                                            singleton,
+                                            deferred
+                                        ).get_value()
+                                    ;
+                                    
+                                    // A lower value card was found.
+                                    if (new_value < value) {
+                                        // The value and indices are updated.
+                                        value = new_value;
+                                        index = j;
+                                    }
+                                }
+                                
+                                // The worst fighter card in hand is shuffled into the deck.
+                                evaluation.improve<3>(
+                                    Evaluation::CARD,
+                                    priority,
+                                    {
+                                        static_cast<int>(
+                                            store.get_fighters().size() + i
+                                        ),
+                                        index,
+                                        deck_evaluation.get_index()
+                                    }
+                                );
+                            }
+                        }
+                    }
+                    
+                    // Trader holds value if the deck and hand contain supporters.
+                    if (deck.get_supporters().size() && hand.get_fighters().size() > 1) {
+                        // The optimal indices are not calculated
+                        //   (to avoid infinite loops).
+                        if (deferred) {
+                            evaluation.improve(
+                                Evaluation::CARD,
+                                Evaluation::TRADER_SUPPORTER_EVALUATION,
+                                store.get_fighters().size() + i
+                            );
+                        }
+                        
+                        // The optimal deck supporter index is calculated.
+                        else {
+                            // A temporary deck supporter store is created.
+                            CardStore deck_supporters;
+                            deck_supporters.store(deck.get_supporters());
+                            
+                            // The store is evaluated.
+                            Evaluation deck_evaluation(
+                                evaluate_store(deck_supporters, true)
+                            );
+                            
+                            // The store contains a card with value.
+                            if (deck_evaluation.get_value()) {
+                                // The Priority of playing Trader.
+                                Evaluation::Priority priority =
+                                    Evaluation::TRADER_SUPPORTER_EVALUATION
+                                ;
+                                
+                                // The deck contains a card with high value.
+                                // Only considered when the card can be played this turn.
+                                if (
+                                    plays > 1
+                                    && deck_evaluation.get_value() > Evaluation::GOOD
+                                ) {
+                                    priority = Evaluation::TRADER_SUPPORTER_GOOD_EVALUATION;
+                                }
+                                
+                                // The index of the worst supporter card in hand.
+                                int index = i ? 0 : 1;
+                                
+                                // A singleton card store is instantiated.
+                                CardStore singleton;
+                                singleton.store(hand.get_supporters()[index]);
+                                
+                                // The value of the worst supporter card in hand.
+                                Evaluation::Priority value =
+                                    evaluate_store(singleton, deferred).get_value()
+                                ;
+                                
+                                // The worst supporter card in
+                                //   hand is searched for.
+                                // A card without value is the worst.
+                                for (
+                                    int j = i ? 1 : 2;
+                                    j < hand.get_supporters().size() && value;
+                                    ++j
+                                ) {
+                                    // Trader cannot be chosen.
+                                    if (j != i) {
+                                        // The singleton card store is cleared.
+                                        singleton.remove();
+                                        
+                                        // The card to be tested is stored.
+                                        singleton.store(
+                                            hand.get_supporters()[j]
+                                        );
+                                        
+                                        // The card is evaluated.
+                                        Evaluation::Priority new_value =
+                                            evaluate_store(
+                                                singleton,
+                                                deferred
+                                            ).get_value()
+                                        ;
+                                        
+                                        // A lower value card was found.
+                                        if (new_value < value) {
+                                            // The value and indices are updated.
+                                            value = new_value;
+                                            index = j;
+                                        }
+                                    }
+                                }
+                                
+                                // The index is fixed (as Trader
+                                //   would be removed for the choice).
+                                if (index > i) {
+                                    --index;
+                                }
+                                
+                                // The worst supporter card in hand is chosen.
+                                evaluation.improve<3>(
+                                    Evaluation::CARD,
+                                    priority,
+                                    {
+                                        static_cast<int>(
+                                            store.get_supporters().size() + i
+                                        ),
+                                        static_cast<int>(
+                                            hand.get_fighters().size()
+                                            + index
+                                        ),
+                                        static_cast<int>(
+                                            deck_evaluation.get_index()
+                                        )
+                                    }
+                                );
+                            }
+                        }
+                    }
+                    
+                    // Trader holds value if the deck and hand contain energy.
+                    if (deck.get_energy().size() && hand.get_energy().size()) {
+                        // The optimal indices are not calculated
+                        //   (to avoid infinite loops).
+                        if (deferred) {
+                            evaluation.improve(
+                                Evaluation::CARD,
+                                Evaluation::TRADER_ENERGY_EVALUATION,
+                                store.get_fighters().size() + i
+                            );
+                        }
+                        
+                        // The optimal deck energy index is calculated.
+                        else {
+                            // A temporary deck energy store is created.
+                            CardStore deck_energy;
+                            deck_energy.store(deck.get_energy());
+                            
+                            // The store is evaluated.
+                            Evaluation deck_evaluation(
+                                evaluate_store(deck_energy, true)
+                            );
+                            
+                            // The store contains a card with value.
+                            if (deck_evaluation.get_value()) {
+                                // The index of the worst energy card in hand.
+                                int index = 0;
+                                
+                                // A singleton card store is instantiated.
+                                CardStore singleton;
+                                singleton.store(hand.get_energy()[index]);
+                                
+                                // The value of the worst energy card in hand.
+                                Evaluation::Priority value =
+                                    evaluate_store(singleton, deferred).get_value()
+                                ;
+                                
+                                // The worst energy card in
+                                //   hand is searched for.
+                                // A card without value is the worst.
+                                for (
+                                    int j = 1;
+                                    j < hand.get_energy().size() && value;
+                                    ++j
+                                ) {
+                                    // The singleton card store is cleared.
+                                    singleton.remove();
+                                    
+                                    // The card to be tested is stored.
+                                    singleton.store(
+                                        hand.get_energy()[j]
+                                    );
+                                    
+                                    // The card is evaluated.
+                                    Evaluation::Priority new_value =
+                                        evaluate_store(
+                                            singleton,
+                                            deferred
+                                        ).get_value()
+                                    ;
+                                    
+                                    // A lower value card was found.
+                                    if (new_value < value) {
+                                        // The value and indices are updated.
+                                        value = new_value;
+                                        index = j;
+                                    }
+                                }
+                                
+                                // The worst energy card in hand is chosen.
+                                evaluation.improve<3>(
+                                    Evaluation::CARD,
+                                    Evaluation::TRADER_ENERGY_EVALUATION,
+                                    {
+                                        static_cast<int>(
+                                            store.get_energy().size() + i
+                                        ),
+                                        static_cast<int>(
+                                            hand.get_fighters().size()
+                                            + hand.get_supporters().size() - 1
+                                            + index
+                                        ),
+                                        static_cast<int>(
+                                            deck_evaluation.get_index()
+                                        )
+                                    }
+                                );
+                            }
+                        }
+                    }
+                }
+                
+                // Librarian
+                else if (store.get_supporters()[i].get_name() == LIBRARIAN_NAME) {
+                    // Librarian only holds value if the deck contains enough cards.
+                    if (deck.size() >= LIBRARIAN_THRESHOLD) {
+                        // The optimal indices are not calculated
+                        //   (to avoid infinite loops).
+                        if (deferred) {
+                            evaluation.improve(
+                                Evaluation::CARD,
+                                Evaluation::LIBRARIAN_EVALUATION,
+                                store.get_fighters().size() + i
+                            );
+                        }
+                        
+                        // The optimal deck index is calculated.
+                        else {
+                            // The deck is evaluated.
+                            Evaluation deck_evaluation(
+                                evaluate_store(deck, true)
+                            );
+                            
+                            // The deck contains a card with value.
+                            if (deck_evaluation.get_value()) {
+                                // The Priority of playing Librarian.
+                                Evaluation::Priority priority =
+                                    Evaluation::LIBRARIAN_EVALUATION
+                                ;
+                                
+                                // The deck contains a card with high value.
+                                // Only considered when the card can be played this turn.
+                                if (
+                                    plays > 1
+                                    && deck_evaluation.get_value() > Evaluation::GOOD
+                                ) {
+                                    priority = Evaluation::LIBRARIAN_GOOD_EVALUATION;
+                                }
+                                
+                                // The hand contains other cards.
+                                if (hand.size() > 1) {
+                                    // The hand contains other supporter cards.
+                                    if (hand.get_supporters().size() > 1) {
+                                        // The index of the worst supporter card in hand.
+                                        int index = i ? 0 : 1;
+                                        
+                                        // A singleton card store is instantiated.
+                                        CardStore singleton;
+                                        singleton.store(hand.get_supporters()[index]);
+                                        
+                                        // The value of the worst supporter card in hand.
+                                        Evaluation::Priority value =
+                                            evaluate_store(singleton, deferred).get_value()
+                                        ;
+                                        
+                                        // The worst supporter card in
+                                        //   hand is searched for.
+                                        // A card without value is the worst.
+                                        for (
+                                            int j = i ? 1 : 2;
+                                            j < hand.get_supporters().size() && value;
+                                            ++j
+                                        ) {
+                                            // Librarian cannot be chosen.
+                                            if (j != i) {
+                                                // The singleton card store is cleared.
+                                                singleton.remove();
+                                                
+                                                // The card to be tested is stored.
+                                                singleton.store(
+                                                    hand.get_supporters()[j]
+                                                );
+                                                
+                                                // The card is evaluated.
+                                                Evaluation::Priority new_value =
+                                                    evaluate_store(
+                                                        singleton,
+                                                        deferred
+                                                    ).get_value()
+                                                ;
+                                                
+                                                // A lower value card was found.
+                                                if (new_value < value) {
+                                                    // The value and indices are updated.
+                                                    value = new_value;
+                                                    index = j;
+                                                }
+                                            }
+                                        }
+                                        
+                                        // The index is fixed (as Librarian
+                                        //   would be removed for the choice).
+                                        if (index > i) {
+                                            --index;
+                                        }
+                                        
+                                        // The worst supporter card in hand is chosen.
+                                        evaluation.improve<3>(
+                                            Evaluation::CARD,
+                                            priority,
+                                            {
+                                                static_cast<int>(
+                                                    store.get_fighters().size() + i
+                                                ),
+                                                static_cast<int>(
+                                                    hand.get_fighters().size()
+                                                    + index
+                                                ),
+                                                deck_evaluation.get_index()
+                                            }
+                                        );
+                                    }
+                                }
+                                
+                                // The hand only contains Librarian.
+                                else {
+                                    evaluation.improve<2>(
+                                        Evaluation::CARD,
+                                        priority,
+                                        {
+                                            static_cast<int>(
+                                                store.get_fighters().size() + i
+                                            ),
+                                            deck_evaluation.get_index()
+                                        }
+                                    );
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                // Electrician
+                else if (store.get_supporters()[i].get_name() == ELECTRICIAN_NAME) {
+                    // Electrician only has value if energy has been discarded.
+                    if (trash.get_energy().size()) {
+                        // A temporary trash energy store is created.
+                        CardStore trash_energy;
+                        trash_energy.store(trash.get_energy());
+                        
+                        // The energy in the trash is evaluated.
+                        Evaluation energy_evaluation(
+                            evaluate_store(trash_energy, true)
+                        );
+                        
+                        // An energy card of value was found.
+                        if (energy_evaluation.get_value()) {
+                            // The index of the best energy card is stored.
+                            int index = energy_evaluation.get_index();
+                            
+                            // The store is checked for a second valuable energy card.
+                            trash_energy.remove(index);
+                            
+                            // An energy card of value was found.
+                            if (energy_evaluation.get_value()) {
+                                // The index of the best energy card is stored.
+                                int index2 = energy_evaluation.get_index();
+                                
+                                evaluation.improve<3>(
+                                    Evaluation::CARD,
+                                    Evaluation::ELECTRICIAN_EVALUATION,
+                                    {
+                                        static_cast<int>(store.get_fighters().size() + i),
+                                        static_cast<int>(
+                                            trash.get_fighters().size()
+                                            + trash.get_supporters().size()
+                                            + index
+                                        ),
+                                        static_cast<int>(
+                                            trash.get_fighters().size()
+                                            + trash.get_supporters().size()
+                                            + index2
+                                        )
+                                    }
+                                );
+                            }
+                            
+                            // No other energy cards of value were found.
+                            else {
+                                evaluation.improve<2>(
+                                    Evaluation::CARD,
+                                    Evaluation::ELECTRICIAN_HALF_EVALUATION,
+                                    {
+                                        static_cast<int>(store.get_fighters().size() + i),
+                                        static_cast<int>(
+                                            trash.get_fighters().size()
+                                            + trash.get_supporters().size()
+                                            + index
+                                        )
+                                    }
+                                );
+                            }
+                        }
+                    }
+                }
+                
+                // Alchemist
+                else if (store.get_supporters()[i].get_name() == ALCHEMIST_NAME) {
+                    // Alchemist only holds value if the trash contains cards.
+                    if (trash.size()) {
+                        // The optimal indices are not calculated
+                        //   (to avoid infinite loops).
+                        if (deferred) {
+                            evaluation.improve(
+                                Evaluation::CARD,
+                                Evaluation::ALCHEMIST_EVALUATION,
+                                store.get_fighters().size() + i
+                            );
+                        }
+                        
+                        // The optimal trash index is calculated.
+                        else {
+                            // The trash is evaluated.
+                            Evaluation trash_evaluation(
+                                evaluate_store(trash, true)
+                            );
+                            
+                            // The trash contains a card with value.
+                            if (trash_evaluation.get_value()) {
+                                // The Priority of playing Alchemist.
+                                Evaluation::Priority priority =
+                                    Evaluation::ALCHEMIST_EVALUATION
+                                ;
+                                
+                                // The trash contains a card with high value.
+                                // Only considered when the card can be played this turn.
+                                if (
+                                    plays > 1
+                                    && trash_evaluation.get_value() > Evaluation::GOOD
+                                ) {
+                                    priority = Evaluation::ALCHEMIST_GOOD_EVALUATION;
+                                }
+                                
+                                // The hand contains other cards.
+                                if (hand.size() > 1) {
+                                    // The hand contains other supporter cards.
+                                    if (hand.get_supporters().size() > 1) {
+                                        // The index of the worst supporter card in hand.
+                                        int index = i ? 0 : 1;
+                                        
+                                        // A singleton card store is instantiated.
+                                        CardStore singleton;
+                                        singleton.store(hand.get_supporters()[index]);
+                                        
+                                        // The value of the worst supporter card in hand.
+                                        Evaluation::Priority value =
+                                            evaluate_store(singleton, deferred).get_value()
+                                        ;
+                                        
+                                        // The worst supporter card in
+                                        //   hand is searched for.
+                                        // A card without value is the worst.
+                                        for (
+                                            int j = i ? 1 : 2;
+                                            j < hand.get_supporters().size() && value;
+                                            ++j
+                                        ) {
+                                            // Alchemist cannot be chosen.
+                                            if (j != i) {
+                                                // The singleton card store is cleared.
+                                                singleton.remove();
+                                                
+                                                // The card to be tested is stored.
+                                                singleton.store(
+                                                    hand.get_supporters()[j]
+                                                );
+                                                
+                                                // The card is evaluated.
+                                                Evaluation::Priority new_value =
+                                                    evaluate_store(
+                                                        singleton,
+                                                        deferred
+                                                    ).get_value()
+                                                ;
+                                                
+                                                // A lower value card was found.
+                                                if (new_value < value) {
+                                                    // The value and indices are updated.
+                                                    value = new_value;
+                                                    index = j;
+                                                }
+                                            }
+                                        }
+                                        
+                                        // The index is fixed (as Alchemist
+                                        //   would be removed for the choice).
+                                        if (index > i) {
+                                            --index;
+                                        }
+                                        
+                                        // The worst supporter card in hand is chosen.
+                                        evaluation.improve<3>(
+                                            Evaluation::CARD,
+                                            priority,
+                                            {
+                                                static_cast<int>(
+                                                    store.get_fighters().size() + i
+                                                ),
+                                                static_cast<int>(
+                                                    hand.get_fighters().size()
+                                                    + index
+                                                ),
+                                                trash_evaluation.get_index()
+                                            }
+                                        );
+                                    }
+                                }
+                                
+                                // The hand only contains Alchemist.
+                                else {
+                                    evaluation.improve<2>(
+                                        Evaluation::CARD,
+                                        priority,
+                                        {
+                                            static_cast<int>(
+                                                store.get_fighters().size() + i
+                                            ),
+                                            trash_evaluation.get_index()
+                                        }
+                                    );
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                // Time Traveller
+                else if (store.get_supporters()[i].get_name() == TIME_TRAVELLER_NAME) {
+                    // Time Traveller only has value if the trash is non-empty.
+                    if (trash.size()) {
+                        // The optimal trash index is not calculated
+                        //   (to avoid infinite loops).
+                        if (deferred) {
+                            evaluation.improve(
+                                Evaluation::CARD,
+                                Evaluation::TIME_TRAVELLER_EVALUATION,
+                                store.get_fighters().size() + i
+                            );
+                        }
+                        
+                        // The optimal trash index is calculated.
+                        else {
+                            // The trash is evaluated.
+                            Evaluation trash_evaluation(
+                                evaluate_store(trash, true)
+                            );
+                            
+                            // The trash contains a card with value.
+                            if (trash_evaluation.get_value()) {
+                                // The Priority of playing Time Traveller.
+                                Evaluation::Priority priority =
+                                    Evaluation::TIME_TRAVELLER_EVALUATION
+                                ;
+                                
+                                // The trash contains a card with high value.
+                                // Only considered when the card can be played this turn.
+                                if (
+                                    plays > 1
+                                    && trash_evaluation.get_value() > Evaluation::GOOD
+                                ) {
+                                    priority = Evaluation::TIME_TRAVELLER_GOOD_EVALUATION;
+                                }
+                            
+                                evaluation.improve<2>(
+                                    Evaluation::CARD,
+                                    priority,
+                                    {
+                                        static_cast<int>(store.get_fighters().size() + i),
+                                        trash_evaluation.get_index()
+                                    }
+                                );
+                            }
+                        }
+                    }
+                }
+                
+                // Bounty Hunter
+                else if (store.get_supporters()[i].get_name() == BOUNTY_HUNTER_NAME) {
+                    // Bounty Hunter should not be played if lethal is available.
+                    if (opponent->fighters[0].get_health() > damage) {
+                        // The minimum switch in value of an opposing fighter.
+                        int min = opponent->switch_in_value(opponent->fighters[0]);
+                        
+                        // The index of the opponent's worst possible active fighter.
+                        int index = 0;
+                        
+                        // The values are calculated.
+                        for (int j = 1; j < opponent->fighters.size(); ++j) {
+                            // The value is calculated.
+                            int value = opponent->switch_in_value(opponent->fighters[j]);
+                            
+                            // The values are updated.
+                            if (value < min) {
+                                min = value;
+                                index = j;
+                            }
+                        }
+                        
+                        // Bounty Hunter has value when there is a fighter
+                        //   on the opposing bench that has a low value.
+                        if (index) {
+                            evaluation.improve<2>(
+                                Evaluation::CARD,
+                                Evaluation::BOUNTY_HUNTER_EVALUATION,
+                                {
+                                    static_cast<int>(store.get_fighters().size() + i),
+                                    index
+                                }
+                            );
+                        }
+                    }
+                }
+                
+                // Nurse
+                else if (store.get_supporters()[i].get_name() == NURSE_NAME) {
+                    // The maximum lost health of AUTO's fighters.
+                    int max = fighters[0].max_healing();
+                    int index = 0;
+                    
+                    // The value is calculated.
+                    for (int j = 1; j < fighters.size(); ++j) {
+                        int missing = fighters[j].max_healing();
+                        
+                        if (missing > max) {
+                            max = missing;
+                            index = j;
+                        }
+                    }
+                    
+                    // Nurse can get full value.
+                    if (max >= NURSE_HEALING) {
+                        evaluation.improve<2>(
+                            Evaluation::CARD,
+                            Evaluation::NURSE_EVALUATION,
+                            {
+                                static_cast<int>(store.get_fighters().size() + i),
+                                index
+                            }
+                        );
+                    }
+                    
+                    // Nurse can get half value.
+                    else if (max >= NURSE_HEALING / 2) {
+                        evaluation.improve<2>(
+                            Evaluation::CARD,
+                            Evaluation::NURSE_HALF_EVALUATION,
+                            {
+                                static_cast<int>(store.get_fighters().size() + i),
+                                index
+                            }
+                        );
+                    }
+                }
+                
+                // Miracle Worker
+                else if (store.get_supporters()[i].get_name() == MIRACLE_WORKER_NAME) {
+                    // The total lost health of AUTO's fighters.
+                    int missing = 0;
+                    
+                    // The total is calculated.
+                    for (int j = 0; j < fighters.size(); ++j) {
+                        missing += fighters[j].max_healing();
+                    }
+                    
+                    // Miracle Worker can get full value.
+                    if (missing >= MIRACLE_WORKER_HEALING) {
+                        evaluation.improve(
+                            Evaluation::CARD,
+                            Evaluation::MIRACLE_WORKER_EVALUATION,
+                            store.get_fighters().size() + i
+                        );
+                    }
+                    
+                    // Miracle Worker can get half value.
+                    else if (missing >= MIRACLE_WORKER_HEALING / 2) {
+                        evaluation.improve(
+                            Evaluation::CARD,
+                            Evaluation::MIRACLE_WORKER_HALF_EVALUATION,
+                            store.get_fighters().size() + i
+                        );
+                    }
+                }
+                
+                // Assassin
+                else if (store.get_supporters()[i].get_name() == ASSASSIN_NAME) {
+                    // Assassin only works if the opponent's active
+                    //   fighter has less than 20% of its health remaining.
+                    if (
+                        opponent->fighters[0].get_health()
+                        <= round(
+                            ASSASSINATION_THRESHOLD
+                            * opponent->fighters[0].get_max_health()
+                        )
+                    ) {
+                        evaluation.improve(
+                            Evaluation::CARD,
+                            Evaluation::ASSASSIN_EVALUATION,
+                            store.get_fighters().size() + i
+                        );
+                    }
+                }
+                
+                // Sniper
+                else if (store.get_supporters()[i].get_name() == SNIPER_NAME) {
+                    // True if Sniper can defeat a fighter.
+                    bool snipable = false;
+                    
+                    // The index of the fighter that Sniper can defeat.
+                    int index;
+                    
+                    // The values are calculated.
+                    for (int j = 0; j < opponent->fighters.size(); ++j) {
+                        // A fighter can be defeated with Sniper.
+                        if (opponent->fighters[j].get_health() <= SNIPER_DAMAGE) {
+                            snipable = true;
+                            index = j;
+                            break;
+                        }
+                    }
+                    
+                    // Kills with Sniper are prioritised.
+                    if (snipable) {
+                        evaluation.improve<2>(
+                            Evaluation::CARD,
+                            Evaluation::SNIPE_EVALUATION,
+                            {
+                                static_cast<int>(store.get_fighters().size() + i),
+                                index
+                            }
+                        );
+                    }
+                    
+                    // Sniper can't kill by itself.
+                    else {
+                        // Sniper provides lethal damage where it would be missed.
+                        if (
+                            damage < opponent->fighters[0].get_health()
+                            && damage + SNIPER_DAMAGE >= opponent->fighters[0].get_health()
+                        ) {
+                            evaluation.improve<2>(
+                                Evaluation::CARD,
+                                Evaluation::SNIPE_EVALUATION,
+                                {
+                                    static_cast<int>(store.get_fighters().size() + i),
+                                    0
+                                }
+                            );
+                        }
+                        
+                        // Sniper can be used with spare plays against the active fighter.
+                        else {
+                            evaluation.improve<2>(
+                                Evaluation::CARD,
+                                Evaluation::SNIPER_EVALUATION,
+                                {
+                                    static_cast<int>(store.get_fighters().size() + i),
+                                    0
+                                }
+                            );
+                        }
+                    }
+                }
+                
+                // Cheerleader
+                else if (store.get_supporters()[i].get_name() == CHEERLEADER_NAME) {
+                    // Cheerleader is only useful when an attack is possible.
+                    if (attackable) {
+                        // Cheerleader provides lethal damage where it would be missed.
+                        if (
+                            damage < opponent->fighters[0].get_health()
+                            && damage + CHEER_BOOST >= opponent->fighters[0].get_health()
+                        ) {
+                            evaluation.improve(
+                                Evaluation::CARD,
+                                Evaluation::CHEER_LETHAL_EVALUATION,
+                                store.get_fighters().size() + i
+                            );
+                        }
+                        
+                        // Cheerleader can be used with spare plays.
+                        else {
+                            evaluation.improve(
+                                Evaluation::CARD,
+                                Evaluation::CHEERLEADER_EVALUATION,
+                                store.get_fighters().size() + i
+                            );
+                        }
+                    }
+                }
+                
+                // Arms Smuggler
+                else if (store.get_supporters()[i].get_name() == ARMS_SMUGGLER_NAME) {
+                    // Arms Smuggler is valuable when followed by an attack.
+                    if (attackable) {
+                        evaluation.improve(
+                            Evaluation::CARD,
+                            Evaluation::ARMS_SMUGGLER_EVALUATION,
+                            store.get_fighters().size() + i
+                        );
+                    }
+                }
+                
+                // Matchmaker
+                else if (store.get_supporters()[i].get_name() == MATCHMAKER_NAME) {
+                    // Bounty Hunter should not be played if lethal is available.
+                    if (opponent->fighters[0].get_health() > damage) {
+                        // The opponent's active fighter should be switched out.
+                        if (opponent->switch_in_value(opponent->fighters[0]) < 0) {
+                            evaluation.improve(
+                                Evaluation::CARD,
+                                Evaluation::MATCHMAKER_EVALUATION,
+                                store.get_fighters().size() + i
+                            );
+                        }
+                    }
+                }
+                
+                // Gatekeeper
+                else if (store.get_supporters()[i].get_name() == GATEKEEPER_NAME) {
+                    // The opponent's plays can be depleted.
+                    if (plays - (deferred ? 1 : 0) >= opponent->plays) {
+                        evaluation.improve(
+                            Evaluation::CARD,
+                            Evaluation::GATEKEEPER_EVALUATION,
+                            store.get_fighters().size() + i
+                        );
+                    }
+                }
+            }
+            //}
+            
+            // Energy Cards
+            //{
+            // Setup
+            //{
+            // The energy deficits for each fighter.
+            std::vector<int> deficits(fighters.size());
+            std::vector<int> rank_deficits(fighters.size());
+            
+            // The energy deficit for each fighter is calculated.
+            for (int i = 0; i < fighters.size(); ++i) {
+                // The deficit is the difference between the attack cost and energy value.
+                deficits[i] =
+                    fighters[i].get_attack().get_cost()
+                    - fighters[i].energy_value()
+                ;
+                
+                // Pyrotechnician can use extra energy for bonus damage.
+                if (fighters[i].get_name() == PYROTECHNICIAN_NAME) {
+                    deficits[i] += PYROTECHNICIAN_COST_FIX;
+                }
+                
+                // The rank deficit is the difference between the
+                //   attack cost and energy value of the next rank.
+                rank_deficits[i] = get_rank_deficit(fighters[i]);
+            }
+            //}
+            
+            // Loop to find the optimal energy card.
+            for (int i = 0; i < store.get_energy().size(); ++i) {
+                // Loop over the fighters.
+                for (int j = 0; j < fighters.size(); ++j) {
+                    // The fighter is lacking energy for an attack.
+                    if (deficits[j] > 0) {
+                        // The energy card will provide energy for the fighter.
+                        if (fighters[j].energy_value(store.get_energy()[i])) {
+                            // The fighter is benched.
+                            if (j) {
+                                evaluation.improve<2>(
+                                    Evaluation::CARD,
+                                    Evaluation::ENERGY_BENCH_EVALUATION,
+                                    {
+                                        static_cast<int>(
+                                            store.get_fighters().size()
+                                            + store.get_supporters().size()
+                                            + i
+                                        ),
+                                        j
+                                    }
+                                );
+                            }
+                            
+                            // The fighter is active.
+                            else {
+                                evaluation.improve<2>(
+                                    Evaluation::CARD,
+                                    Evaluation::ENERGY_ACTIVE_EVALUATION,
+                                    {
+                                        static_cast<int>(
+                                            store.get_fighters().size()
+                                            + store.get_supporters().size()
+                                            + i
+                                        ),
+                                        j
+                                    }
+                                );
+                            }
+                        }
+                    }
+                    
+                    // The fighter's future rank lacks energy for an attack.
+                    else if (rank_deficits[j] > 0) {
+                        // The energy card will provide energy for the fighter.
+                        if (fighters[j].energy_value(store.get_energy()[i])) {
+                            // The fighter is benched.
+                            if (j) {
+                                evaluation.improve<2>(
+                                    Evaluation::CARD,
+                                    Evaluation::ENERGY_RANK_BENCH_EVALUATION,
+                                    {
+                                        static_cast<int>(
+                                            store.get_fighters().size()
+                                            + store.get_supporters().size()
+                                            + i
+                                        ),
+                                        j
+                                    }
+                                );
+                            }
+                            
+                            // The fighter is active.
+                            else {
+                                evaluation.improve<2>(
+                                    Evaluation::CARD,
+                                    Evaluation::ENERGY_RANK_ACTIVE_EVALUATION,
+                                    {
+                                        static_cast<int>(
+                                            store.get_fighters().size()
+                                            + store.get_supporters().size()
+                                            + i
+                                        ),
+                                        j
+                                    }
+                                );
+                            }
+                        }
+                    }
+                }
+            }
+            //}
+            
+            // The optimal card evaluation is returned.
+            return evaluation;
+        }
+        //}
+        
+        // Setup and Continuation
+        //{
+        /**
+         * Returns a string index of the optimal active fighter.
+         */
+        std::string optimal_active() const noexcept {
+            const std::vector<Fighter>& options = hand.get_fighters();
+            
+            for (int i = 0; i < options.size(); ++i) {
+                if (options[i].basic()) {
+                    return std::to_string(i);
+                }
+            }
+            
+            return std::string();
+        }
+        
+        /**
+         * Chooses a new active fighter to send out.
+         * Called when AUTO's active fighter has been defeated.
+         */
+        void auto_new_active(const Messenger& messenger) const noexcept {
+            // Delay to allow the user to read.
+            messenger.read();
+            
+            // The evaluation of the benched fighters.
+            // Starts off as the evaluation of the first benched fighter.
+            int value = switch_in_value(fighters[1]);
+            int index = 1;
+            
+            // The best index is found.
+            for (int i = 2; i < fighters.size(); ++i) {
+                // Each fighter is evaluated according to their switch in value.
+                int new_value = switch_in_value(fighters[i]);
+                
+                // The switch in value can be improved.
+                if (new_value > value) {
+                    value = new_value;
+                    index = i;
+                }
+            }
+            
+            // The best index is sent.
+            messenger.send(std::to_string(index));
+        }
+        
+        /**
+         * Chooses a life card to draw.
+         * Called when one of AUTO's fighters were defeated.
+         */
+        void auto_draw_life(const Messenger& messenger) const noexcept {
+            // The number of life cards to draw is found.
+            int life_draws = std::stoi(messenger.read());
+            
+            // Loop for each draw.
+            for (int i = 0; i < life_draws; ++i) {
+                // Delay to allow the user to read.
+                messenger.read();
+                
+                // The number of life cards is recorded.
+                int life_size = life_cards.size();
+                
+                // The best index is sent.
+                messenger.send(
+                    std::to_string(
+                        evaluate_store(life_cards, true).get_index()
+                    )
+                );
+                
+                // Waits for the number of life cards to be decremented.
+                while (life_cards.size() != life_size - 1);
+            }
+        }
+        
+        /**
+         * Chooses a life card to banish.
+         * Called when one of AUTO's fighters were defeated.
+         */
+        void auto_banish_life(const Messenger& messenger) const noexcept {
+            // The number of life cards to banish is found.
+            int life_banishes = std::stoi(messenger.read());
+            
+            // Loop for each banish.
+            for (int i = 0; i < life_banishes; ++i) {
+                // Delay to allow the user to read.
+                messenger.read();
+                
+                // The number of life cards is recorded.
+                int life_size = life_cards.size();
+                
+                // The worst index is sent.
+                messenger.send("0");
+                
+                // Waits for the number of life cards to be decremented.
+                while (life_cards.size() != life_size - 1);
+            }
+        }
+        //}
+        
+        // Evaluation Complements
+        //{
+        /**
+         * Returns true if a sufficient amount of energy can be
+         *   provided for the attack of the new rank this turn.
+         */
+        bool energisable(
+            const Fighter& old_rank,
+            const Fighter& new_rank,
+            bool deferred
+        ) const noexcept {
+            // The number of remaining plays.
+            int count = plays - (deferred ? 2 : 1);
+            
+            // The current energy value.
+            int value = old_rank.energy_value();
+            
+            // Test for initial sufficiency.
+            if (new_rank.get_attack().get_cost() <= value) {
+                return true;
+            }
+            
+            // Loop through the energy cards in hand.
+            for (int i = 0; i < hand.get_energy().size() && count; ++i) {
+                // The energy value and remaining plays are updated.
+                value += new_rank.energy_value(hand.get_energy()[i]);
+                
+                // Alpha energy does not reduce the number of remaining plays.
+                if (hand.get_energy()[i].get_name() != ALPHA_ENERGY_NAME) {
+                    --count;
+                }
+                
+                // If the energy suffices, true is returned.
+                if (new_rank.get_attack().get_cost() <= value) {
+                    return true;
+                }
+            }
+            
+            // Insufficient plays or energy cards.
+            return false;
+        }
+        
+        /**
+         * Returns the value of switching in the chosen fighter.
+         */
+        int switch_in_value(const Fighter& fighter) const noexcept {
+            // The value of switching out the fighter.
+            int value = 0;
+            
+            // Swimmer's switch in value depends on the possibility of a pivot.
+            if (fighter.get_name() == SWIMMER_NAME) {
+                // True if a Scuba Diver pivot is possible.
+                bool pivotable = false;
+                
+                // A Scuba Diver pivot is only possible after an attack.
+                // A Scuba Diver pivot requires spare plays.
+                if (attacked && plays) {
+                    // Scuba Diver is searched for.
+                    for (int i = 0; i < hand.get_fighters().size(); ++i) {
+                        // Scuba Diver is found.
+                        if (hand.get_fighters()[i].get_name() == SCUBA_DIVER_NAME) {
+                            pivotable = true;
+                            break;
+                        }
+                    }
+                }
+                
+                // Swimmer should be switched in if a pivot is possible.
+                if (pivotable) {
+                    value += SCUBA_DIVER_PIVOT_EVALUATION;
+                }
+                
+                // Swimmer should not be switched in under normal circumstances.
+                else {
+                    value += SWIMMER_SWITCH_IN_EVALUATION;
+                }
+            }
+            
+            // A fighter's switch in value depends on its attack value.
+            std::array<int, ATTACK_VALUES> attack_values(
+                attack_value(fighter)
+            );
+            
+            // The value of the attack is added to the switch in value.
+            for (int v : attack_values) {
+                value += v;
+            }
+            
+            // The evaluated value is returned.
+            return value;
+        }
+        
+        /**
+         * Returns the energy deficit of the given fighter for its future ranks.
+         */
+        static int get_rank_deficit(const Fighter& fighter) noexcept {
+            // The cost of the future rank's attack.
+            int cost;
+            
+            // Welder ranks up into Pyrotechnician.
+            if (fighter.get_name() == WELDER_NAME) {
+                cost = PYROTECHNICIAN_ATTACK_COST + PYROTECHNICIAN_COST_FIX;
+            }
+            
+            // Swimmer ranks up into Scuba Diver.
+            else if (fighter.get_name() == SWIMMER_NAME) {
+                cost = SCUBA_DIVER_ATTACK_COST;
+            }
+            
+            // Wind Runner ranks up into Cloud Surfer.
+            else if (fighter.get_name() == WIND_RUNNER_NAME) {
+                cost = CLOUD_SURFER_ATTACK_COST;
+            }
+            
+            return cost - fighter.energy_value();
+        }
+        
+        /**
+         * Returns the damage dealt by the active fighter's attack.
+         * Returns the non-damage value provided by the attack.
+         */
+        std::array<int, ATTACK_VALUES> attack_value(const Fighter& fighter) const noexcept {
+            // The attack damage and value.
+            std::array<int, ATTACK_VALUES> value({});
+            
+            // The attack is only valued if it is usable.
+            if (fighter.attack_usable()) {
+                // A copy of the attack is extracted.
+                Attack attack(fighter.get_attack());
+                
+                // The effects are extracted.
+                const std::vector<std::vector<std::string>>& effects = attack.get_effects();
+                
+                // The power boost is calculated.
+                int power =
+                    effect_count(POWER_AURA_EFFECT)
+                    + effect_count(POWER_EFFECT)
+                    + fighters[0].effect_count(POWER_EFFECT)
+                ;
+                
+                // The damage boost from the attack's effects.
+                int boost = 0;
+                
+                // The attack's effects are resolved.
+                for (int i = 0; i < effects.size(); ++i) {
+                    // Can damage any opposing fighter.
+                    if (effects[i][0] == SNIPE_EFFECT) {
+                        // The snipe damage is calculated.
+                        int damage = std::stoi(effects[i][1]) + power + boost;
+                        
+                        // The damage is incremented.
+                        if (damage > 0) {
+                            value[ATTACK_DAMAGE_INDEX] += damage;
+                        }
+                    }
+                    
+                    // The attack's damage can be increased.
+                    else if (effects[i][0] == POWER_EFFECT) {
+                        // The damage is boosted by the number of cards in the trash.
+                        if (effects[i][1] == TRASH_EFFECT) {
+                            boost += trash.size() * std::stoi(effects[i][2]);
+                        }
+                        
+                        // The damage is boosted by the fighter's total energy value.
+                        else if (effects[i][1] == ENERGY_TYPE) {
+                            int proto_boost = round(
+                                fighters[0].energy_value()
+                                * std::stod(effects[i][2])
+                            );
+                            
+                            int max_boost = std::stoi(effects[i][3]);
+                            
+                            if (proto_boost > max_boost) {
+                                proto_boost = max_boost;
+                            }
+                            
+                            boost += proto_boost;
+                        }
+                        
+                        // The damage is boosted if the fighter is invincible.
+                        else if (
+                            effects[i][1] == INVINCIBILITY_EFFECT
+                            && fighters[0].effect_search(INVINCIBILITY_EFFECT).size()
+                        ) {
+                            boost += std::stoi(effects[i][2]);
+                        }
+                        
+                        // The damage is boosted if the deck has no fighter cards.
+                        else if (
+                            effects[i][1] == FIGHTERLESS_EFFECT
+                            && !deck.get_fighters().size()
+                        ) {
+                            boost += std::stoi(effects[i][2]);
+                        }
+                        
+                        // The damage is boosted by the number of cards in the void.
+                        else if (effects[i][1] == VOID_EFFECT) {
+                            int proto_boost = the_void.size() * std::stoi(effects[i][2]);
+                            int max_boost = std::stoi(effects[i][3]);
+                            
+                            if (proto_boost > max_boost) {
+                                proto_boost = max_boost;
+                            }
+                            
+                            boost += proto_boost;
+                        }
+                        
+                        // The damage is boosted by the number of cards in the hand.
+                        else if (effects[i][1] == HAND_EFFECT) {
+                            int proto_boost = hand.size() * std::stoi(effects[i][2]);
+                            int max_boost = std::stoi(effects[i][3]);
+                            
+                            if (proto_boost < max_boost) {
+                                proto_boost = max_boost;
+                            }
+                            
+                            boost += proto_boost;
+                        }
+                    }
+
+                    // The target's retreat cost is changed for a turn.
+                    else if (effects[i][0] == AGILITY_EFFECT) {
+                        // The non-damage value is incremented.
+                        value[ATTACK_VALUE_INDEX] +=
+                            AGILITY_MODIFIER * std::stoi(effects[i][1])
+                        ;
+                    }
+                
+                    // Deals damage to all of a player's benched fighters.
+                    else if (effects[i][0] == SPLASH_EFFECT) {
+                        // Splashes the player's own bench.
+                        if (effects[i][1] == SELF_EFFECT) {
+                            // The damage dealt to the bench is calculated.
+                            int damage = 
+                                (fighters.size() - 1)
+                                * (std::stoi(effects[i][2]) + power + boost)
+                            ;
+                            
+                            // The non-damage value is decremented.
+                            if (damage > 0) {
+                                value[ATTACK_VALUE_INDEX] -= damage;
+                            }
+                        }
+                        
+                        // Splashes the opponent's bench.
+                        else {
+                            // The damage dealt to the bench is calculated.
+                            int damage = 
+                                (opponent->fighters.size() - 1)
+                                * (std::stoi(effects[i][1]) + power + boost)
+                            ;
+                            
+                            // The non-damage value is incremented.
+                            if (damage > 0) {
+                                value[ATTACK_VALUE_INDEX] += damage;
+                            }
+                        }
+                    }
+                
+                    // Deals damage to the user.
+                    else if (effects[i][0] == RECOIL_EFFECT) {
+                        // The damage dealt to the user is calculated.
+                        int damage = std::stoi(effects[i][1]) + boost + power;
+                        
+                        // The non-damage value is incremented.
+                        if (damage > 0) {
+                            value[ATTACK_VALUE_INDEX] -= damage;
+                        }
+                    }
+                
+                    // Heals a fighter.
+                    else if (effects[i][0] == HEAL_EFFECT) {
+                        // Heals the user.
+                        if (effects[i][1] == SELF_EFFECT) {
+                            // Heals based on damage dealt.
+                            if (effects[i][2] == DAMAGE_EFFECT) {
+                                // The healing is calculated.
+                                int healing = round(
+                                    (value[ATTACK_DAMAGE_INDEX] + value[ATTACK_VALUE_INDEX])
+                                    * std::stod(effects[i][3])
+                                );
+                                
+                                // The non-damage value is incremented.
+                                if (healing > 0) {
+                                    value[ATTACK_VALUE_INDEX] += healing;
+                                }
+                            }
+                            
+                            // Constant healing.
+                            else {
+                                // The amount to heal is extracted.
+                                int healing = std::stoi(effects[i][2]);
+                                
+                                // The non-damage value is incremented.
+                                if (healing > 0) {
+                                    value[ATTACK_VALUE_INDEX] += healing;
+                                }
+                            }
+                        }
+                    }
+                
+                    // The attack deals damage over time.
+                    else if (effects[i][0] == CURSE_EFFECT) {
+                        // The damage is dependent on the void's size.
+                        if (effects[i][1] == VOID_EFFECT) {
+                            int curse_value = the_void.size() * std::stoi(effects[i][2]);
+                            int max_curse = std::stoi(effects[i][3]);
+                            
+                            if (curse_value > max_curse) {
+                                curse_value = max_curse;
+                            }
+                            
+                            // The damage value is incremented.
+                            if (curse_value > 0) {
+                                value[ATTACK_DAMAGE_INDEX] += curse_value;
+                            }
+                        }
+                    }
+                    
+                    // Randomly distributes the damage for all fighters.
+                    else if (effects[i][0] == DISTRIBUTE_EFFECT) {
+                        // The total damage is extracted.
+                        int total_damage;
+                        
+                        // Powered by the Void.
+                        if (effects[i][1] == VOID_EFFECT) {
+                            total_damage = the_void.size() * std::stoi(effects[i][2]);
+                            int max_damage = std::stoi(effects[i][3]);
+                            
+                            // Damage cannot exceed the cap.
+                            if (total_damage > max_damage) {
+                                total_damage = max_damage;
+                            }
+                        }
+                        
+                        // The base damage is constant.
+                        else {
+                            total_damage = std::stoi(effects[i][1]);
+                        }
+                        
+                        // Boost is applied to the damage.
+                        total_damage += boost;
+                        
+                        // Power is only applied to an already damaging attack.
+                        if (total_damage > 0) {
+                            total_damage += power;
+                            
+                            // The damage dealt to the active fighter.
+                            int active_damage = total_damage / opponent->fighters.size();
+                            
+                            // Active damage increments the damage value.
+                            value[ATTACK_DAMAGE_INDEX] += active_damage;
+                            
+                            // Bench damage increments the non-damage value.
+                            value[ATTACK_VALUE_INDEX] += total_damage - active_damage;
+                        }
+                    }
+                    
+                    // The effect is only resolved if heads was flipped.
+                    else if (effects[i][0] == HEADS_EFFECT) {
+                        // The effect is only resolved if the 2nd coin flip was heads.
+                        if (effects[i][1] == HEADS_EFFECT) {
+                            // Cripples the opponent's active fighter (no retreat).
+                            if (effects[i][2] == CRIPPLE_EFFECT) {
+                                // The non-damage value is incremented.
+                                value[ATTACK_VALUE_INDEX] += CRIPPLE_ATTACK_VALUE / 4;
+                            }
+                            
+                            // Impairs the opponent's active fighter (no attack).
+                            else if (effects[i][2] == IMPAIR_EFFECT) {
+                                // The non-damage value is incremented.
+                                value[ATTACK_VALUE_INDEX] += IMPAIR_ATTACK_VALUE / 4;
+                            }
+                        }
+                        
+                        // The attack's damage can be increased.
+                        else if (effects[i][1] == POWER_EFFECT) {
+                            // The non-damage value is incremented.
+                            value[ATTACK_VALUE_INDEX] += std::stoi(effects[i][2]) / 2;
+                        }
+                    
+                        // Cripples the opponent's active fighter (no retreat).
+                        else if (effects[i][1] == CRIPPLE_EFFECT) {
+                            // The non-damage value is incremented.
+                            value[ATTACK_VALUE_INDEX] += CRIPPLE_ATTACK_VALUE / 2;
+                        }
+                        
+                        // Impairs the opponent's active fighter (no attack).
+                        else if (effects[i][1] == IMPAIR_EFFECT) {
+                            // The non-damage value is incremented.
+                            value[ATTACK_VALUE_INDEX] += IMPAIR_ATTACK_VALUE / 2;
+                        }
+                    }
+                
+                    // The effect is only resolved if heads was flipped.
+                    else if (effects[i][0] == TAILS_EFFECT) {
+                        // Cripples the opponent's active fighter (no retreat).
+                        if (effects[i][1] == CRIPPLE_EFFECT) {
+                            // The non-damage value is incremented.
+                            value[ATTACK_VALUE_INDEX] += CRIPPLE_ATTACK_VALUE / 2;
+                        }
+                    }
+                }
+                
+                // The damage is caculated.
+                int damage = attack.get_damage() + boost;
+                
+                // Damage is only boosted by power if it was non-zero.
+                if (damage) {
+                    damage += power;
+                    
+                    // The damage value is incremented.
+                    value[ATTACK_DAMAGE_INDEX] += damage;
+                }
+            }
+            
+            return value;
+        }
+        //}
+        //}
         
     private:
         CardStore deck; // The player's deck (where the player's cards start off in).
@@ -17037,6 +19793,9 @@ class Player: public Affectable {
         int card_limit = BASE_CARD_LIMIT; // The base number of cards that can be played.
         int plays = BASE_CARD_LIMIT; // The number of cards that can be played.
 };
+
+// The player vector is declared in the global namespace for Demi Duel: AUTO.
+std::vector<Player> players;
 //}
 
 // Deck Generator
@@ -18454,6 +21213,12 @@ const DeckCode* const ALL_DECK_CODES[DECK_CODE_COUNT] = {
 };
 //}
 
+#ifdef DEMI_DUEL_DEBUG
+    #define view_hand_size view_hand
+    #define view_deck_size view_deck
+    #define view_life_cards_size view_life_cards
+#endif
+
 // Main Functions
 //{
 // Main Game Functions
@@ -18684,6 +21449,11 @@ void mulligan(
         difference = -MAX_BONUS;
     }
     
+    // If Demi Duel: AUTO is active, the difference is sent.
+    if (AUTO) {
+        messenger.send(std::to_string(difference));
+    }
+    
     // If the player performed fewer mulligans, they may draw extra cards.
     if (difference > 0) {
         display_sprite.fill();
@@ -18723,7 +21493,7 @@ void mulligan(
         ));
     }
     
-    // If the opponent performed fewer mulligans, the may draw extra cards.
+    // If the opponent performed fewer mulligans, they may draw extra cards.
     else if (difference < 0) {
         // The opponent's draw potential is revealed.
         display_sprite.fill();
@@ -18966,8 +21736,8 @@ void game(
     // Fighters may not attack on the first turn.
     int turn_count = 0;
     
-    // The players are initialised.
-    std::vector<Player> players;
+    // The player vector is reset.
+    players = std::vector<Player>();
     
     for (int i = 0; i < PLAYERS; ++i) {
         players.push_back(
@@ -19679,6 +22449,11 @@ void game(
         
         // Opponent's turn.
         while (turn && !end && winner < 0) {
+            // AUTO is informed that it is its turn.
+            if (AUTO) {
+                messenger.send(AUTO_TURN);
+            }
+            
             // The board is renderered.
             //{
             // The display is cleared.
@@ -20033,12 +22808,15 @@ void game(
             // The number of turns taken is incremented.
             ++turn_count;
         }
-        
-        
     }
     
     // Post game.
     //{
+    // Demi Duel: AUTO is informed that the game ended.
+    if (AUTO) {
+        messenger.send(AUTO_TERMINATOR);
+    }
+    
     // The play is notified if they won or lost.
     display.fill();
     display.blit(
@@ -21659,8 +24437,163 @@ void build_deck(
 }
 //}
 
+// AUTO
+//{//}
+
 // Main and Connection Menus
 //{
+/**
+ * The main function for Demi Duel: AUTO.
+ * Returns immediately if the port given is not an AUTO port.
+ */
+int auto_duel(void* port) noexcept {
+    // The deck code is extracted from the port.
+    AUTO_DECK = *static_cast<int*>(port) - AUTO_BASE;
+    
+    // Checks that the deck code is valid.
+    if (0 <= AUTO_DECK && AUTO_DECK < DECK_CODE_COUNT) {
+        // One-time initialisation.
+        //{
+        // The AUTO flag is enabled.
+        AUTO = true;
+        
+        // Choosing the clear deck makes Demi Duel: AUTO do nothing.
+        bool afk = AUTO_DECK == DECK_CODE_COUNT - 1;
+        
+        // The server is connected to.
+        Client client(AUTO_ADDRESS, *static_cast<int*>(port));
+        const Messenger& messenger = client;
+        
+        // Confirms version compatability.
+        messenger.send(System::version(VERSION));
+        
+        // Version compatability confirmation.
+        messenger.read();
+        
+        // Message store.
+        std::string message;
+        //}
+        
+        // The user's speed is received.
+        // If the terminate string was received instead of a speed, this thread terminates.
+        while ((message = messenger.read()) != TERMINATOR_STRING) {
+            // Game set-up.
+            //{
+            // A slower speed is sent.
+            messenger.send(std::to_string(std::stod(message) + 1));
+            
+            // The seed is received.
+            int seed = std::stoi(messenger.read());
+            
+            // The RNG is seeded.
+            std::mt19937 generator(seed);
+            
+            // A random deck is chosen.
+            if (!AUTO_DECK || afk) {
+                AUTO_DECK = AUTO_DECKS[
+                    Random::get_int(generator, 0, AUTO_DECK_COUNT - 1)
+                ];
+            }
+            
+            // The deck code is sent.
+            messenger.send(to_deck_code(ALL_DECK_CODES[AUTO_DECK]->get_code()));
+            
+            // The deck code is received.
+            messenger.read();
+            
+            // The mulligan difference is received.
+            int difference = std::stoi(messenger.read());
+            
+            // The bonus draw is received.
+            if (difference > 0) {
+                messenger.read();
+            }
+            
+            // The bonus draw is sent.
+            else if (difference < 0) {
+                messenger.send(std::to_string(-difference));
+            }
+            
+            // Demi Duel: AUTO's player is set.
+            Player& player = players[1];
+            
+            // The player's active is received.
+            messenger.read();
+            
+            // The auto's active is chosen and sent.
+            messenger.send(player.optimal_active());
+            
+            // True when the game ends.
+            bool end = false;
+            
+            // True when it is AUTO's turn.
+            bool turn = false;
+            //}
+            
+            // Main game loop.
+            while (!end) {
+                // Demi Duel: AUTO's turn.
+                if (turn) {
+                    // AUTO does nothing while AFK.
+                    if (afk) {
+                        messenger.send(END_TURN_STRING);
+                    }
+                    
+                    // AUTO takes its turn.
+                    // The game may end during AUTO's turn.
+                    else if (player.automate(messenger)) {
+                        end = true;
+                        break;
+                    }
+                }
+                
+                // Player's turn.
+                else {
+                    // Loop to read player choices.
+                    while (true) {
+                        // A choice is waited for.
+                        message = messenger.read();
+                        
+                        // If the player ends their turn, the loop breaks.
+                        if (message == AUTO_TURN) {
+                            break;
+                        }
+                        
+                        // If the player concedes, the game ends.
+                        else if (message == AUTO_TERMINATOR) {
+                            end = true;
+                            break;
+                        }
+                        
+                        // AUTO needs to choose a new active fighter.
+                        else if (message == AUTO_NEW_ACTIVE) {
+                            player.auto_new_active(messenger);
+                        }
+                        
+                        // AUTO needs to choose a life card to draw.
+                        else if (message == AUTO_DRAW_LIFE) {
+                            player.auto_draw_life(messenger);
+                        }
+                        
+                        // AUTO needs to choose a life card to banish.
+                        else if (message == AUTO_BANISH_LIFE) {
+                            player.auto_banish_life(messenger);
+                        }
+                    }
+                }
+                
+                // The turn switches over.
+                turn = !turn;
+            }
+        }
+    
+        // The AUTO flag is disabled.
+        AUTO = false;
+    }
+    
+    return 0;
+}
+
 /**
  * Attempts to initialise the server.
  * The user may cancel this intialisation.
@@ -21699,6 +24632,10 @@ void set_server(
     std::unique_ptr<Server> server;
     ServerPackage package(server, end, port);
     Thread thread(ServerPackage::make_server, &package);
+    
+    // A Demi Duel: AUTO server address was chosen.
+    // The Demi Duel: AUTO protocol commences.
+    Thread auto_thread(auto_duel, &port);
     
     // Loop to display the wait screen.
     while (!end) {
@@ -22416,6 +25353,22 @@ int main(int argc, char** argv) noexcept {
 //}
 
 /* CHANGELOG:
+     v2:
+       Introducing Demi Duel: AUTO a bot for PvE duels.
+       Connect to Demi Duel: AUTO by hosting a server on port 80700 - 80709.
+       The port chosen will determine the deck that the bot will use.
+       80700 - Random Deck.
+       80701 - Aggro Deck (Incomplete).
+       80702 - Tempo Deck.
+       80703 - Blend Deck (Incomplete).
+       80704 - Control Deck (Incomplete).
+       80705 - Mill Deck (Incomplete).
+       80706 - Midrange Deck (Incomplete).
+       80707 - Aggro Combo Deck (Incomplete).
+       80708 - Control Combo Deck (Incomplete).
+       80709 - OTK Combo Deck (Incomplete).
+       80710 - AFK.
+       Subjugate's effects are now mutually exclusive and exhaustive.
      v1.12.5:
        Arsonist no longer mills.
        Arsonist now banishes all discarded cards.

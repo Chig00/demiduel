@@ -1,4 +1,20 @@
 /* CHANGELOG:
+     v2:
+       Introducing Demi Duel: AUTO a bot for PvE duels.
+       Connect to Demi Duel: AUTO by hosting a server on port 80700 - 80709.
+       The port chosen will determine the deck that the bot will use.
+       80700 - Random Deck.
+       80701 - Aggro Deck (Incomplete).
+       80702 - Tempo Deck.
+       80703 - Blend Deck (Incomplete).
+       80704 - Control Deck (Incomplete).
+       80705 - Mill Deck (Incomplete).
+       80706 - Midrange Deck (Incomplete).
+       80707 - Aggro Combo Deck (Incomplete).
+       80708 - Control Combo Deck (Incomplete).
+       80709 - OTK Combo Deck (Incomplete).
+       80710 - AFK.
+       Subjugate's effects are now mutually exclusive and exhaustive.
      v1.12.5:
        Arsonist no longer mills.
        Arsonist now banishes all discarded cards.

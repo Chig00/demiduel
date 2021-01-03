@@ -16,6 +16,20 @@ INSTRUCTIONS:
 	To duel with both players on the same PC, the Client
 	  should connect to the 127.0.0.1 IP address.
 	
+    To duel againt Demi Duel: AUTO (AI) set up a
+      server with a port in the range 80700 - 80710.
+    The port determines the deck used by the bot:
+      80700 - Random Deck.
+      80701 - Aggro Deck (Incomplete).
+      80702 - Tempo Deck.
+      80703 - Blend Deck (Incomplete).
+      80704 - Control Deck (Incomplete).
+      80705 - Mill Deck (Incomplete).
+      80706 - Midrange Deck (Incomplete).
+      80707 - Aggro Combo Deck (Incomplete).
+      80708 - Control Combo Deck (Incomplete).
+      80709 - OTK Combo Deck (Incomplete).
+      80710 - AFK.
 	
   DECK BUILDING:
     The deckbuilding phase allows the players to choose
@@ -29,6 +43,7 @@ INSTRUCTIONS:
 	  of a fighter or supporter card.
 	A deck can only have, at most, four copies of an energy card.
 	
+    
   DUEL SETUP:
     At the start of the duel, some set up is required.
 	A player is randomly chosen to go first.

@@ -9,17 +9,19 @@
 #include <stdexcept>
 #include <cmath>
 #include <ctime>
+#include <limits>
+#include <random>
 #include <SDL.h>
 #include <SDL_net.h>
 
-// System and Timer
+// System, Timer, and Random
 //{
 /**
  * A namespace for initialisation and shutdown functions.
  */
 namespace System {
 	// The current version of the library.
-	constexpr int VERSION[] = {2, 0, 0, 0};
+	constexpr int VERSION[] = {2, 1, 0, 1};
 	constexpr int VERSION_LENGTH = 4;
 	
 	// The number of letters and numbers.
@@ -100,8 +102,8 @@ namespace System {
 	/**
 	 * Sends the given command to the command line.
 	 */
-	void command(const std::string& command_string) noexcept {
-		system(command_string.c_str());
+	int command(const std::string& command_string) noexcept {
+		return system(command_string.c_str());
 	}
 }
 
@@ -150,6 +152,44 @@ namespace Timer {
 			HOURS_TO_MINUTES * MINUTES_TO_SECONDS * hours
 			+ MINUTES_TO_SECONDS * minutes
 			+ seconds
+		;
+	}
+}
+
+/**
+ * A namespace for RNG functions.
+ */
+namespace Random {
+	/**
+	 * A function that returns a random integer in the interval [min, max].
+	 * This function is a cross-platform replacement for std::uniform_int_distribution.
+	 */
+	int get_int(std::mt19937& generator, int min, int max) noexcept {
+		return min + generator() % static_cast<unsigned>(1 + max - min);
+	}
+	
+	/**
+	 * A function that returns a random real number in the interval [min, max).
+	 * This function is a cross-platform replacement for std::uniform_real_distribution.
+	 */
+	double get_real(std::mt19937& generator, int min, int max) noexcept {
+		return
+			min
+			+ (max - min)
+			* generator()
+			/ (1 + static_cast<double>(std::numeric_limits<unsigned>::max()))
+		;
+	}
+	
+	/**
+	 * A function that returns a random real number in the interval [min, max].
+	 */
+	double get_double(std::mt19937& generator, int min, int max) noexcept {
+		return
+			min
+			+ (max - min)
+			* generator()
+			/ static_cast<double>(std::numeric_limits<unsigned>::max())
 		;
 	}
 }
@@ -3044,4 +3084,9 @@ class Thread {
 	     Messenger::read() from reading 2 two messages at once).
 	   Display is now a subclass of Sprite, but all methods are still operational.
 	   Renderer::render() and Renderer::lined_render() now have ratio versions.
+	 v2.1:
+	   Added the Random namespace.
+	   System::command now returns the command's exit code.
+	 v2.1.0.1:
+	   Random::get_int() now converts (1 + max - min) to an unsigned integer.
  */
