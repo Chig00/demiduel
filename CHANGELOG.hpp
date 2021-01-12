@@ -1,4 +1,19 @@
 /* CHANGELOG:
+     v2.0.1:
+       Unification of PC and Mobile Port.
+       Added an alternate duel song that plays half of the time.
+       AUTO now prioritises attacks that are lethal without Assassin.
+       AUTO no longer attacks when the opponent's active fighter is
+         invincible, unless attacking has value other than active damage.
+       Improved Matchmaker's evaluation to root suboptimal active fighters.
+       Improved Matchmaker's evaluation to root weak fighters.
+       Improved Matchmaker's evaluation to root fighters for lethal next turn.
+       Improved Bounty Hunter's evaluation to hook for lethal damage.
+       Improved switch-in evaluation to consider opposing lethal.
+       Old versions are no longer included in the zip archive.
+       Utility programs are no longer included in the zip archive.
+       Alternate loaders and builders are no longer included in the zip archive.
+       All removed file sources are available at github.com/chig00/demiduel.
      v2:
        Introducing Demi Duel: AUTO a bot for PvE duels.
        Connect to Demi Duel: AUTO by hosting a server on port 80700 - 80709.

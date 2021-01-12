@@ -2,12 +2,12 @@
 #include <type_traits>
 #include "sdlandnet.hpp"
 
-// Universal Constants
+// Constants
 //{
 // System Constants
 //{
 // The current version of the program.
-constexpr int VERSION[] = {2, 0, 0, 0};
+constexpr int VERSION[] = {2, 0, 1, 0};
 
 // The title of the game in string form.
 constexpr const char* TITLE_STRING = "Demi Duel";
@@ -3137,6 +3137,68 @@ constexpr const char* EMPTY_EXPLANATION = "";
 //}
 //}
 
+// Audio Constants
+//{
+// Menu song details.
+constexpr const char* MENU_SONG_SOURCE = "data/menusong.wav";
+constexpr double MENU_SONG_LENGTH = Timer::to_seconds(0, 1, 8);
+
+// Build song details.
+constexpr const char* BUILD_SONG_SOURCE = "data/buildsong.wav";
+constexpr double BUILD_SONG_LENGTH = Timer::to_seconds(0, 0, 57);
+
+// Duel song details.
+constexpr const char* DUEL_SONG_SOURCE = "data/duelsong.wav";
+constexpr double DUEL_SONG_LENGTH = Timer::to_seconds(0, 1, 55);
+
+// Alternate duel song details.
+constexpr const char* ALT_SONG_SOURCE = "data/altsong.wav";
+constexpr double ALT_SONG_LENGTH = Timer::to_seconds(0, 2, 2);
+//}
+
+// Mobile Accessibility
+//{
+// Sources, positions, and dimensions of the numbers (for number entry).
+//{
+constexpr const char* NUMBER_SOURCES[NUMBERS] = {
+	"data/0.bmp",
+	"data/1.bmp",
+	"data/2.bmp",
+	"data/3.bmp",
+	"data/4.bmp",
+	"data/5.bmp",
+	"data/6.bmp",
+	"data/7.bmp",
+	"data/8.bmp",
+	"data/9.bmp"
+};
+constexpr double NUMBER_WIDTH = 0.05;
+constexpr double NUMBER_HEIGHT = 0.1;
+constexpr double NUMBER_X[] = {
+	0.2,
+	0.275,
+	0.35,
+	0.425,
+	0.5,
+	0.575,
+	0.65,
+	0.725,
+	0.8,
+	0.875
+};
+constexpr double NUMBER_Y = 0.75;
+//}
+
+// Source, position, and dimensions of the dot (for address entry).
+//{
+constexpr const char* DOT_SOURCE = "data/fullstop.bmp";
+constexpr double DOT_WIDTH = NUMBER_WIDTH;
+constexpr double DOT_HEIGHT = NUMBER_HEIGHT;
+constexpr double DOT_X = NUMBER_X[0] - DOT_WIDTH;
+constexpr double DOT_Y = NUMBER_Y;
+//}
+//}
+
 // Card Instance Constants
 //{
 // Fighter Cards
@@ -5362,7 +5424,7 @@ constexpr const char* AUTO_DRAW_LIFE = "auto_draw_life";
 constexpr const char* AUTO_BANISH_LIFE = "auto_banish_life";
 //}
 
-// Card Specific Modifiers
+// Switch-in Evaluation
 //{
 /* The value of switching in Swimmer when a Scuba Diver pivot is possible.
    A Scuba Diver pivot is performed by attacking with the active fighter, switching
@@ -5373,8 +5435,17 @@ constexpr const char* AUTO_BANISH_LIFE = "auto_banish_life";
 constexpr int SCUBA_DIVER_PIVOT_EVALUATION = 10000;
 
 // The value of switching in Swimmer normally.
-constexpr int SWIMMER_SWITCH_IN_EVALUATION = -10000;
+constexpr int SWIMMER_SWITCH_IN_EVALUATION = -5000;
 
+// The threshold for determining if a fighter is no longer a weak switch-in candidate.
+constexpr int STRONG_SWITCH_IN_VALUE = 500;
+
+// The penalty for being subject to lethal damage.
+constexpr int LETHAL_SWITCH_IN_VALUE = -10000;
+//}
+
+// Card Specific Modifiers
+//{
 // The cost of a maximum damage Primed Payload.
 constexpr int PYROTECHNICIAN_COST_FIX = 2000;
 
@@ -5426,24 +5497,6 @@ constexpr int CRIPPLE_ATTACK_VALUE = 300;
 // The value of impairing the opponent's active fighter.
 constexpr int IMPAIR_ATTACK_VALUE = 250;
 //}
-//}
-//}
-
-// PC Constants
-//{
-// Audio Constants
-//{
-// Menu song details.
-constexpr const char* MENU_SONG_SOURCE = "data/menusong.wav";
-constexpr double MENU_SONG_LENGTH = Timer::to_seconds(0, 1, 8);
-
-// Build song details.
-constexpr const char* BUILD_SONG_SOURCE = "data/buildsong.wav";
-constexpr double BUILD_SONG_LENGTH = Timer::to_seconds(0, 0, 57);
-
-// Duel song details.
-constexpr const char* DUEL_SONG_SOURCE = "data/duelsong.wav";
-constexpr double DUEL_SONG_LENGTH = Timer::to_seconds(0, 1, 55);
 //}
 //}
 
@@ -5507,7 +5560,7 @@ class Evaluation {
             ELECTRICIAN_EVALUATION, // Play Electrician for full value.
             RANK_ACTIVE_EVALUATION, // Rank up the active fighter.
             ENERGY_ACTIVE_EVALUATION, // Attach energy to the active fighter for attacks.
-            ASSASSIN_ATTACK_EVALUATION, // Attack for an Assasin follow-up.
+            ATTACK_LETHAL_EVALUATION, // Attack for lethal damage or Assassin follow-up.
             ASSASSIN_EVALUATION, // Play Assassin when effective.
             SNIPE_EVALUATION, // Play Sniper when it kills.
             CHEER_LETHAL_EVALUATION, // Play Cheerleader for lethal damage.
@@ -17698,15 +17751,29 @@ class Player: public Affectable {
                 }
                 
                 // The damage dealt by the active fighter's attack is extracted.
-                int damage = value[0];
+                int damage = value[ATTACK_DAMAGE_INDEX];
+                
+                // True if the opponent's active fighter is invincible.
+                bool invincible =
+                    opponent->fighters[0].effect_search(INVINCIBILITY_EFFECT).size()
+                ;
                 
                 // True if the attack can be followed by Assassin for lethal.
                 bool assassinable = false;
                 
+                // Attacking provides lethal damage.
+                if (!invincible && opponent->fighters[0].get_health() <= damage) {
+                    evaluation.improve(
+                        Evaluation::ATTACK,
+                        Evaluation::ATTACK_LETHAL_EVALUATION,
+                        0
+                    );
+                }
+                
                 // Attacking takes the opposing active fighter into assassination range.
-                if (
+                else if (
                     plays
-                    && opponent->fighters[0].get_health() - damage > 0
+                    && !invincible
                     && opponent->fighters[0].get_health() - damage
                     <= round(
                         ASSASSINATION_THRESHOLD
@@ -17726,14 +17793,19 @@ class Player: public Affectable {
                 if (assassinable) {
                     evaluation.improve(
                         Evaluation::ATTACK,
-                        Evaluation::ASSASSIN_ATTACK_EVALUATION,
+                        Evaluation::ATTACK_LETHAL_EVALUATION,
                         0
                     );
                 }
                 
                 // Assassin cannot be used for a lethal follow-up.
                 // Attacks should not be used if they don't provide value.
-                else if (total_value > 0) {
+                // If the opponent's active fighter is invincible, the
+                //   attack should provide some non-damage value to be used.
+                else if (
+                    total_value > 0
+                    && (!invincible || total_value > damage)
+                ) {
                     evaluation.improve(
                         Evaluation::ATTACK,
                         Evaluation::ATTACK_EVALUATION,
@@ -18885,6 +18957,12 @@ class Player: public Affectable {
                         
                         // The values are calculated.
                         for (int j = 1; j < opponent->fighters.size(); ++j) {
+                            // Lethal opportunity.
+                            if (opponent->fighters[j].get_health() <= damage) {
+                                index = j;
+                                break;
+                            }
+                            
                             // The value is calculated.
                             int value = opponent->switch_in_value(opponent->fighters[j]);
                             
@@ -18897,6 +18975,8 @@ class Player: public Affectable {
                         
                         // Bounty Hunter has value when there is a fighter
                         //   on the opposing bench that has a low value.
+                        // Bounty Hunter also has value when
+                        //   lethal is available on the bench.
                         if (index) {
                             evaluation.improve<2>(
                                 Evaluation::CARD,
@@ -19101,10 +19181,42 @@ class Player: public Affectable {
                 
                 // Matchmaker
                 else if (store.get_supporters()[i].get_name() == MATCHMAKER_NAME) {
-                    // Bounty Hunter should not be played if lethal is available.
+                    // Matchmaker should not be played if lethal is available.
                     if (opponent->fighters[0].get_health() > damage) {
-                        // The opponent's active fighter should be switched out.
-                        if (opponent->switch_in_value(opponent->fighters[0]) < 0) {
+                        // True if Matchmaker should be played.
+                        bool to_play = false;
+                        
+                        // The switch-in value of the opponent's active fighter.
+                        int active_value = opponent->switch_in_value(opponent->fighters[0]);
+                        
+                        // If the opponent has multiple fighters and the active
+                        //   fighter is not optimal, Matchmaker can be played.
+                        if (opponent->fighters.size() > 1) {
+                            // Search for a better benched fighter.
+                            for (int j = 1; j < opponent->fighters.size(); ++j) {
+                                // A benched fighter has a greater value than the active.
+                                if (
+                                    opponent->switch_in_value(opponent->fighters[j])
+                                    > active_value
+                                ) {
+                                    to_play = true;
+                                    break;
+                                }
+                            }
+                        }
+                        
+                        // If the opponent only has one fighter and
+                        //   it can be trapped for lethal for next turn
+                        //   or it is weak, Matchmaker can be played.
+                        else if (
+                            opponent->fighters[0].get_health() <= 2 * damage
+                            || active_value < STRONG_SWITCH_IN_VALUE
+                        ) {
+                            to_play = true;
+                        }
+                        
+                        // Matchmaker could be played.
+                        if (to_play) {
                             evaluation.improve(
                                 Evaluation::CARD,
                                 Evaluation::MATCHMAKER_EVALUATION,
@@ -19391,7 +19503,7 @@ class Player: public Affectable {
             // The value of switching out the fighter.
             int value = 0;
             
-            // Swimmer's switch in value depends on the possibility of a pivot.
+            // Swimmer's switch-in value depends on the possibility of a pivot.
             if (fighter.get_name() == SWIMMER_NAME) {
                 // True if a Scuba Diver pivot is possible.
                 bool pivotable = false;
@@ -19420,14 +19532,22 @@ class Player: public Affectable {
                 }
             }
             
-            // A fighter's switch in value depends on its attack value.
+            // A fighter's switch-in value depends on its attack value.
             std::array<int, ATTACK_VALUES> attack_values(
                 attack_value(fighter)
             );
             
-            // The value of the attack is added to the switch in value.
+            // The value of the attack is added to the switch-in value.
             for (int v : attack_values) {
                 value += v;
+            }
+            
+            // A fighter's switch-in value is decreased if it can take lethal damage.
+            if (
+                opponent->attack_value(opponent->fighters[0])[ATTACK_DAMAGE_INDEX]
+                >= fighter.get_health()
+            ) {
+                value += LETHAL_SWITCH_IN_VALUE;
             }
             
             // The evaluated value is returned.
@@ -21634,8 +21754,25 @@ void game(
     display_sprite.blit(wait_sprite, WAIT_X, WAIT_Y);
     display.update();
     
+    // The source of the duel song to be played.
+    const char* duel_song_source;
+    
+    // The length of the duel song to be played.
+    int duel_song_length;
+    
+    // The duel song to be played is determined by time.
+    if (Timer::current() % 2) {
+        duel_song_source = DUEL_SONG_SOURCE;
+        duel_song_length = DUEL_SONG_LENGTH;
+    }
+    
+    else {
+        duel_song_source = ALT_SONG_SOURCE;
+        duel_song_length = ALT_SONG_LENGTH;
+    }
+    
     // The main game song is loaded and queued in another thread.
-    Audio duel_song(DUEL_SONG_SOURCE, DUEL_SONG_LENGTH);
+    Audio duel_song(duel_song_source, duel_song_length);
     Thread song_thread(Audio::thread_queue, &duel_song);
     
     // The message is extracted from the package.
@@ -24437,9 +24574,6 @@ void build_deck(
 }
 //}
 
-// AUTO
-//{//}
-
 // Main and Connection Menus
 //{
 /**
@@ -24782,6 +24916,25 @@ void set_port(
     // The host's port.
     std::string port;
     
+	// A vector of number buttons for use on mobile devices.
+	std::vector<Button> number_buttons;
+	
+    // The number buttons are initialised.
+	for (int i = 0; i < NUMBERS; ++i) {
+		number_buttons.push_back(
+			Button(
+				Sprite(
+					NUMBER_SOURCES[i],
+					NUMBER_WIDTH * display.width(),
+					NUMBER_HEIGHT * display.height()
+				),
+				display,
+				NUMBER_X[i],
+				NUMBER_Y
+			)
+		);
+	}
+	
     // True if the function should return.
     bool end = false;
     
@@ -24793,6 +24946,11 @@ void set_port(
         back_button.blit_to(display_sprite);
         next_button.blit_to(display_sprite);
         
+        // The number buttons are blitted to the display.
+		for (int i = 0; i < NUMBERS; ++i) {
+			number_buttons[i].blit_to(display);
+		}
+		
         // The host port is rendered.
         display_sprite.blit(
             renderer.render(
@@ -24810,12 +24968,13 @@ void set_port(
         
         // Loop to get user input.
         while (true) {
-            // If the user clicks the back button or presses
-            //   the quit key, the address menu is returned to.
+            // Pressing the quit key returns the user to the previous menu.
+            // Clicking the back button has the same effect when the port is empty.
             if (
-                Events::unpress(QUIT_KEY)
-                || back_button.get_rectangle().unclick()
-            ) {
+				Events::unpress(QUIT_KEY)
+				|| !port.length()
+				&& back_button.get_rectangle().unclick()
+			) {
                 end = true;
                 break;
             }
@@ -24860,7 +25019,13 @@ void set_port(
             
             // If the user presses the delete button,
             //   the last character entered is removed.
-            else if (Events::unpress(DELETE_KEY) && port.length()) {
+            // Clicking the back button with a non-empty port does the same.
+            else if (
+				(
+					Events::unpress(DELETE_KEY)
+					|| back_button.get_rectangle().unclick()
+				) && port.length()
+			) {
                 port.pop_back();
                 break;
             }
@@ -24872,7 +25037,10 @@ void set_port(
                 
                 // The numbers are checked.
                 for (int i = 0; !found && i < NUMBERS; i++) {
-                    if (Events::unpress(Events::NUMBERS[i])) {
+                    if (
+						Events::unpress(Events::NUMBERS[i])
+						|| number_buttons[i].get_rectangle().unclick()
+					) {
                         port += '0' + i;
                         found = true;
                     }
@@ -24918,6 +25086,37 @@ void set_address(
     // The address of the host.
     std::string address;
     
+	// A dot button for use on mobile devices.
+	Button dot_button(
+		Sprite(
+			DOT_SOURCE,
+			DOT_WIDTH * display.width(),
+			DOT_HEIGHT * display.height()
+		),
+		display,
+		DOT_X,
+		DOT_Y
+	);
+	
+	// A vector of number buttons for use on mobile devices.
+	std::vector<Button> number_buttons;
+	
+    // The number buttons are initialised.
+	for (int i = 0; i < NUMBERS; ++i) {
+		number_buttons.push_back(
+			Button(
+				Sprite(
+					NUMBER_SOURCES[i],
+					NUMBER_WIDTH * display.width(),
+					NUMBER_HEIGHT * display.height()
+				),
+				display,
+				NUMBER_X[i],
+				NUMBER_Y
+			)
+		);
+	}
+	
     // True if the function should return.
     bool end = false;
     
@@ -24928,6 +25127,13 @@ void set_address(
         display_sprite.blit(address_sprite, ADDRESS_X, ADDRESS_Y);
         back_button.blit_to(display_sprite);
         next_button.blit_to(display_sprite);
+		dot_button.blit_to(display);
+		
+        // The numbers are blitted to the display.
+		for (int i = 0; i < NUMBERS; ++i) {
+			number_buttons[i].blit_to(display);
+		}
+		
         
         // The host address is rendered.
         display_sprite.blit(
@@ -24946,12 +25152,13 @@ void set_address(
         
         // Loop to get user input.
         while (true) {
-            // If the user clicks the back button or presses
-            //   the quit key, the connect menu is returned to.
+            // Pressing the quit key returns the user to the previous menu.
+            // Clicking the back button with an empty address does the same.
             if (
-                Events::unpress(QUIT_KEY)
-                || back_button.get_rectangle().unclick()
-            ) {
+				Events::unpress(QUIT_KEY)
+				|| !address.length()
+				&& back_button.get_rectangle().unclick()
+			) {
                 end = true;
                 break;
             }
@@ -24977,14 +25184,23 @@ void set_address(
             
             // If the user presses the delete button,
             //   the last character entered is removed.
-            else if (Events::unpress(DELETE_KEY) && address.length()) {
+            // Clicking the back button does the same (with a non-empty address).
+            else if (
+				(
+					Events::unpress(DELETE_KEY)
+					|| back_button.get_rectangle().unclick()
+				) && address.length()
+			) {
                 address.pop_back();
                 break;
             }
             
             // A full stop is appended to the address, if
             //   the user pressed the full stop button.
-            else if (Events::unpress(Events::FULL_STOP)) {
+            else if (
+				Events::unpress(Events::FULL_STOP)
+				|| dot_button.get_rectangle().unclick()
+			) {
                 address += '.';
                 break;
             }
@@ -24996,7 +25212,10 @@ void set_address(
                 
                 // The numbers are checked.
                 for (int i = 0; !found && i < NUMBERS; i++) {
-                    if (Events::unpress(Events::NUMBERS[i])) {
+                    if (
+						Events::unpress(Events::NUMBERS[i])
+						|| number_buttons[i].get_rectangle().unclick()
+					) {
                         address += '0' + i;
                         found = true;
                     }
@@ -25353,6 +25572,21 @@ int main(int argc, char** argv) noexcept {
 //}
 
 /* CHANGELOG:
+     v2.0.1:
+       Unification of PC and Mobile Port.
+       Added an alternate duel song that plays half of the time.
+       AUTO now prioritises attacks that are lethal without Assassin.
+       AUTO no longer attacks when the opponent's active fighter is
+         invincible, unless attacking has value other than active damage.
+       Improved Matchmaker's evaluation to root suboptimal active fighters.
+       Improved Matchmaker's evaluation to root weak fighters.
+       Improved Matchmaker's evaluation to root fighters for lethal next turn.
+       Improved Bounty Hunter's evaluation to hook for lethal damage.
+       Improved switch-in evaluation to consider opposing lethal.
+       Old versions are no longer included in the zip archive.
+       Utility programs are no longer included in the zip archive.
+       Alternate loaders and builders are no longer included in the zip archive.
+       All removed file sources are available at github.com/chig00/demiduel.
      v2:
        Introducing Demi Duel: AUTO a bot for PvE duels.
        Connect to Demi Duel: AUTO by hosting a server on port 80700 - 80709.
