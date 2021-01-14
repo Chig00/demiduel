@@ -7,7 +7,7 @@
 // System Constants
 //{
 // The current version of the program.
-constexpr int VERSION[] = {2, 0, 1, 0};
+constexpr int VERSION[] = {2, 0, 1, 1};
 
 // The title of the game in string form.
 constexpr const char* TITLE_STRING = "Demi Duel";
@@ -17874,7 +17874,7 @@ class Player: public Affectable {
                 }
                 
                 // A good retreat option was found.
-                if (value) {
+                if (value > 0) {
                     // The optimal retreat option is used.
                     evaluation.improve(
                         Evaluation::RETREAT,
@@ -25572,6 +25572,9 @@ int main(int argc, char** argv) noexcept {
 //}
 
 /* CHANGELOG:
+     v2.0.1.1:
+       Retreating only occurs when value is gained from a retreat, rather than
+         when the value of a retreat is non-zero (no more negative value retreats).
      v2.0.1:
        Unification of PC and Mobile Port.
        Added an alternate duel song that plays half of the time.

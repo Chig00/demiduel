@@ -1,4 +1,7 @@
 /* CHANGELOG:
+     v2.0.1.1:
+       Retreating only occurs when value is gained from a retreat, rather than
+         when the value of a retreat is non-zero (no more negative value retreats).
      v2.0.1:
        Unification of PC and Mobile Port.
        Added an alternate duel song that plays half of the time.
