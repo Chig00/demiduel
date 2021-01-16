@@ -7,7 +7,7 @@
 // System Constants
 //{
 // The current version of the program.
-constexpr int VERSION[] = {2, 0, 1, 1};
+constexpr int VERSION[] = {2, 0, 1, 2};
 
 // The title of the game in string form.
 constexpr const char* TITLE_STRING = "Demi Duel";
@@ -18269,18 +18269,8 @@ class Player: public Affectable {
                 else if (store.get_supporters()[i].get_name() == TRADER_NAME) {
                     // Trader holds value if the deck and hand contain fighters.
                     if (deck.get_fighters().size() && hand.get_fighters().size()) {
-                        // The optimal indices are not calculated
-                        //   (to avoid infinite loops).
-                        if (deferred) {
-                            evaluation.improve(
-                                Evaluation::CARD,
-                                Evaluation::TRADER_FIGHTER_EVALUATION,
-                                store.get_fighters().size() + i
-                            );
-                        }
-                        
-                        // The optimal deck fighter index is calculated.
-                        else {
+                        // Searchers should not search for other searchers.
+                        if (!deferred) {
                             // A temporary deck fighter store is created.
                             CardStore deck_fighters;
                             deck_fighters.store(deck.get_supporters());
@@ -18368,18 +18358,8 @@ class Player: public Affectable {
                     
                     // Trader holds value if the deck and hand contain supporters.
                     if (deck.get_supporters().size() && hand.get_fighters().size() > 1) {
-                        // The optimal indices are not calculated
-                        //   (to avoid infinite loops).
-                        if (deferred) {
-                            evaluation.improve(
-                                Evaluation::CARD,
-                                Evaluation::TRADER_SUPPORTER_EVALUATION,
-                                store.get_fighters().size() + i
-                            );
-                        }
-                        
-                        // The optimal deck supporter index is calculated.
-                        else {
+                        // Searchers should not search for other searchers.
+                        if (!deferred) {
                             // A temporary deck supporter store is created.
                             CardStore deck_supporters;
                             deck_supporters.store(deck.get_supporters());
@@ -18481,18 +18461,8 @@ class Player: public Affectable {
                     
                     // Trader holds value if the deck and hand contain energy.
                     if (deck.get_energy().size() && hand.get_energy().size()) {
-                        // The optimal indices are not calculated
-                        //   (to avoid infinite loops).
-                        if (deferred) {
-                            evaluation.improve(
-                                Evaluation::CARD,
-                                Evaluation::TRADER_ENERGY_EVALUATION,
-                                store.get_fighters().size() + i
-                            );
-                        }
-                        
-                        // The optimal deck energy index is calculated.
-                        else {
+                        // Searchers should not search for other searchers.
+                        if (!deferred) {
                             // A temporary deck energy store is created.
                             CardStore deck_energy;
                             deck_energy.store(deck.get_energy());
@@ -18575,18 +18545,8 @@ class Player: public Affectable {
                 else if (store.get_supporters()[i].get_name() == LIBRARIAN_NAME) {
                     // Librarian only holds value if the deck contains enough cards.
                     if (deck.size() >= LIBRARIAN_THRESHOLD) {
-                        // The optimal indices are not calculated
-                        //   (to avoid infinite loops).
-                        if (deferred) {
-                            evaluation.improve(
-                                Evaluation::CARD,
-                                Evaluation::LIBRARIAN_EVALUATION,
-                                store.get_fighters().size() + i
-                            );
-                        }
-                        
-                        // The optimal deck index is calculated.
-                        else {
+                        // Searchers should not search for other searchers.
+                        if (!deferred) {
                             // The deck is evaluated.
                             Evaluation deck_evaluation(
                                 evaluate_store(deck, true)
@@ -18769,18 +18729,8 @@ class Player: public Affectable {
                 else if (store.get_supporters()[i].get_name() == ALCHEMIST_NAME) {
                     // Alchemist only holds value if the trash contains cards.
                     if (trash.size()) {
-                        // The optimal indices are not calculated
-                        //   (to avoid infinite loops).
-                        if (deferred) {
-                            evaluation.improve(
-                                Evaluation::CARD,
-                                Evaluation::ALCHEMIST_EVALUATION,
-                                store.get_fighters().size() + i
-                            );
-                        }
-                        
-                        // The optimal trash index is calculated.
-                        else {
+                        // Searchers should not search for other searchers.
+                        if (!deferred) {
                             // The trash is evaluated.
                             Evaluation trash_evaluation(
                                 evaluate_store(trash, true)
@@ -18899,18 +18849,8 @@ class Player: public Affectable {
                 else if (store.get_supporters()[i].get_name() == TIME_TRAVELLER_NAME) {
                     // Time Traveller only has value if the trash is non-empty.
                     if (trash.size()) {
-                        // The optimal trash index is not calculated
-                        //   (to avoid infinite loops).
-                        if (deferred) {
-                            evaluation.improve(
-                                Evaluation::CARD,
-                                Evaluation::TIME_TRAVELLER_EVALUATION,
-                                store.get_fighters().size() + i
-                            );
-                        }
-                        
-                        // The optimal trash index is calculated.
-                        else {
+                        // Searchers should not search for other searchers.
+                        if (!deferred) {
                             // The trash is evaluated.
                             Evaluation trash_evaluation(
                                 evaluate_store(trash, true)
@@ -18948,7 +18888,11 @@ class Player: public Affectable {
                 // Bounty Hunter
                 else if (store.get_supporters()[i].get_name() == BOUNTY_HUNTER_NAME) {
                     // Bounty Hunter should not be played if lethal is available.
-                    if (opponent->fighters[0].get_health() > damage) {
+                    // Bounty Hunter should not be played against an active Boxer.
+                    if (
+                        opponent->fighters[0].get_health() > damage
+                        && !opponent->fighters[0].effect_search(AGGRESSIVE_EFFECT).size()
+                    ) {
                         // The minimum switch in value of an opposing fighter.
                         int min = opponent->switch_in_value(opponent->fighters[0]);
                         
@@ -19182,7 +19126,11 @@ class Player: public Affectable {
                 // Matchmaker
                 else if (store.get_supporters()[i].get_name() == MATCHMAKER_NAME) {
                     // Matchmaker should not be played if lethal is available.
-                    if (opponent->fighters[0].get_health() > damage) {
+                    // Matchmaker should not be played against an active Boxer.
+                    if (
+                        opponent->fighters[0].get_health() > damage
+                        && !opponent->fighters[0].effect_search(AGGRESSIVE_EFFECT).size()
+                    ) {
                         // True if Matchmaker should be played.
                         bool to_play = false;
                         
@@ -19420,7 +19368,7 @@ class Player: public Affectable {
                 // The best index is sent.
                 messenger.send(
                     std::to_string(
-                        evaluate_store(life_cards, true).get_index()
+                        evaluate_store(life_cards).get_index()
                     )
                 );
                 
@@ -19445,7 +19393,7 @@ class Player: public Affectable {
                 // The number of life cards is recorded.
                 int life_size = life_cards.size();
                 
-                // The worst index is sent.
+                // An index is sent.
                 messenger.send("0");
                 
                 // Waits for the number of life cards to be decremented.
@@ -25572,6 +25520,11 @@ int main(int argc, char** argv) noexcept {
 //}
 
 /* CHANGELOG:
+     v2.0.1.2:
+       Player::auto_draw_life() no longer defers card evaluation.
+       All general search cards have no deferred value (to stop search for search).
+       Bounty Hunter and Matchmaker will not be played if the opponent's
+         active fighter has the Aggressive effect (Boxer).
      v2.0.1.1:
        Retreating only occurs when value is gained from a retreat, rather than
          when the value of a retreat is non-zero (no more negative value retreats).
