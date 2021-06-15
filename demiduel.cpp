@@ -7,7 +7,7 @@
 // System Constants
 //{
 // The current version of the program.
-constexpr int VERSION[] = {2, 0, 1, 2};
+constexpr int VERSION[] = {2, 0, 2, 0};
 
 // The title of the game in string form.
 constexpr const char* TITLE_STRING = "Demi Duel";
@@ -476,10 +476,10 @@ constexpr const char* FORBIDDEN_FUEL_REPRESENTATION = "Void Fuel";
 #define CURSE_CONDITION (value = effect_count(CURSE_EFFECT))
 constexpr const char* CURSE_REPRESENTATION = "Curse";
 #define CURSE_VALUE std::to_string(value)
-#define CURSE_EXPLANATION (              \
-    "This fighter takes "                \
-    + effect_value                       \
-    + " damage at the end of each turn!" \
+#define CURSE_EXPLANATION (                  \
+    "This fighter takes "                    \
+    + effect_value                           \
+    + " damage at the start of their turns!" \
 )
 //}
 
@@ -2999,7 +2999,7 @@ constexpr const char* BANISH_LIFE_ANNOUNCEMENT = "Choose a life card to banish."
     + opponent->fighters[0].get_name()                    \
     + " will take "                                       \
     + curse                                               \
-    + " damage at the end of each turn!"                  \
+    + " damage at the start of its owner's turns!"        \
 )
 //}
 
@@ -4097,7 +4097,7 @@ constexpr int BANISHER_ABILITY_USES = VOID_SERVANT_ABILITY_USES;
 constexpr const char* BANISHER_ATTACK_NAME = "Shadow Flame";
 constexpr const char* BANISHER_ATTACK_DESCRIPTION =
     "Your opponent's active fighter takes 50 damage at "
-    "the end of each turn, for each card in the void, "
+    "the start of their turns, for each card in the void, "
     "for a maximum of 500 damage."
 ;
 const std::string BANISHER_ATTACK_EFFECTS(
@@ -4127,18 +4127,18 @@ constexpr bool BANSHEE_ABILITY_PASSIVE = VOID_SERVANT_ABILITY_PASSIVE;
 constexpr int BANSHEE_ABILITY_USES = VOID_SERVANT_ABILITY_USES;
 constexpr const char* BANSHEE_ATTACK_NAME = "Screech";
 constexpr const char* BANSHEE_ATTACK_DESCRIPTION =
-    "Deal 75 damage to your opponent's active fighter, "
+    "Deal 70 damage to your opponent's active fighter, "
     "for each card in the void, "
-    "for a maximum of 750 damage."
+    "for a maximum of 700 damage."
 ;
 const std::string BANSHEE_ATTACK_EFFECTS(
     std::string(POWER_EFFECT) // power
     + EFFECT_SEPARATOR        //
     + VOID_EFFECT             // void
     + EFFECT_SEPARATOR        //
-    + "75"                    // 75
+    + "70"                    // 70
     + EFFECT_SEPARATOR        //
-    + "750"                   // 750
+    + "700"                   // 700
 );
 constexpr int BANSHEE_ATTACK_DAMAGE = 0;
 constexpr int BANSHEE_ATTACK_COST = 0;
@@ -17210,19 +17210,22 @@ class Player: public Affectable {
         }
         
         /**
-         * Deals damage to a cursed actie fighter.
+         * Deals damage to a cursed active fighter.
          */
         void curse() noexcept {
-            // Curses can only affect the active fighter.
-            int index = 0;
-            
-            // The curse's damage is extracted.
-            int damage = fighters[index].effect_count(CURSE_EFFECT);
-            
-            // If the fighter is cursed, the damage is dealt and announced.
-            if (damage) {
-                damage = fighters[index].damage(damage);
-                announce(FRIENDLY_DAMAGE_ANNOUNCEMENT);
+            // Curses only take effect at the start of the player's turn.
+            if (turn != opposing) {
+                // Curses can only affect the active fighter.
+                int index = 0;
+                
+                // The curse's damage is extracted.
+                int damage = fighters[index].effect_count(CURSE_EFFECT);
+                
+                // If the fighter is cursed, the damage is dealt and announced.
+                if (damage) {
+                    damage = fighters[index].damage(damage);
+                    announce(FRIENDLY_DAMAGE_ANNOUNCEMENT);
+                }
             }
         }
         
@@ -25520,6 +25523,10 @@ int main(int argc, char** argv) noexcept {
 //}
 
 /* CHANGELOG:
+     v2.0.2.0:
+       Screech's damage scaling was reduced from 75 to 70.
+       Screech's damage cap was reduced from 750 to 700.
+       Curse no longer deals damage at the end of the fighter's turn.
      v2.0.1.2:
        Player::auto_draw_life() no longer defers card evaluation.
        All general search cards have no deferred value (to stop search for search).
