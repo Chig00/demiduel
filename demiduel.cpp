@@ -7,7 +7,7 @@
 // System Constants
 //{
 // The current version of the program.
-constexpr int VERSION[] = {2, 0, 2, 0};
+constexpr int VERSION[] = {2, 0, 2, 1};
 
 // The title of the game in string form.
 constexpr const char* TITLE_STRING = "Demi Duel";
@@ -13654,9 +13654,9 @@ class Player: public Affectable {
             depower();
             end_discard();
             banishment();
+            vincible();
             curse();
             heal_aura();
-            vincible();
             unroot();
             reset_agility();
             uncripple();
@@ -25523,6 +25523,8 @@ int main(int argc, char** argv) noexcept {
 //}
 
 /* CHANGELOG:
+     v2.0.2.1:
+       Invincibility no longer blocks curse damage.
      v2.0.2.0:
        Screech's damage scaling was reduced from 75 to 70.
        Screech's damage cap was reduced from 750 to 700.
