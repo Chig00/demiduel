@@ -7,7 +7,7 @@
 // System Constants
 //{
 // The current version of the program.
-constexpr int VERSION[] = {2, 0, 2, 1};
+constexpr int VERSION[] = {2, 0, 2, 2};
 
 // The title of the game in string form.
 constexpr const char* TITLE_STRING = "Demi Duel";
@@ -2126,7 +2126,7 @@ constexpr const char* DRAW_LIFE_ANNOUNCEMENT = "Choose a life card to draw.";
     std::string(opposing ? "Your opponent" : "You")   \
     + " shuffled "                                    \
     + (                                               \
-        shuffles == 1 ? "a card from " \
+        shuffles == 1 ? "a card from "                \
         : "all "                                      \
         + std::to_string(shuffles)                    \
         + " of the cards in "                         \
@@ -2140,11 +2140,11 @@ constexpr const char* DRAW_LIFE_ANNOUNCEMENT = "Choose a life card to draw.";
 
 // Announcement for an opposing hand shuffled into the deck.
 //{
-#define SHUFFLE_OPPONENT_ALL_ANNOUNCEMENT (                    \
+#define SHUFFLE_OPPONENT_ALL_ANNOUNCEMENT (           \
     std::string(!opposing ? "Your opponent" : "You")  \
     + " shuffled "                                    \
     + (                                               \
-        shuffles == 1 ? opponent->hand[0].get_name() + " from " \
+        shuffles == 1 ? "a card from "                \
         : "all "                                      \
         + std::to_string(shuffles)                    \
         + " of the cards in "                         \
@@ -25523,6 +25523,9 @@ int main(int argc, char** argv) noexcept {
 //}
 
 /* CHANGELOG:
+     v2.0.2.2:
+       Players can no longer see the card that the opponent shuffled into
+         the deck from their hand, when the hand contains a single card.
      v2.0.2.1:
        Invincibility no longer blocks curse damage.
      v2.0.2.0:
