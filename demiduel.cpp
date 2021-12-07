@@ -7,7 +7,7 @@
 // System Constants
 //{
 // The current version of the program.
-constexpr int VERSION[] = {2, 0, 2, 2};
+constexpr int VERSION[] = {2, 0, 2, 3};
 
 // The title of the game in string form.
 constexpr const char* TITLE_STRING = "Demi Duel";
@@ -3252,7 +3252,7 @@ const std::string RACER_ABILITY_EFFECTS(
     + EFFECT_SEPARATOR            //
     + POWER_EFFECT                // power
     + EFFECT_SEPARATOR            //
-    + "50"                       // 50
+    + "50"                        // 50
 );
 constexpr bool RACER_ABILITY_PASSIVE = false;
 constexpr int RACER_ABILITY_USES = 1;
@@ -5655,8 +5655,8 @@ class Evaluation {
 };
 
 /**
- * An abstract base class for objects
- *   that can be affected to inherit from.
+ * An abstract base class for objects,
+ *   that can be affected, to inherit from.
  */
 class Affectable {
     public:
@@ -13728,7 +13728,8 @@ class Player: public Affectable {
                 // The fighter switches in if it was on the bench.
                 if (effects[i][0] == SWITCH_IN_EFFECT) {
                     // Switching in can only work from the bench.
-                    if (index) {
+                    // Switches don't work when the active fighter is rooted.
+                    if (index && !fighters[0].effect_search(ROOT_EFFECT).size()) {
                         switch_in(index);
                         
                         // The fighter is now in the active position.
@@ -17414,7 +17415,7 @@ class Player: public Affectable {
         bool automate(const Messenger& messenger) const noexcept {
             // Loop to choose an option.
             while (true) {
-                // An evaluation is initialised to end the turn.
+                // An evaluation is initialised to end the turn by default.
                 Evaluation evaluation;
                 
                 // The evaluation considers an attack.
@@ -25523,6 +25524,9 @@ int main(int argc, char** argv) noexcept {
 //}
 
 /* CHANGELOG:
+     v2.0.2.3:
+       Acceleration and Charged Thruster no longer give
+         other fighters power boosts when the switch-in fails.
      v2.0.2.2:
        Players can no longer see the card that the opponent shuffled into
          the deck from their hand, when the hand contains a single card.
