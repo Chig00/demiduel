@@ -7,7 +7,7 @@
 // System Constants
 //{
 // The current version of the program.
-constexpr int VERSION[] = {2, 0, 2, 3};
+constexpr int VERSION[] = {2, 0, 3, 0};
 
 // The title of the game in string form.
 constexpr const char* TITLE_STRING = "Demi Duel";
@@ -243,6 +243,7 @@ constexpr const char* POWER_AURA_EFFECT = "power_aura";
 constexpr const char* DEPOWER_EFFECT = "depower";
 constexpr const char* INVISIBLE_EFFECT = "invisible";
 constexpr const char* LOST_EFFECT = "lost";
+constexpr const char* PLANK_EFFECT = "plank";
 //}
 
 // The constants for effect explanations.
@@ -3302,7 +3303,7 @@ constexpr int HOT_RODDER_ATTACK_COST = 1000;
 //{
 constexpr const char* SAILOR_NAME = "Sailor";
 constexpr const char* SAILOR_ELEMENT = WATER_ELEMENT;
-constexpr int SAILOR_HEALTH = 1200;
+constexpr int SAILOR_HEALTH = 1100;
 constexpr int SAILOR_RETREAT_COST = 1000;
 constexpr const char* SAILOR_OLD_RANK = DRIVER_NAME;
 constexpr const char* SAILOR_ABILITY_NAME = "Sailor's Compass";
@@ -3318,12 +3319,12 @@ constexpr bool SAILOR_ABILITY_PASSIVE = false;
 constexpr int SAILOR_ABILITY_USES = 1;
 constexpr const char* SAILOR_ATTACK_NAME = "Torpedo";
 constexpr const char* SAILOR_ATTACK_DESCRIPTION =
-    "Deal 300 damage to one of your opponent's fighters."
+    "Deal 400 damage to one of your opponent's fighters."
 ;
 const std::string SAILOR_ATTACK_EFFECTS(
     std::string(SNIPE_EFFECT) // snipe
     + EFFECT_SEPARATOR        //
-    + "300"                   // 300
+    + "400"                   // 400
 );
 constexpr int SAILOR_ATTACK_DAMAGE = 0;
 constexpr int SAILOR_ATTACK_COST = 1000;
@@ -3333,7 +3334,7 @@ constexpr int SAILOR_ATTACK_COST = 1000;
 //{
 constexpr const char* PIRATE_NAME = "Pirate";
 constexpr const char* PIRATE_ELEMENT = WATER_ELEMENT;
-constexpr int PIRATE_HEALTH = 1200;
+constexpr int PIRATE_HEALTH = 1100;
 constexpr int PIRATE_RETREAT_COST = 1000;
 constexpr const char* PIRATE_OLD_RANK = SAILOR_NAME;
 constexpr const char* PIRATE_ABILITY_NAME = "Plundered";
@@ -3349,19 +3350,18 @@ constexpr bool PIRATE_ABILITY_PASSIVE = false;
 constexpr int PIRATE_ABILITY_USES = 1;
 constexpr const char* PIRATE_ATTACK_NAME = "Plank Walk";
 constexpr const char* PIRATE_ATTACK_DESCRIPTION =
-    "Deal 350 damage to one of your opponent's fighters.\n"
-    "Deal 50 less damage to Water element fighters."
+    "Choose one of your opponent's fighters to damage based on its element.\n"
+    "Water: 300 damage.\n"
+    "Air: 400 damage.\n"
+    "Earth: 500 damage.\n"
+    "Fire: 600 damage."
 ;
 const std::string PIRATE_ATTACK_EFFECTS(
     std::string(SNIPE_EFFECT) // snipe
     + EFFECT_SEPARATOR        //
-    + "350"                   // 350
+    + "300"                   // 300
     + EFFECT_SEPARATOR        //
-    + POWER_EFFECT            // power
-    + EFFECT_SEPARATOR        //
-    + WATER_ELEMENT           // Water
-    + EFFECT_SEPARATOR        //
-    + "-50"                   // -50
+    + PLANK_EFFECT            // plank
 );
 constexpr int PIRATE_ATTACK_DAMAGE = 0;
 constexpr int PIRATE_ATTACK_COST = 1000;
@@ -15238,6 +15238,24 @@ class Player: public Affectable {
                                     snipe += std::stoi(effects[i][4]);
                                 }
                             }
+                            
+                            // The snipe's damage depends on the target's element.
+                            else if (effects[i][2] == PLANK_EFFECT) {
+                                // Air element fighters take extra damage.
+                                if (opponent->fighters[index].get_element() == AIR_ELEMENT) {
+                                    snipe += 100;
+                                }
+                                
+                                // Earth element fighters take even more damage.
+                                else if (opponent->fighters[index].get_element() == EARTH_ELEMENT) {
+                                    snipe += 200;
+                                }
+                                
+                                // Fire element fighters take the most damage.
+                                else if (opponent->fighters[index].get_element() == FIRE_ELEMENT) {
+                                    snipe += 300;
+                                }
+                            }
                         }
                         
                         snipe = opponent->fighters[index].damage(snipe);
@@ -25524,6 +25542,15 @@ int main(int argc, char** argv) noexcept {
 //}
 
 /* CHANGELOG:
+     v2.0.3.0:
+       Sailor's health was reduced from 1200 to 1100.
+       Torpedo's damage was increased from 300 to 400.
+       Pirate's health was reduced from 1200 to 1100.
+       Plank Walk's damage is now completely based on the target's element:
+         Water - 300 damage.
+         Air - 400 damage.
+         Earth - 500 damage.
+         Fire - 600 damage.
      v2.0.2.3:
        Acceleration and Charged Thruster no longer give
          other fighters power boosts when the switch-in fails.
@@ -25605,7 +25632,7 @@ int main(int argc, char** argv) noexcept {
        Divebomb's damage was decreased from 375 to 350.
        Astronaut's retreat cost was decreased from 2000 to 1000.
        Gravity Flip's damage was decreased from 500 to 450.
-       Gravity Flip's agility decreased was decreased from 2000 to 1000.
+       Gravity Flip's agility reduction was decreased from 2000 to 1000.
        Cultist's retreat cost was decreased from 2000 to 0.
        Void Pact was replaced with Void Servant.
        Shadow Bond was replaced with Ancient Power (void-powered Assimilate).
