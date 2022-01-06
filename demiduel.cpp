@@ -3455,24 +3455,24 @@ constexpr int MONSTER_TRUCKER_RETREAT_COST = 1000;
 constexpr const char* MONSTER_TRUCKER_OLD_RANK = DIRT_BIKER_NAME;
 constexpr const char* MONSTER_TRUCKER_ABILITY_NAME = "Scrap Metal";
 constexpr const char* MONSTER_TRUCKER_ABILITY_DESCRIPTION =
-    "Twice a turn, you may discard the top card of "
-    "your deck and heal 400 damage from this fighter."
+    "Once a turn, you may discard the top 2 cards of "
+    "your deck and heal 800 damage from this fighter."
 ;
 const std::string MONSTER_TRUCKER_ABILITY_EFFECTS(
     std::string(MILL_EFFECT) // mill
     + EFFECT_SEPARATOR       //
     + SELF_EFFECT            // self
     + EFFECT_SEPARATOR       //
-    + "1"                    // 1
+    + "2"                    // 2
     + EFFECT_TERMINATOR
     + HEAL_EFFECT            // heal
     + EFFECT_SEPARATOR       //
     + SELF_EFFECT            // self
     + EFFECT_SEPARATOR       //
-    + "400"                  // 400
+    + "800"                  // 800
 );
 constexpr bool MONSTER_TRUCKER_ABILITY_PASSIVE = false;
-constexpr int MONSTER_TRUCKER_ABILITY_USES = 2;
+constexpr int MONSTER_TRUCKER_ABILITY_USES = 1;
 constexpr const char* MONSTER_TRUCKER_ATTACK_NAME = "Crush";
 constexpr const char* MONSTER_TRUCKER_ATTACK_DESCRIPTION =
     "Deal 500 damage to your opponent's active fighter.\n"
@@ -25701,6 +25701,10 @@ int main(int argc, char** argv) noexcept {
 //}
 
 /* CHANGELOG:
+     v2.1.1:
+       Scrap Metal's healing was increased from 400 to 800.
+       Scrap Metal's self-mill was increased from 1 to 2.
+       Scrap Metal's uses were decreased from 2 to 1.
      v2.1:
        9 custom deck slots were added - they can be modified in the data folder.
        Quick Fix's healing was increased from 200 to 400.
