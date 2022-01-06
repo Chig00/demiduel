@@ -11,8 +11,6 @@
 #include <ctime>
 #include <limits>
 #include <random>
-#include <SDL.h>
-#include <SDL_net.h>
 
 // System, Timer, and Random
 //{
@@ -21,7 +19,7 @@
  */
 namespace System {
 	// The current version of the library.
-	constexpr int VERSION[] = {2, 1, 0, 1};
+	constexpr int VERSION[] = {2, 1, 0, 2};
 	constexpr int VERSION_LENGTH = 4;
 	
 	// The number of letters and numbers.
@@ -3089,4 +3087,6 @@ class Thread {
 	   System::command now returns the command's exit code.
 	 v2.1.0.1:
 	   Random::get_int() now converts (1 + max - min) to an unsigned integer.
+	 v2.1.0.2:
+	   Moved the SDL headers from sdlandnet.hpp to demiduel.cpp for compatability.
  */

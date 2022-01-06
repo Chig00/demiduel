@@ -82,18 +82,18 @@ INSTRUCTIONS:
 	
 	The number of cards that can be played each turn is limited.
 	The number starts of at one and increments with each turn.
-	  
+    
 	Energy allows fighters to attack or retreat. Only fighters with a sufficient amount of
 	  energy can attack or retreat and the energy's element often needs to match the fighter.
-	  
+    
 	The player can attack once a turn. Only the active fighter's attack may be used.
 	Attacks often deal damage to the opponent's active
 	  fighter and may have additional effects.
-	  
+    
 	The player can retreat once a turn. Retreating switched the active fighter with
 	  a fighter on the bench. Nothing is exchanged when retreating in this game.
 	Retreating removes all effects from the retreated fighter.
-	  
+    
 	When a fighter takes damage (usually from attacks), their health decreases.
 	When a fighter's health drops to zero or below, the fighter is defeated.
 	Players draw a life card for each of their defeated fighters.
@@ -101,6 +101,12 @@ INSTRUCTIONS:
 	
 	If a fighter runs out of life cards or fighters in play, they lose.
 	If a player concedes, they lose.
+
+
+  CUSTOM DECKS:
+    Replace the fields given with valid deck data.
+    Changing the file structure may result in deck corruption.
+    The structure on lines after "DESCRIPTION:" can be modified freely.
 	
 	
   TIPS:

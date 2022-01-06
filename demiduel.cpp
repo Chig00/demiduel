@@ -1,5 +1,8 @@
 #include <iostream>
+#include <fstream>
 #include <type_traits>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_net.h>
 #include "sdlandnet.hpp"
 
 // Constants
@@ -7,7 +10,7 @@
 // System Constants
 //{
 // The current version of the program.
-constexpr int VERSION[] = {2, 0, 3, 0};
+constexpr int VERSION[] = {2, 1, 0, 0};
 
 // The title of the game in string form.
 constexpr const char* TITLE_STRING = "Demi Duel";
@@ -104,7 +107,7 @@ constexpr int HAND_SIZE = 7;
 constexpr int LIFE_SIZE = 3;
 constexpr int TURN_DRAW = 1;
 constexpr int MAX_FIGHTER_COPIES = 1;
-constexpr int MAX_SUPPORTER_COPIES = MAX_FIGHTER_COPIES;
+constexpr int MAX_SUPPORTER_COPIES = 1;
 constexpr int MAX_ENERGY_COPIES = 2;
 constexpr int BASE_CARD_LIMIT = 1;
 constexpr int CARD_LIMIT_INCREMENT = 1;
@@ -244,6 +247,7 @@ constexpr const char* DEPOWER_EFFECT = "depower";
 constexpr const char* INVISIBLE_EFFECT = "invisible";
 constexpr const char* LOST_EFFECT = "lost";
 constexpr const char* PLANK_EFFECT = "plank";
+constexpr const char* DONATE_EFFECT = "donate";
 //}
 
 // The constants for effect explanations.
@@ -346,7 +350,7 @@ constexpr const char* AGILITY_AURA_REPRESENTATION = "Agility Aura";
     "This player's fighters retreat for "               \
     + std::to_string(abs(std::stoi(effect_value)))      \
     + (std::stoi(effect_value) < 0 ? " more" : " less") \
-    + " energy!"                                        \
+    + " energy."                                        \
 )
 //}
 
@@ -468,7 +472,7 @@ constexpr const char* FORBIDDEN_FUEL_REPRESENTATION = "Void Fuel";
 #define FORBIDDEN_FUEL_EXPLANATION (                           \
     "This player's active fighter can attack and retreat for " \
     + effect_value                                             \
-    + " less energy!"                                          \
+    + " less energy."                                          \
 )
 //}
 
@@ -480,7 +484,7 @@ constexpr const char* CURSE_REPRESENTATION = "Curse";
 #define CURSE_EXPLANATION (                  \
     "This fighter takes "                    \
     + effect_value                           \
-    + " damage at the start of their turns!" \
+    + " damage at the start of their turns." \
 )
 //}
 
@@ -1157,6 +1161,10 @@ constexpr Renderer::Justification DESCRIPTION_JUSTIFICATION = Renderer::CENTRE_J
 )
 constexpr const char* NO_BASICS_STRING =
     "A deck must have at least 1 fighter that doesn't rank up from another fighter."
+;
+constexpr const char* INVALID_COUNT_STRING =
+    "A deck must have 0 or 1 copies of any fighter or supporter card.\n"
+    "A deck must have 0, 1, or 2 copies of any energy card."
 ;
 constexpr double DECK_ERROR_X = INCOMPATIBLE_X;
 constexpr double DECK_ERROR_Y = INCOMPATIBLE_Y;
@@ -2471,6 +2479,31 @@ constexpr const char* DRAW_LIFE_ANNOUNCEMENT = "Choose a life card to draw.";
 )
 //}
 
+// Announcement to announce that the player is to choose a fighter to transfer health to.
+//{
+#define TO_DONATE_ANNOUNCEMENT (                           \
+    opposing ?                                             \
+        "Your opponent is choosing a fighter to transfer " \
+        + std::to_string(healing)                          \
+        + " health to."                                    \
+    :                                                      \
+        "Choose a fighter to transfer "                    \
+        + std::to_string(healing)                          \
+        + " health to."                                    \
+)
+//}
+
+// Announcement to display the health transferred to a fighter.
+//{
+#define DONATE_ANNOUNCEMENT (                  \
+    (!opposing ? "Your " : "Your opponent's ") \
+    + fighters[index].get_name()               \
+    + " was transferred "                      \
+    + std::to_string(healing)                  \
+    + " health!"                               \
+)
+//}
+
 // Announcement to announce a change to a fighter's retreat cost.
 //{
 #define AGILITY_ANNOUNCEMENT (                             \
@@ -3380,7 +3413,7 @@ constexpr const char* DIRT_BIKER_OLD_RANK = DRIVER_NAME;
 constexpr const char* DIRT_BIKER_ABILITY_NAME = "Quick Fix";
 constexpr const char* DIRT_BIKER_ABILITY_DESCRIPTION =
     "Once a turn, you may discard the top card of "
-    "your deck and heal 200 damage from this fighter."
+    "your deck and heal 400 damage from this fighter."
 ;
 const std::string DIRT_BIKER_ABILITY_EFFECTS(
     std::string(MILL_EFFECT) // mill
@@ -3393,7 +3426,7 @@ const std::string DIRT_BIKER_ABILITY_EFFECTS(
     + EFFECT_SEPARATOR       //
     + SELF_EFFECT            // self
     + EFFECT_SEPARATOR       //
-    + "200"                  // 200
+    + "400"                  // 400
 );
 constexpr bool DIRT_BIKER_ABILITY_PASSIVE = false;
 constexpr int DIRT_BIKER_ABILITY_USES = 1;
@@ -3422,7 +3455,7 @@ constexpr int MONSTER_TRUCKER_RETREAT_COST = 1000;
 constexpr const char* MONSTER_TRUCKER_OLD_RANK = DIRT_BIKER_NAME;
 constexpr const char* MONSTER_TRUCKER_ABILITY_NAME = "Scrap Metal";
 constexpr const char* MONSTER_TRUCKER_ABILITY_DESCRIPTION =
-    "Once a turn, you may discard the top card of "
+    "Twice a turn, you may discard the top card of "
     "your deck and heal 400 damage from this fighter."
 ;
 const std::string MONSTER_TRUCKER_ABILITY_EFFECTS(
@@ -3439,7 +3472,7 @@ const std::string MONSTER_TRUCKER_ABILITY_EFFECTS(
     + "400"                  // 400
 );
 constexpr bool MONSTER_TRUCKER_ABILITY_PASSIVE = false;
-constexpr int MONSTER_TRUCKER_ABILITY_USES = 1;
+constexpr int MONSTER_TRUCKER_ABILITY_USES = 2;
 constexpr const char* MONSTER_TRUCKER_ATTACK_NAME = "Crush";
 constexpr const char* MONSTER_TRUCKER_ATTACK_DESCRIPTION =
     "Deal 500 damage to your opponent's active fighter.\n"
@@ -3658,17 +3691,15 @@ constexpr bool CLERIC_ABILITY_PASSIVE = true;
 constexpr int CLERIC_ABILITY_USES = PASSIVE_USES;
 constexpr const char* CLERIC_ATTACK_NAME = "Radiant Pulse";
 constexpr const char* CLERIC_ATTACK_DESCRIPTION =
-    "Deal 400 damage to your opponent's active fighter.\n"
-    "Heal 100 damage from this fighter."
+    "Deal 450 damage to your opponent's active fighter.\n"
+    "Transfer 150 health from this fighter to one of your benched fighters."
 ;
 const std::string CLERIC_ATTACK_EFFECTS(
-    std::string(HEAL_EFFECT) // heal
-    + EFFECT_SEPARATOR       //
-    + SELF_EFFECT            // self
-    + EFFECT_SEPARATOR       //
-    + "100"                  // 100
+    std::string(DONATE_EFFECT) // donate
+    + EFFECT_SEPARATOR         //
+    + "150"                    // 150
 );
-constexpr int CLERIC_ATTACK_DAMAGE = 400;
+constexpr int CLERIC_ATTACK_DAMAGE = 450;
 constexpr int CLERIC_ATTACK_COST = 1000;
 //}
 
@@ -5591,8 +5622,16 @@ class Evaluation {
         /**
          * A custom evaluation with multiple indices is initialised.
          */
-        template<unsigned N>
-        Evaluation(Option option, Priority value, const std::array<int, N>& indices) noexcept:
+        Evaluation(Option option, Priority value, const std::array<int, 2>& indices) noexcept:
+            option(option),
+            value(value),
+            indices(indices.cbegin(), indices.cend())
+        {}
+        
+        /**
+         * A custom evaluation with multiple indices is initialised.
+         */
+        Evaluation(Option option, Priority value, const std::array<int, 3>& indices) noexcept:
             option(option),
             value(value),
             indices(indices.cbegin(), indices.cend())
@@ -16052,6 +16091,38 @@ class Player: public Affectable {
                 else if (effects[i][0] == DEPOWER_EFFECT) {
                     boost = 0;
                 }
+                
+                // Transfers health to a benched fighter.
+                else if (effects[i][0] == DONATE_EFFECT && fighters.size() > 1) {
+                    // The amount of healing is extracted.
+                    int healing = std::stoi(effects[i][1]);
+                    
+                    // The fighter to be healed.
+                    int index;
+                    
+                    // If the player only has one benched fighter, it is healed.
+                    if (fighters.size() == 2) {
+                        index = 1;
+                    }
+                    
+                    // Else, the player chooses a fighter to heal.
+                    else if (!opposing) {
+                        announce(TO_DONATE_ANNOUNCEMENT);
+                        index = choose_bench();
+                        messenger.send(std::to_string(index));
+                    }
+                    
+                    // The opponent receives the index of the fighter to heal.
+                    else {
+                        announce(TO_DONATE_ANNOUNCEMENT, false);
+                        index = std::stoi(message);
+                        get_message();
+                    }
+                    
+                    healing = fighters[index].heal(healing);
+                    fighters[0].damage(healing);
+                    announce(DONATE_ANNOUNCEMENT);
+                }
             }
             
             // The damage is caculated.
@@ -19914,6 +19985,40 @@ class DeckCode {
         }
         
         /**
+         * Constructs a deck code from the given source file.
+         */
+        DeckCode(const std::string& source) {
+            // The input file stream is initialised.
+            std::ifstream file(source);
+            
+            // The deck's name is extracted ("Name:" is discarded).
+            std::getline(file, name);
+            std::getline(file, name);
+            
+            // The empty line between the deck's name and contents is discarded.
+            std::getline(file, description);
+            
+            // The deck code is extracted.
+            for (int& c : code) {
+                // The card count is extracted.
+                file >> c;
+                
+                // The deck size is updated.
+                size += c;
+                
+                // The empty line between the deck's name and contents is discarded.
+                std::getline(file, description);
+            }
+            
+            // The empty line between the deck's contents and description is discarded.
+            std::getline(file, description);
+            
+            // The deck's description is extracted ("Description:" is discarded).
+            std::getline(file, description);
+            std::getline(file, description, static_cast<char>(EOF));
+        }
+        
+        /**
          * Returns the deck code's name.
          */
         const std::string& get_name() const noexcept {
@@ -19987,10 +20092,10 @@ const DeckCode TEST_DECK(
         0, // BANSHEE
         0, // CULTIST
         
-        4, // APPRENTICE
-        4, // SENSEI'S CHOSEN
-        4, // NINJA
-        4, // SAMURAI
+        0, // APPRENTICE
+        0, // SENSEI'S CHOSEN
+        0, // NINJA
+        0, // SAMURAI
         
         0, // FIRE ELEMENTAL
         0, // AIR ELEMENTAL
@@ -20032,7 +20137,7 @@ const DeckCode TEST_DECK(
         0, // SNIPER
         
         0, // CHEERLEADER
-        4, // ARMS SMUGGLER
+        0, // ARMS SMUGGLER
         0, // MANIAC
         
         0, // PEACEMAKER
@@ -20051,9 +20156,9 @@ const DeckCode TEST_DECK(
         0, // EARTH ENERGY
         
         0, // UNIVERSAL ENERGY
-        5, // ALPHA ENERGY
+        0, // ALPHA ENERGY
         0, // OMEGA ENERGY
-        5  // BOND ENERGY
+        0  // BOND ENERGY
     }
 );
 
@@ -21283,10 +21388,20 @@ const DeckCode CLEAR_DECK(
         0  // BOND ENERGY
     }
 );
+
+const DeckCode CUSTOM_DECK_1("data/customdeck1.txt");
+const DeckCode CUSTOM_DECK_2("data/customdeck2.txt");
+const DeckCode CUSTOM_DECK_3("data/customdeck3.txt");
+const DeckCode CUSTOM_DECK_4("data/customdeck4.txt");
+const DeckCode CUSTOM_DECK_5("data/customdeck5.txt");
+const DeckCode CUSTOM_DECK_6("data/customdeck6.txt");
+const DeckCode CUSTOM_DECK_7("data/customdeck7.txt");
+const DeckCode CUSTOM_DECK_8("data/customdeck8.txt");
+const DeckCode CUSTOM_DECK_9("data/customdeck9.txt");
 //}
 
 // All of the deck codes.
-constexpr int DECK_CODE_COUNT = 11;
+constexpr int DECK_CODE_COUNT = 20;
 const DeckCode* const ALL_DECK_CODES[DECK_CODE_COUNT] = {
 //  &TEST_DECK,
     &RANDOM_DECK,
@@ -21299,7 +21414,16 @@ const DeckCode* const ALL_DECK_CODES[DECK_CODE_COUNT] = {
     &AGGRO_COMBO_DECK,
     &CONTROL_COMBO_DECK,
     &OTK_COMBO_DECK,
-    &CLEAR_DECK
+    &CLEAR_DECK,
+    &CUSTOM_DECK_1,
+    &CUSTOM_DECK_2,
+    &CUSTOM_DECK_3,
+    &CUSTOM_DECK_4,
+    &CUSTOM_DECK_5,
+    &CUSTOM_DECK_6,
+    &CUSTOM_DECK_7,
+    &CUSTOM_DECK_8,
+    &CUSTOM_DECK_9
 };
 //}
 
@@ -24183,6 +24307,33 @@ bool has_basic(const std::array<int, CARD_COUNT>& card_counts) noexcept {
 }
 
 /**
+ * Returns true if the number of card copies are within the valid range.
+ * Fighter: [0, 1].
+ * Supporter: [0, 1].
+ * Energy: [0, 2].
+ */
+bool valid_count(const std::array<int, CARD_COUNT>& card_counts) {
+    for (int i = 0; i < card_counts.size(); ++i) {
+        if (
+            card_counts[i] < 0
+            || i < FIGHTER_COUNT && card_counts[i] > MAX_FIGHTER_COPIES
+            || (
+                i >= FIGHTER_COUNT && i < FIGHTER_COUNT + SUPPORTER_COUNT
+                && card_counts[i] > MAX_SUPPORTER_COPIES
+            )
+            || (
+                i >= FIGHTER_COUNT + SUPPORTER_COUNT
+                && card_counts[i] > MAX_ENERGY_COPIES
+            )
+        ) {
+            return false;
+        }
+    }
+    
+    return true;
+}
+
+/**
  * Returns true if the deck is valid.
  * Gives the reason for deck invalidity if false is to be returned.
  */
@@ -24192,11 +24343,19 @@ bool valid_deck(
     const std::array<int, CARD_COUNT>& card_counts,
     const int& card_count
 ) noexcept {
+    // Stores the deck error.
     std::string error_string;
     
+    // The deck is checked for errors.
     if (card_count == DECK_SIZE) {
         if (has_basic(card_counts)) {
-            return true;
+            if (valid_count(card_counts)) {
+                return true;
+            }
+            
+            else {
+                error_string = INVALID_COUNT_STRING;
+            }
         }
         
         else {
@@ -25542,7 +25701,18 @@ int main(int argc, char** argv) noexcept {
 //}
 
 /* CHANGELOG:
-     v2.0.3.0:
+     v2.1:
+       9 custom deck slots were added - they can be modified in the data folder.
+       Quick Fix's healing was increased from 200 to 400.
+       Scrap Metal's uses per turn were increased from 1 to 2.
+       Radiant Pulse's damage was increased from 400 to 450.
+       Radiant Pulse no longer heals its user.
+       Radiant Pulse now moves 150 health from its user to a benched fighter.
+       Replaced all songs with silent, replaceable dummy files for copyright.
+       Moved the SDL headers from sdlandnet.hpp to demiduel.cpp for compatability.
+       Removed templating from Evaluation's constructor for compatability.
+       Minor text changes.
+     v2.0.3:
        Sailor's health was reduced from 1200 to 1100.
        Torpedo's damage was increased from 300 to 400.
        Pirate's health was reduced from 1200 to 1100.
@@ -25559,7 +25729,7 @@ int main(int argc, char** argv) noexcept {
          the deck from their hand, when the hand contains a single card.
      v2.0.2.1:
        Invincibility no longer blocks curse damage.
-     v2.0.2.0:
+     v2.0.2:
        Screech's damage scaling was reduced from 75 to 70.
        Screech's damage cap was reduced from 750 to 700.
        Curse no longer deals damage at the end of the fighter's turn.
