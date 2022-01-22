@@ -10,7 +10,7 @@
 // System Constants
 //{
 // The current version of the program.
-constexpr int VERSION[] = {2, 1, 1, 0};
+constexpr int VERSION[] = {2, 2, 0, 0};
 
 // The title of the game in string form.
 constexpr const char* TITLE_STRING = "Demi Duel";
@@ -4066,11 +4066,12 @@ constexpr int BOXER_ATTACK_COST = 0;
 //{
 constexpr const char* LOST_SOUL_NAME = "Lost Soul";
 constexpr const char* LOST_SOUL_ELEMENT = AIR_ELEMENT;
-constexpr int LOST_SOUL_HEALTH = 1000;
+constexpr int LOST_SOUL_HEALTH = 700;
 constexpr int LOST_SOUL_RETREAT_COST = 0;
 constexpr const char* LOST_SOUL_OLD_RANK = NO_OLD_RANK;
 constexpr const char* LOST_SOUL_ABILITY_NAME = "Lost";
 constexpr const char* LOST_SOUL_ABILITY_DESCRIPTION =
+    "This fighter will always be in the starting hand.\n"
     "When this fighter is defeated, return it and its attached energy cards to your hand."
 ;
 constexpr const char* LOST_SOUL_ABILITY_EFFECTS = LOST_EFFECT; // lost
@@ -4954,14 +4955,26 @@ const std::string NURSE_EFFECTS(
 //{
 constexpr const char* INNKEEPER_NAME = "Innkeeper";
 constexpr const char* INNKEEPER_DESCRIPTION =
-    "Heal 400 damage from each of your fighters."
+    "Discard all of the energy cards in your hand.\n"
+    "Heal 500 damage from each of your fighters for each card discarded.\n"
+    "Clear the effects from your active fighter."
 ;
 const std::string INNKEEPER_EFFECTS(
-    std::string(HEAL_EFFECT) // heal
-    + EFFECT_SEPARATOR       //
-    + SPLASH_EFFECT          // splash
-    + EFFECT_SEPARATOR       //
-    + "400"                  // 400
+    std::string(DISCARD_EFFECT) // discard
+    + EFFECT_SEPARATOR          //
+    + ENERGY_TYPE               // Energy
+    + EFFECT_SEPARATOR          //
+    + UNIVERSAL_EFFECT          // all
+    + EFFECT_TERMINATOR
+    + HEAL_EFFECT               // heal
+    + EFFECT_SEPARATOR          //
+    + SPLASH_EFFECT             // splash
+    + EFFECT_SEPARATOR          //
+    + DRAW_COUNT_EFFECT         // draw_count
+    + EFFECT_SEPARATOR          //
+    + "500"                     // 500
+    + EFFECT_TERMINATOR
+    + CLEAR_EFFECT              // clear
 );
 //}
 
@@ -4984,23 +4997,17 @@ const std::string MIRACLE_WORKER_EFFECTS(
 //{
 constexpr const char* DOCTOR_NAME = "Doctor";
 constexpr const char* DOCTOR_DESCRIPTION =
-    "Discard all of the energy cards in your hand.\n"
-    "Heal 500 damage from each of your fighters for each card discarded."
+    "Discard 2 cards from your hand.\n"
+    "Fully heal and clear the effects from your active fighter."
 ;
 const std::string DOCTOR_EFFECTS(
     std::string(DISCARD_EFFECT) // discard
     + EFFECT_SEPARATOR          //
-    + ENERGY_TYPE               // Energy
-    + EFFECT_SEPARATOR          //
-    + UNIVERSAL_EFFECT          // all
+    + "2"                       // 2
     + EFFECT_TERMINATOR
     + HEAL_EFFECT               // heal
     + EFFECT_SEPARATOR          //
-    + SPLASH_EFFECT             // splash
-    + EFFECT_SEPARATOR          //
-    + DRAW_COUNT_EFFECT         // draw_count
-    + EFFECT_SEPARATOR          //
-    + "500"                     // 500
+    + ACTIVE_EFFECT             // active
     + EFFECT_TERMINATOR
     + CLEAR_EFFECT              // clear
 );
@@ -5123,20 +5130,25 @@ const std::string MANIAC_EFFECTS(
 constexpr const char* PEACEMAKER_NAME = "Peacemaker";
 constexpr const char* PEACEMAKER_DESCRIPTION =
     "If you haven't attacked this turn, both players' attacks "
-    "deal 10000 less damage until the start of your next turn."
+    "deal 10000 less damage until the start of your next turn.\n"
+    "You can play 1 less card next turn."
 ;
 const std::string PEACEMAKER_EFFECTS(
     std::string(ATTACKLESS_EFFECT) // attackless
     + EFFECT_TERMINATOR
     + POWER_EFFECT                 // power
     + EFFECT_SEPARATOR             //
-    + "-10000"                      // -10000
+    + "-10000"                     // -10000
     + EFFECT_TERMINATOR
     + POWER_EFFECT                 // power
     + EFFECT_SEPARATOR             //
     + OPPONENT_EFFECT              // opponent
     + EFFECT_SEPARATOR             //
-    + "-10000"                      // -10000
+    + "-10000"                     // -10000
+    + EFFECT_TERMINATOR
+    + OVERLOAD_EFFECT              // overload
+    + EFFECT_SEPARATOR             //
+    + "1"                          // 1
 );
 //}
 
@@ -7102,6 +7114,20 @@ class Fighter: public Card {
          */
         int get_health() const noexcept {
             return health;
+        }
+        
+        /**
+         * Fully heals the fighter and returns the amount of damage healed.
+         */
+        int heal() noexcept {
+            // The fighter is fully healed.
+            int heal_value = max_health - health;
+            
+            // The healing is performed.
+            health += heal_value;
+            
+            // The actual damage healed is returned.
+            return heal_value;
         }
         
         /**
@@ -9738,6 +9764,20 @@ class CardStore {
             return std::unique_ptr<Card>();
         }
         
+        /**
+         * Returns an index to a figher with the Lost ability effect.
+         * Returns -1 if no such fighter is present in the card store.
+         */
+        int lost() const noexcept {
+            for (int i = 0; i < fighters.size(); ++i) {
+                if (fighters[i].effect_search(LOST_EFFECT).size()) {
+                    return i;
+                }
+            }
+            
+            return -1;
+        }
+        
     private:
         std::vector<Fighter> fighters;     // The store of fighter cards.
         std::vector<Supporter> supporters; // The store of supporter cards.
@@ -9848,8 +9888,16 @@ class Player: public Affectable {
             // The cards are drawn from the deck to form the starting hand.
             draw(HAND_SIZE - 1);
             
+            // Stores the position of a fighter with the Lost ability in the deck.
+            int lost_index = deck.lost();
+            
+            // If the deck contains a fighter with the Lost ability, it is drawn.
+            if (lost_index >= 0) {
+                hand.store(*deck.remove(lost_index));
+            }
+            
             // If the hand is valid, a random card is drawn
-            if (hand.valid()) {
+            else if (hand.valid()) {
                 draw(1);
             }
             
@@ -11856,6 +11904,13 @@ class Player: public Affectable {
                         }
                         
                         announce(HEAL_SPLASH_ANNOUNCEMENT);
+                    }
+                    
+                    // Fully heals the active fighter.
+                    else if (effects[i][1] == ACTIVE_EFFECT) {
+                        int index = 0;
+                        int healing = fighters[index].heal();
+                        announce(HEAL_ANNOUNCEMENT);
                     }
                     
                     // Heals one of the player's fighters.
@@ -20543,7 +20598,7 @@ const DeckCode BLEND_DECK(
         0, // OMEGA ELEMENTAL
         
         // Supporter Cards
-        1, // PROFESSOR
+        0, // PROFESSOR
         1, // LECTURER
         1, // INVESTOR
         0, // RESEARCHER
@@ -20563,13 +20618,13 @@ const DeckCode BLEND_DECK(
         0, // BANKER
         0, // GLUTTON
         
-        0, // SUBSTITUTE
+        1, // SUBSTITUTE
         1, // BOUNTY HUNTER
         
         1, // NURSE
-        1, // INNKEEPER
+        0, // INNKEEPER
         1, // MIRACLE WORKER
-        0, // DOCTOR
+        1, // DOCTOR
         0, // ESCAPE ARTIST
         
         1, // ASSASSIN
@@ -20797,7 +20852,7 @@ const DeckCode MILL_DECK(
         1, // INNKEEPER
         1, // MIRACLE WORKER
         1, // DOCTOR
-        0, // ESCAPE ARTIST
+        1, // ESCAPE ARTIST
         
         0, // ASSASSIN
         0, // SNIPER
@@ -20821,10 +20876,10 @@ const DeckCode MILL_DECK(
         0, // WATER ENERGY
         0, // EARTH ENERGY
         
-        2, // UNIVERSAL ENERGY
+        0, // UNIVERSAL ENERGY
         2, // ALPHA ENERGY
-        2, // OMEGA ENERGY
-        0  // BOND ENERGY
+        1, // OMEGA ENERGY
+        2  // BOND ENERGY
     }
 );
 
@@ -20905,9 +20960,9 @@ const DeckCode MIDRANGE_DECK(
         1, // BOUNTY HUNTER
         
         1, // NURSE
-        1, // INNKEEPER
+        0, // INNKEEPER
         1, // MIRACLE WORKER
-        0, // DOCTOR
+        1, // DOCTOR
         1, // ESCAPE ARTIST
         
         1, // ASSASSIN
@@ -21136,7 +21191,7 @@ const DeckCode CONTROL_COMBO_DECK(
         1, // NURSE
         0, // INNKEEPER
         1, // MIRACLE WORKER
-        0, // DOCTOR
+        1, // DOCTOR
         0, // ESCAPE ARTIST
         
         0, // ASSASSIN
@@ -21151,7 +21206,7 @@ const DeckCode CONTROL_COMBO_DECK(
         1, // PLUMBER
         1, // LOCKSMITH
         1, // LOCK PICKER
-        1, // GATEKEEPER
+        0, // GATEKEEPER
         0, // MILLER
         0, // ARSONIST
         
@@ -25701,6 +25756,13 @@ int main(int argc, char** argv) noexcept {
 //}
 
 /* CHANGELOG:
+     v2.2:
+       Lost Soul's health was reduced from 1000 to 700.
+       Lost now also forces the fighter to start in the hand.
+       Doctor now discards two cards in hand to fully heal and clear the effects of the active fighter.
+       Innkeeper inherited Doctor's old effect with the effect clear documented in the card description.
+       Peacemaker now also reduces the number of card plays on the user's next turn by 1.
+       Changes to the pre-built deck lists.
      v2.1.1:
        Scrap Metal's healing was increased from 400 to 800.
        Scrap Metal's self-mill was increased from 1 to 2.
