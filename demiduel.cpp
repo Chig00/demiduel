@@ -10,7 +10,7 @@
 // System Constants
 //{
 // The current version of the program.
-constexpr int VERSION[] = {2, 2, 0, 0};
+constexpr int VERSION[] = {2, 2, 1, 0};
 
 // The title of the game in string form.
 constexpr const char* TITLE_STRING = "Demi Duel";
@@ -94,6 +94,10 @@ constexpr int TIE = 2;
 // Constants to define the outcomes of a coin flip.
 constexpr bool HEADS = true;
 constexpr bool TAILS = false;
+
+// The file paths of the default address and port.
+constexpr const char* DEFAULT_ADDRESS = "data/address.txt";
+constexpr const char* DEFAULT_PORT = "data/port.txt";
 //}
 
 // Game Constants
@@ -3250,6 +3254,7 @@ constexpr int DRIVER_RETREAT_COST = 1000;
 constexpr const char* DRIVER_OLD_RANK = NO_OLD_RANK;
 constexpr const char* DRIVER_ABILITY_NAME = "Fuel Conversion";
 constexpr const char* DRIVER_ABILITY_DESCRIPTION =
+    "This fighter can use energy of any element.\n"
     "When this fighter ranks up, convert all of energy cards attached "
     "to this fighter to the element of the new rank."
 ;
@@ -3257,6 +3262,8 @@ const std::string DRIVER_ABILITY_EFFECTS(
     std::string(RANK_UP_EFFECT) // rank_up
     + EFFECT_SEPARATOR          //
     + CONVERSION_EFFECT         // conversion
+    + EFFECT_TERMINATOR
+    + ADAPTABILITY_EFFECT       // adaptability
 );
 constexpr bool DRIVER_ABILITY_PASSIVE = true;
 constexpr int DRIVER_ABILITY_USES = PASSIVE_USES;
@@ -3266,7 +3273,7 @@ constexpr const char* DRIVER_ATTACK_DESCRIPTION =
 ;
 constexpr const char* DRIVER_ATTACK_EFFECTS = NO_EFFECTS;
 constexpr int DRIVER_ATTACK_DAMAGE = 250;
-constexpr int DRIVER_ATTACK_COST = 0;
+constexpr int DRIVER_ATTACK_COST = 1000;
 //}
 
 // Racer
@@ -3336,7 +3343,7 @@ constexpr int HOT_RODDER_ATTACK_COST = 1000;
 //{
 constexpr const char* SAILOR_NAME = "Sailor";
 constexpr const char* SAILOR_ELEMENT = WATER_ELEMENT;
-constexpr int SAILOR_HEALTH = 1100;
+constexpr int SAILOR_HEALTH = 1150;
 constexpr int SAILOR_RETREAT_COST = 1000;
 constexpr const char* SAILOR_OLD_RANK = DRIVER_NAME;
 constexpr const char* SAILOR_ABILITY_NAME = "Sailor's Compass";
@@ -3352,12 +3359,12 @@ constexpr bool SAILOR_ABILITY_PASSIVE = false;
 constexpr int SAILOR_ABILITY_USES = 1;
 constexpr const char* SAILOR_ATTACK_NAME = "Torpedo";
 constexpr const char* SAILOR_ATTACK_DESCRIPTION =
-    "Deal 400 damage to one of your opponent's fighters."
+    "Deal 300 damage to one of your opponent's fighters."
 ;
 const std::string SAILOR_ATTACK_EFFECTS(
     std::string(SNIPE_EFFECT) // snipe
     + EFFECT_SEPARATOR        //
-    + "400"                   // 400
+    + "300"                   // 300
 );
 constexpr int SAILOR_ATTACK_DAMAGE = 0;
 constexpr int SAILOR_ATTACK_COST = 1000;
@@ -3367,7 +3374,7 @@ constexpr int SAILOR_ATTACK_COST = 1000;
 //{
 constexpr const char* PIRATE_NAME = "Pirate";
 constexpr const char* PIRATE_ELEMENT = WATER_ELEMENT;
-constexpr int PIRATE_HEALTH = 1100;
+constexpr int PIRATE_HEALTH = 1300;
 constexpr int PIRATE_RETREAT_COST = 1000;
 constexpr const char* PIRATE_OLD_RANK = SAILOR_NAME;
 constexpr const char* PIRATE_ABILITY_NAME = "Plundered";
@@ -3599,7 +3606,7 @@ constexpr int MAGE_ATTACK_COST = 1000;
 //{
 constexpr const char* PYROMANCER_NAME = "Pyromancer";
 constexpr const char* PYROMANCER_ELEMENT = FIRE_ELEMENT;
-constexpr int PYROMANCER_HEALTH = 1150;
+constexpr int PYROMANCER_HEALTH = 1200;
 constexpr int PYROMANCER_RETREAT_COST = 2000;
 constexpr const char* PYROMANCER_OLD_RANK = MAGE_NAME;
 constexpr const char* PYROMANCER_ABILITY_NAME = "Incinerate";
@@ -3636,7 +3643,7 @@ constexpr int PYROMANCER_ATTACK_COST = 0;
 //{
 constexpr const char* WARLOCK_NAME = "Warlock";
 constexpr const char* WARLOCK_ELEMENT = EARTH_ELEMENT;
-constexpr int WARLOCK_HEALTH = 1250;
+constexpr int WARLOCK_HEALTH = 1300;
 constexpr int WARLOCK_RETREAT_COST = 2000;
 constexpr const char* WARLOCK_OLD_RANK = MAGE_NAME;
 constexpr const char* WARLOCK_ABILITY_NAME = "Dark Bargain";
@@ -3660,12 +3667,12 @@ constexpr int WARLOCK_ABILITY_USES = 1;
 constexpr const char* WARLOCK_ATTACK_NAME = "Shadow Pulse";
 constexpr const char* WARLOCK_ATTACK_DESCRIPTION =
     "Deal 800 damage to your opponent's active fighter.\n"
-    "Deal 150 damage to this fighter."
+    "Deal 100 damage to this fighter."
 ;
 const std::string WARLOCK_ATTACK_EFFECTS(
     std::string(RECOIL_EFFECT) // recoil
     + EFFECT_SEPARATOR         //
-    + "150"                    // 150
+    + "100"                    // 100
 );
 constexpr int WARLOCK_ATTACK_DAMAGE = 800;
 constexpr int WARLOCK_ATTACK_COST = 2000;
@@ -3675,31 +3682,31 @@ constexpr int WARLOCK_ATTACK_COST = 2000;
 //{
 constexpr const char* CLERIC_NAME = "Cleric";
 constexpr const char* CLERIC_ELEMENT = AIR_ELEMENT;
-constexpr int CLERIC_HEALTH = 1350;
+constexpr int CLERIC_HEALTH = 1400;
 constexpr int CLERIC_RETREAT_COST = 2000;
 constexpr const char* CLERIC_OLD_RANK = MAGE_NAME;
 constexpr const char* CLERIC_ABILITY_NAME = "Healing Aura";
 constexpr const char* CLERIC_ABILITY_DESCRIPTION =
-    "At the end of your turn, heal 150 damage from each of your fighters."
+    "At the end of your turn, heal 200 damage from each of your fighters."
 ;
 const std::string CLERIC_ABILITY_EFFECTS(
     std::string(HEAL_AURA_EFFECT) // heal_aura
     + EFFECT_SEPARATOR            //
-    + "150"                       // 150
+    + "200"                       // 200
 );
 constexpr bool CLERIC_ABILITY_PASSIVE = true;
 constexpr int CLERIC_ABILITY_USES = PASSIVE_USES;
 constexpr const char* CLERIC_ATTACK_NAME = "Radiant Pulse";
 constexpr const char* CLERIC_ATTACK_DESCRIPTION =
-    "Deal 450 damage to your opponent's active fighter.\n"
-    "Transfer 150 health from this fighter to one of your benched fighters."
+    "Deal 400 damage to your opponent's active fighter.\n"
+    "Transfer 200 health from this fighter to one of your benched fighters."
 ;
 const std::string CLERIC_ATTACK_EFFECTS(
     std::string(DONATE_EFFECT) // donate
     + EFFECT_SEPARATOR         //
-    + "150"                    // 150
+    + "200"                    // 200
 );
-constexpr int CLERIC_ATTACK_DAMAGE = 450;
+constexpr int CLERIC_ATTACK_DAMAGE = 400;
 constexpr int CLERIC_ATTACK_COST = 1000;
 //}
 
@@ -3707,7 +3714,7 @@ constexpr int CLERIC_ATTACK_COST = 1000;
 //{
 constexpr const char* HYDROMANCER_NAME = "Hydromancer";
 constexpr const char* HYDROMANCER_ELEMENT = WATER_ELEMENT;
-constexpr int HYDROMANCER_HEALTH = 1050;
+constexpr int HYDROMANCER_HEALTH = 1100;
 constexpr int HYDROMANCER_RETREAT_COST = 1000;
 constexpr const char* HYDROMANCER_OLD_RANK = MAGE_NAME;
 constexpr const char* HYDROMANCER_ABILITY_NAME = "Whirlpool";
@@ -3836,7 +3843,7 @@ constexpr int EXCAVATOR_ATTACK_COST = 1000;
 //{
 constexpr const char* SWIMMER_NAME = "Swimmer";
 constexpr const char* SWIMMER_ELEMENT = WATER_ELEMENT;
-constexpr int SWIMMER_HEALTH = 1050;
+constexpr int SWIMMER_HEALTH = 1000;
 constexpr int SWIMMER_RETREAT_COST = 1000;
 constexpr const char* SWIMMER_OLD_RANK = NO_OLD_RANK;
 constexpr const char* SWIMMER_ABILITY_NAME = RANKER_ABILITY_NAME;
@@ -3993,7 +4000,7 @@ constexpr const char* CLOUD_SURFER_ELEMENT = AIR_ELEMENT;
 constexpr int CLOUD_SURFER_HEALTH = 1100;
 constexpr int CLOUD_SURFER_RETREAT_COST = 0;
 constexpr const char* CLOUD_SURFER_OLD_RANK = WIND_RUNNER_NAME;
-constexpr const char* CLOUD_SURFER_ABILITY_NAME = "Windfall";
+constexpr const char* CLOUD_SURFER_ABILITY_NAME = "Tailwind";
 constexpr const char* CLOUD_SURFER_ABILITY_DESCRIPTION =
     "When this fighter card is played from your hand, "
     "reset your attack and retreat usage for this turn.\n"
@@ -5131,7 +5138,7 @@ constexpr const char* PEACEMAKER_NAME = "Peacemaker";
 constexpr const char* PEACEMAKER_DESCRIPTION =
     "If you haven't attacked this turn, both players' attacks "
     "deal 10000 less damage until the start of your next turn.\n"
-    "You can play 1 less card next turn."
+    "You can play 2 fewer cards next turn."
 ;
 const std::string PEACEMAKER_EFFECTS(
     std::string(ATTACKLESS_EFFECT) // attackless
@@ -5148,7 +5155,7 @@ const std::string PEACEMAKER_EFFECTS(
     + EFFECT_TERMINATOR
     + OVERLOAD_EFFECT              // overload
     + EFFECT_SEPARATOR             //
-    + "1"                          // 1
+    + "2"                          // 2
 );
 //}
 
@@ -25100,6 +25107,10 @@ void set_port(
     // The host's port.
     std::string port;
     
+    // The default address is used.
+    std::ifstream file(DEFAULT_PORT);
+    file >> port;
+    
 	// A vector of number buttons for use on mobile devices.
 	std::vector<Button> number_buttons;
 	
@@ -25269,6 +25280,10 @@ void set_address(
     
     // The address of the host.
     std::string address;
+    
+    // The default address is used.
+    std::ifstream file(DEFAULT_ADDRESS);
+    file >> address;
     
 	// A dot button for use on mobile devices.
 	Button dot_button(
@@ -25756,6 +25771,24 @@ int main(int argc, char** argv) noexcept {
 //}
 
 /* CHANGELOG:
+     v2.2.1:
+       The default port and address to use are defined by the files "data/address.txt" and "data/port.txt".
+       Fuel Conversion now also includes Adaptability's effect.
+       Drift's cost was increased from 0 to 1000.
+       Sailor's health was increased from 1100 to 1150.
+       Torpedo's damage was decreased from 400 to 300.
+       Pirate's health was increased from 1100 to 1300.
+       Pyromancer's health was increased from 1150 to 1200.
+       Warlock's health was increased from 1250 to 1300.
+       Dark Pulse's recoil damage was decreased from 150 to 100.
+       Cleric's health was increased from 1350 to 1400.
+       Healing Aura's healing was increased from 150 to 200.
+       Radiant Pulse's damage was decreased from 450 to 400.
+       Radiant Pulse's health transfer was increased from 150 to 200.
+       Hydromancer's health was increased from 1050 to 1100.
+       Swimmer's health was decreased from 1050 to 1000.
+       Cloud Surfer's ability was renamed to Tailwind.
+       Peacemaker's card play reduction was increased from 1 to 2.
      v2.2:
        Lost Soul's health was reduced from 1000 to 700.
        Lost now also forces the fighter to start in the hand.

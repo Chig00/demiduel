@@ -132,19 +132,12 @@ INSTRUCTIONS:
 
 
 SUPPORT:
-  Have any questions, comments, or feedback?
-  Want to see my other projects?
-  Care to support my development of free, open-source software?
-  Check me out here: https://gf.me/u/x4rw9t
-  My email address: chiago321@gmail.com
+  Email: chiago321@gmail.com
+  Projects: https://github.com/chig00
 
 CREDITS:
   Programmed by Chigozie Agomo in C++
   Uses the SDL and SDL Net Utilities library by Chigozie Agomo.
   Compiled using MinGW (which is a Windows port of GCC).
   SDL and SDL Net Utilities is an abstraction of SDL and SDL Net.
-  Sprites when produced by Chigozie Agomo in Pixelformer.
-  The audio was modified using Audacity.
-  Menu Music source: https://www.youtube.com/watch?v=Yk0lZorU3ns
-  Deck building music source: https://www.youtube.com/watch?v=FDXu7D3GGXY
-  Duel music source: https://www.youtube.com/watch?v=PGCCa_HZ6Wc
+  Sprites produced by Chigozie Agomo in Pixelformer.
