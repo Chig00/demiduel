@@ -10,7 +10,7 @@
 // System Constants
 //{
 // The current version of the program.
-constexpr int VERSION[] = {2, 2, 2, 0};
+constexpr int VERSION[] = {2, 2, 2, 1};
 
 // The title of the game in string form.
 constexpr const char* TITLE_STRING = "Demi Duel";
@@ -3721,7 +3721,7 @@ constexpr const char* HYDROMANCER_ABILITY_NAME = "Whirlpool";
 constexpr const char* HYDROMANCER_ABILITY_DESCRIPTION =
     "You may banish a random fighter in your trash that ranks up into this one.\n"
     "If you do, switch in one of your opponent's benched fighters.\n"
-    "Your opponent's active fighter can't retreat during your opponent's next turn."
+    "Your opponent's active fighter can't switch out during your opponent's next turn."
 ;
 const std::string HYDROMANCER_ABILITY_EFFECTS(
     std::string(ABANDON_EFFECT) // abandon
@@ -25778,6 +25778,8 @@ int main(int argc, char** argv) noexcept {
 //}
 
 /* CHANGELOG:
+     v2.2.2.1:
+       Updated Whirpool's description to match its new effect.
      v2.2.2:
        Whirpool now prevents switching rather than retreating.
        Lost Soul's health was increased from 700 to 850.
