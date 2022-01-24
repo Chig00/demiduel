@@ -10,7 +10,7 @@
 // System Constants
 //{
 // The current version of the program.
-constexpr int VERSION[] = {2, 2, 1, 0};
+constexpr int VERSION[] = {2, 2, 2, 0};
 
 // The title of the game in string form.
 constexpr const char* TITLE_STRING = "Demi Duel";
@@ -3730,7 +3730,7 @@ const std::string HYDROMANCER_ABILITY_EFFECTS(
     + EFFECT_SEPARATOR          //
     + HOOK_EFFECT               // hook
     + EFFECT_SEPARATOR          //
-    + CRIPPLE_EFFECT            // cripple
+    + ROOT_EFFECT               // root
 );
 constexpr bool HYDROMANCER_ABILITY_PASSIVE = false;
 constexpr int HYDROMANCER_ABILITY_USES = 1;
@@ -4073,7 +4073,7 @@ constexpr int BOXER_ATTACK_COST = 0;
 //{
 constexpr const char* LOST_SOUL_NAME = "Lost Soul";
 constexpr const char* LOST_SOUL_ELEMENT = AIR_ELEMENT;
-constexpr int LOST_SOUL_HEALTH = 700;
+constexpr int LOST_SOUL_HEALTH = 850;
 constexpr int LOST_SOUL_RETREAT_COST = 0;
 constexpr const char* LOST_SOUL_OLD_RANK = NO_OLD_RANK;
 constexpr const char* LOST_SOUL_ABILITY_NAME = "Lost";
@@ -14863,6 +14863,13 @@ class Player: public Affectable {
                             if (effects[i].size() > 3 && effects[i][3] == CRIPPLE_EFFECT) {
                                 opponent->fighters[0].affect(effects[i][3]);
                                 announce(CRIPPLE_ANNOUNCEMENT);
+                            }
+                            
+                            // Roots the opponent's active fighter (no switch).
+                            else if (effects[i].size() > 3 && effects[i][3] == ROOT_EFFECT) {
+                                opponent->fighters[0].affect(effects[i][3]);
+                                opponent->fighters[0].affect(DOUBLE_ROOT_EFFECT);
+                                announce(ROOT_OPPONENT_ANNOUNCEMENT);
                             }
                         }
                     }
@@ -25771,6 +25778,9 @@ int main(int argc, char** argv) noexcept {
 //}
 
 /* CHANGELOG:
+     v2.2.2:
+       Whirpool now prevents switching rather than retreating.
+       Lost Soul's health was increased from 700 to 850.
      v2.2.1:
        The default port and address to use are defined by the files "data/address.txt" and "data/port.txt".
        Fuel Conversion now also includes Adaptability's effect.
