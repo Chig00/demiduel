@@ -10,7 +10,7 @@
 // System Constants
 //{
 // The current version of the program.
-constexpr int VERSION[] = {2, 2, 2, 1};
+constexpr int VERSION[] = {2, 2, 3, 0};
 
 // The title of the game in string form.
 constexpr const char* TITLE_STRING = "Demi Duel";
@@ -4004,7 +4004,7 @@ constexpr const char* CLOUD_SURFER_ABILITY_NAME = "Tailwind";
 constexpr const char* CLOUD_SURFER_ABILITY_DESCRIPTION =
     "When this fighter card is played from your hand, "
     "reset your attack and retreat usage for this turn.\n"
-    "Attacks deal 300 less damage this turn."
+    "Attacks deal 400 less damage this turn."
 ;
 const std::string CLOUD_SURFER_ABILITY_EFFECTS(
     std::string(PLAY_EFFECT) // play
@@ -4015,7 +4015,7 @@ const std::string CLOUD_SURFER_ABILITY_EFFECTS(
     + EFFECT_SEPARATOR       //
     + POWER_EFFECT           // power
     + EFFECT_SEPARATOR       //
-    + "-300"                 // -300
+    + "-400"                 // -400
 );
 constexpr bool CLOUD_SURFER_ABILITY_PASSIVE = true;
 constexpr int CLOUD_SURFER_ABILITY_USES = PASSIVE_USES;
@@ -5090,14 +5090,14 @@ const std::string CHEERLEADER_EFFECTS(
 //{
 constexpr const char* ARMS_SMUGGLER_NAME = "Arms Smuggler";
 constexpr const char* ARMS_SMUGGLER_DESCRIPTION =
-    "Attacks deal 100 more damage for the rest of the duel.\n"
+    "Attacks deal 50 more damage for the rest of the duel.\n"
     "Draw a card.\n"
     "You can play 1 more card this turn."
 ;
 const std::string ARMS_SMUGGLER_EFFECTS(
     std::string(POWER_AURA_EFFECT) // power_aura
     + EFFECT_SEPARATOR             //
-    + "100"                        // 100
+    + "50"                         // 50
     + EFFECT_TERMINATOR
     + DRAW_EFFECT                  // draw
     + EFFECT_SEPARATOR             //
@@ -25778,6 +25778,9 @@ int main(int argc, char** argv) noexcept {
 //}
 
 /* CHANGELOG:
+     v2.2.3:
+       Tailwind's damage reduction was increased from 300 to 400.
+       Arms Smuggler's damage boost was decreased from 100 to 50.
      v2.2.2.1:
        Updated Whirpool's description to match its new effect.
      v2.2.2:
