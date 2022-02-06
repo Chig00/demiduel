@@ -10,7 +10,7 @@
 // System Constants
 //{
 // The current version of the program.
-constexpr int VERSION[] = {2, 2, 3, 0};
+constexpr int VERSION[] = {2, 2, 4, 0};
 
 // The title of the game in string form.
 constexpr const char* TITLE_STRING = "Demi Duel";
@@ -5245,26 +5245,18 @@ const std::string GATEKEEPER_EFFECTS(
 //{
 constexpr const char* MILLER_NAME = "Miller";
 constexpr const char* MILLER_DESCRIPTION =
-    "Discard the top card of both players' decks.\n"
-    "Return this card to your hand.\n"
-    "At the end of your turn, discard this card."
+    "Discard the top 2 cards of both players' decks."
 ;
 const std::string MILLER_EFFECTS(
     std::string(MILL_EFFECT) // mill
     + EFFECT_SEPARATOR       //
-    + "1"                    // 1
+    + "2"                    // 2
     + EFFECT_TERMINATOR
     + MILL_EFFECT            // mill
     + EFFECT_SEPARATOR       //
     + SELF_EFFECT            // self
     + EFFECT_SEPARATOR       //
-    + "1"                    // 1
-    + EFFECT_TERMINATOR
-    + RECYCLE_EFFECT         // recycle
-    + EFFECT_SEPARATOR       //
-    + HAND_EFFECT            // hand
-    + EFFECT_TERMINATOR
-    + END_DISCARD_EFFECT     // end_discard
+    + "2"                    // 2
 );
 //}
 
@@ -25778,6 +25770,9 @@ int main(int argc, char** argv) noexcept {
 //}
 
 /* CHANGELOG:
+     v2.2.4:
+       Miller's mill was increased from 1 to 2.
+       Miller no longer returns itself to the hand after it is played.
      v2.2.3:
        Tailwind's damage reduction was increased from 300 to 400.
        Arms Smuggler's damage boost was decreased from 100 to 50.
