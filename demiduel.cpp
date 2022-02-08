@@ -10,7 +10,7 @@
 // System Constants
 //{
 // The current version of the program.
-constexpr int VERSION[] = {2, 3, 0, 0};
+constexpr int VERSION[] = {2, 3, 0, 1};
 
 // The title of the game in string form.
 constexpr const char* TITLE_STRING = "Demi Duel";
@@ -565,15 +565,18 @@ constexpr const char* NEXT_CARD_PLAYS_REPRESENTATION = " Plays ";
 //{
 #define NEXT_TURN_CARD_PLAYS_CONDITION (turn == opposing)
 constexpr const char* NEXT_TURN_CARD_PLAYS_REPRESENTATION = "Next Plays";
-#define NEXT_TURN_CARD_PLAYS_VALUE std::to_string( \
-    (                                              \
-        value                                      \
-        = card_limit                               \
-        + CARD_LIMIT_INCREMENT                     \
-        - effect_count(OVERLOAD_EFFECT)            \
-    ) < 0                                          \
-    ? 0                                            \
-    : (value < MAX_PLAYS ? value : MAX_PLAYS)      \
+#define NEXT_TURN_CARD_PLAYS_VALUE std::to_string(        \
+    (                                                     \
+        value                                             \
+        = (                                               \
+            card_limit + CARD_LIMIT_INCREMENT < MAX_PLAYS \
+            ? card_limit + CARD_LIMIT_INCREMENT           \
+            : MAX_PLAYS                                   \
+        )                                                 \
+        - effect_count(OVERLOAD_EFFECT)                   \
+    ) < 0                                                 \
+    ? 0                                                   \
+    : value                                               \
 )
 #define NEXT_TURN_CARD_PLAYS_EXPLANATION (      \
     "This player can play "                     \
@@ -25763,6 +25766,8 @@ int main(int argc, char** argv) noexcept {
 //}
 
 /* CHANGELOG:
+     v2.3.0.1:
+       Fixed the next plays effect for max plays and overload.
      v2.3:
        The number of plays available each turn no longer increases past 5.
        Miller's mill was decreased from 2 to 1.
