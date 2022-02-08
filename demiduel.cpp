@@ -10,7 +10,7 @@
 // System Constants
 //{
 // The current version of the program.
-constexpr int VERSION[] = {2, 2, 4, 0};
+constexpr int VERSION[] = {2, 3, 0, 0};
 
 // The title of the game in string form.
 constexpr const char* TITLE_STRING = "Demi Duel";
@@ -115,6 +115,7 @@ constexpr int MAX_SUPPORTER_COPIES = 1;
 constexpr int MAX_ENERGY_COPIES = 2;
 constexpr int BASE_CARD_LIMIT = 1;
 constexpr int CARD_LIMIT_INCREMENT = 1;
+constexpr int MAX_PLAYS = 5;
 
 // Ensures that the game can begin after the bonus draws.
 constexpr int MAX_BONUS = DECK_SIZE - HAND_SIZE - LIFE_SIZE - 1;
@@ -572,7 +573,7 @@ constexpr const char* NEXT_TURN_CARD_PLAYS_REPRESENTATION = "Next Plays";
         - effect_count(OVERLOAD_EFFECT)            \
     ) < 0                                          \
     ? 0                                            \
-    : value                                        \
+    : (value < MAX_PLAYS ? value : MAX_PLAYS)      \
 )
 #define NEXT_TURN_CARD_PLAYS_EXPLANATION (      \
     "This player can play "                     \
@@ -5245,18 +5246,26 @@ const std::string GATEKEEPER_EFFECTS(
 //{
 constexpr const char* MILLER_NAME = "Miller";
 constexpr const char* MILLER_DESCRIPTION =
-    "Discard the top 2 cards of both players' decks."
+    "Discard the top card of both players' decks.\n"
+    "Return this card to your hand.\n"
+    "At the end of your turn, discard this card."
 ;
 const std::string MILLER_EFFECTS(
     std::string(MILL_EFFECT) // mill
     + EFFECT_SEPARATOR       //
-    + "2"                    // 2
+    + "1"                    // 1
     + EFFECT_TERMINATOR
     + MILL_EFFECT            // mill
     + EFFECT_SEPARATOR       //
     + SELF_EFFECT            // self
     + EFFECT_SEPARATOR       //
-    + "2"                    // 2
+    + "1"                    // 1
+    + EFFECT_TERMINATOR
+    + RECYCLE_EFFECT         // recycle
+    + EFFECT_SEPARATOR       //
+    + HAND_EFFECT            // hand
+    + EFFECT_TERMINATOR
+    + END_DISCARD_EFFECT     // end_discard
 );
 //}
 
@@ -5332,17 +5341,6 @@ constexpr int EARTH_ENERGY_VALUE = BASIC_ENERGY_VALUE;
 
 // Special Energy
 //{
-// Void Energy
-//{
-constexpr const char* VOID_ENERGY_NAME = "Void Energy";
-constexpr const char* VOID_ENERGY_DESCRIPTION =
-    "Provides 3000 energy for fighters of this element."
-;
-constexpr const char* VOID_ENERGY_ELEMENT = NO_ELEMENT;
-constexpr const char* VOID_ENERGY_EFFECTS = NO_EFFECTS;
-constexpr int VOID_ENERGY_VALUE = 3000;
-//}
-
 // Universal Energy
 //{
 constexpr const char* UNIVERSAL_ENERGY_NAME = "Universal Energy";
@@ -5381,7 +5379,7 @@ constexpr int ALPHA_ENERGY_VALUE = 250;
 //{
 constexpr const char* OMEGA_ENERGY_NAME = "Omega Energy";
 constexpr const char* OMEGA_ENERGY_DESCRIPTION =
-    "Provides 2000 energy for fighters of all elements.\n"
+    "Provides 10000 energy for fighters of all elements.\n"
     "When this energy card is played, discard a card from your hand.\n"
     "You can play 1 less card this turn."
 ;
@@ -5397,7 +5395,7 @@ const std::string OMEGA_ENERGY_EFFECTS(
     + EFFECT_SEPARATOR            //
     + "1"                         // 1
 );
-constexpr int OMEGA_ENERGY_VALUE = 2000;
+constexpr int OMEGA_ENERGY_VALUE = 10000;
 //}
 
 // Bond Energy
@@ -8496,14 +8494,6 @@ const Energy EARTH_ENERGY(
 
 // Special Energy
 //{
-const Energy VOID_ENERGY(
-    VOID_ENERGY_NAME,
-    VOID_ENERGY_DESCRIPTION,
-    VOID_ENERGY_ELEMENT,
-    VOID_ENERGY_EFFECTS,
-    VOID_ENERGY_VALUE
-);
-
 const Energy UNIVERSAL_ENERGY(
     UNIVERSAL_ENERGY_NAME,
     UNIVERSAL_ENERGY_DESCRIPTION,
@@ -17399,7 +17389,10 @@ class Player: public Affectable {
          */
         void reset_plays() noexcept {
             if (turn == opposing) {
-                card_limit += CARD_LIMIT_INCREMENT;
+                if (card_limit < MAX_PLAYS) {
+                    card_limit += CARD_LIMIT_INCREMENT;
+                }
+                
                 plays = card_limit - effect_count(OVERLOAD_EFFECT);
                 
                 // The player cannot have a negative number of plays.
@@ -25770,6 +25763,12 @@ int main(int argc, char** argv) noexcept {
 //}
 
 /* CHANGELOG:
+     v2.3:
+       The number of plays available each turn no longer increases past 5.
+       Miller's mill was decreased from 2 to 1.
+       Miller now returns to hand and discards itself at the end of the turn.
+       Omega Energy's energy value was increased from 2000 to 10000.
+       Void Energy was removed from the code.
      v2.2.4:
        Miller's mill was increased from 1 to 2.
        Miller no longer returns itself to the hand after it is played.
