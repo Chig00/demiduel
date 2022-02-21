@@ -10,7 +10,7 @@
 // System Constants
 //{
 // The current version of the program.
-constexpr int VERSION[] = {2, 3, 0, 1};
+constexpr int VERSION[] = {2, 4, 0, 0};
 
 // The title of the game in string form.
 constexpr const char* TITLE_STRING = "Demi Duel";
@@ -253,6 +253,7 @@ constexpr const char* INVISIBLE_EFFECT = "invisible";
 constexpr const char* LOST_EFFECT = "lost";
 constexpr const char* PLANK_EFFECT = "plank";
 constexpr const char* DONATE_EFFECT = "donate";
+constexpr const char* PEACE_EFFECT = "peace";
 //}
 
 // The constants for effect explanations.
@@ -706,6 +707,16 @@ constexpr const char* LOST_EXPLANATION =
     "energy cards are returned to its player's hand."
 ;
 //}
+
+// The constants for the peace explanation.
+//{
+#define PEACE_CONDITION effect_search(PEACE_EFFECT).size()
+constexpr const char* PEACE_REPRESENTATION = "Duel Tax";
+constexpr const char* PEACE_VALUE = "";
+constexpr const char* PEACE_EXPLANATION =
+    "This player's fighters' actions cost plays."
+;
+//}
 //}
 
 // The total number of fighter-specific explainable effects.
@@ -798,7 +809,7 @@ constexpr const char* EFFECT_REPRESENTATIONS[EXPLANATION_COUNT] = {
 //}
 
 // The total number of player-specific explainable effects.
-constexpr int PLAYER_EXPLANATION_COUNT = 20;
+constexpr int PLAYER_EXPLANATION_COUNT = 21;
 
 // All of the player-specific explainable effect conditions.
 //{
@@ -822,7 +833,8 @@ constexpr int PLAYER_EXPLANATION_COUNT = 20;
     : X == 16 ? static_cast<bool>(EXPERIMENTER_END_DISCARD_CONDITION) \
     : X == 17 ? static_cast<bool>(BANKER_END_DISCARD_CONDITION)       \
     : X == 18 ? static_cast<bool>(GATEKEEPER_END_DISCARD_CONDITION)   \
-    : static_cast<bool>(MILLER_END_DISCARD_CONDITION)                 \
+    : X == 19 ? static_cast<bool>(MILLER_END_DISCARD_CONDITION)       \
+    : static_cast<bool>(PEACE_CONDITION)                              \
 )
 //}
 
@@ -847,7 +859,8 @@ constexpr const char* PLAYER_EFFECT_REPRESENTATIONS[PLAYER_EXPLANATION_COUNT] = 
     END_DISCARD_REPRESENTATION,
     END_DISCARD_REPRESENTATION,
     END_DISCARD_REPRESENTATION,
-    END_DISCARD_REPRESENTATION
+    END_DISCARD_REPRESENTATION,
+    PEACE_REPRESENTATION
 };
 
 // All of the player-specific explainable effect values.
@@ -872,7 +885,8 @@ constexpr const char* PLAYER_EFFECT_REPRESENTATIONS[PLAYER_EXPLANATION_COUNT] = 
     : X == 16 ? EXPERIMENTER_END_DISCARD_VALUE \
     : X == 17 ? BANKER_END_DISCARD_VALUE       \
     : X == 18 ? GATEKEEPER_END_DISCARD_VALUE   \
-    : MILLER_END_DISCARD_VALUE                 \
+    : X == 19 ? MILLER_END_DISCARD_VALUE       \
+    : PEACE_VALUE                              \
 )
 //}
 
@@ -898,7 +912,8 @@ constexpr const char* PLAYER_EFFECT_REPRESENTATIONS[PLAYER_EXPLANATION_COUNT] = 
     : X == 16 ? END_DISCARD_EXPLANATION         \
     : X == 17 ? END_DISCARD_EXPLANATION         \
     : X == 18 ? END_DISCARD_EXPLANATION         \
-    : END_DISCARD_EXPLANATION                   \
+    : X == 19 ? END_DISCARD_EXPLANATION         \
+    : PEACE_EXPLANATION                         \
 )
 //}
 //}
@@ -2943,9 +2958,9 @@ constexpr const char* ENERGY_BOUNCE_ANNOUNCEMENT =
 
 // Announcement for an attack and retreat reset.
 //{
-#define RESET_ANNOUNCEMENT (                                  \
-    std::string(opposing ? "Your opponent's" : "Your")        \
-    + " attack and retreat use has been reset for this turn!" \
+#define RESET_ANNOUNCEMENT (                           \
+    std::string(opposing ? "Your opponent's" : "Your") \
+    + " fighters' ability uses have been reset!"       \
 )
 //}
 
@@ -3161,6 +3176,16 @@ constexpr const char* BANISH_LIFE_ANNOUNCEMENT = "Choose a life card to banish."
 constexpr const char* BANISH_TRASH_ANNOUNCEMENT =
     "Both players' discarded cards were banished!"
 ;
+//}
+
+// Announcement for duel tax.
+//{
+#define PEACE_ANNOUNCEMENT (                           \
+    std::string(opposing ? "Your" : "Your opponent's") \
+    + " fighters' actions cost plays during "          \
+    + (opposing ? "your" : "their")                    \
+    + " next turn!"                                    \
+)
 //}
 //}
 
@@ -4007,32 +4032,25 @@ constexpr const char* CLOUD_SURFER_OLD_RANK = WIND_RUNNER_NAME;
 constexpr const char* CLOUD_SURFER_ABILITY_NAME = "Tailwind";
 constexpr const char* CLOUD_SURFER_ABILITY_DESCRIPTION =
     "When this fighter card is played from your hand, "
-    "reset your attack and retreat usage for this turn.\n"
-    "Attacks deal 400 less damage this turn."
+    "reset your fighters' ability uses."
 ;
 const std::string CLOUD_SURFER_ABILITY_EFFECTS(
     std::string(PLAY_EFFECT) // play
     + EFFECT_SEPARATOR       //
     + RESET_EFFECT           // reset
-    + EFFECT_TERMINATOR
-    + PLAY_EFFECT            // play
-    + EFFECT_SEPARATOR       //
-    + POWER_EFFECT           // power
-    + EFFECT_SEPARATOR       //
-    + "-400"                 // -400
 );
 constexpr bool CLOUD_SURFER_ABILITY_PASSIVE = true;
 constexpr int CLOUD_SURFER_ABILITY_USES = PASSIVE_USES;
 constexpr const char* CLOUD_SURFER_ATTACK_NAME = "Hurricane";
 constexpr const char* CLOUD_SURFER_ATTACK_DESCRIPTION =
-    "Deal 250 damage to all of your opponent's fighters."
+    "Deal 400 damage to all of your opponent's fighters."
 ;
 const std::string CLOUD_SURFER_ATTACK_EFFECTS(
     std::string(SPLASH_EFFECT) // splash
     + EFFECT_SEPARATOR         //
-    + "250"                    // 250
+    + "400"                    // 400
 );
-constexpr int CLOUD_SURFER_ATTACK_DAMAGE = 250;
+constexpr int CLOUD_SURFER_ATTACK_DAMAGE = 400;
 constexpr int CLOUD_SURFER_ATTACK_COST = 2000;
 //}
 //}
@@ -5118,7 +5136,7 @@ const std::string ARMS_SMUGGLER_EFFECTS(
 constexpr const char* MANIAC_NAME = "Maniac";
 constexpr const char* MANIAC_DESCRIPTION =
     "If your deck, hand, and bench are empty, "
-    "attacks deal 10000 more damage this turn."
+    "attacks deal 2000 more damage this turn."
 ;
 const std::string MANIAC_EFFECTS(
     std::string(EMPTY_DECK_EFFECT) // empty_deck
@@ -5129,7 +5147,7 @@ const std::string MANIAC_EFFECTS(
     + EFFECT_TERMINATOR
     + POWER_EFFECT                 // power
     + EFFECT_SEPARATOR             //
-    + "10000"                      // 10000
+    + "2000"                       // 2000
 );
 //}
 //}
@@ -5140,27 +5158,9 @@ const std::string MANIAC_EFFECTS(
 //{
 constexpr const char* PEACEMAKER_NAME = "Peacemaker";
 constexpr const char* PEACEMAKER_DESCRIPTION =
-    "If you haven't attacked this turn, both players' attacks "
-    "deal 10000 less damage until the start of your next turn.\n"
-    "You can play 2 fewer cards next turn."
+    "Your opponent's fighters' actions cost plays during their next turn."
 ;
-const std::string PEACEMAKER_EFFECTS(
-    std::string(ATTACKLESS_EFFECT) // attackless
-    + EFFECT_TERMINATOR
-    + POWER_EFFECT                 // power
-    + EFFECT_SEPARATOR             //
-    + "-10000"                     // -10000
-    + EFFECT_TERMINATOR
-    + POWER_EFFECT                 // power
-    + EFFECT_SEPARATOR             //
-    + OPPONENT_EFFECT              // opponent
-    + EFFECT_SEPARATOR             //
-    + "-10000"                     // -10000
-    + EFFECT_TERMINATOR
-    + OVERLOAD_EFFECT              // overload
-    + EFFECT_SEPARATOR             //
-    + "2"                          // 2
-);
+constexpr const char* PEACEMAKER_EFFECTS = PEACE_EFFECT; // peace
 //}
 
 // Matchmaker
@@ -10608,10 +10608,9 @@ class Player: public Affectable {
                     }
                 }
                 
-                // attacked and retreated are set to false.
+                // Ability uses for fighters are reset.
                 else if (filtered[i][1] == RESET_EFFECT) {
-                    attacked = false;
-                    retreated = false;
+                    reset_abilities();
                     announce(RESET_ANNOUNCEMENT);
                 }
                 
@@ -12493,6 +12492,12 @@ class Player: public Affectable {
                     const std::string& power = effects[i][1];
                     announce(POWER_AURA_ANNOUNCEMENT);
                 }
+                
+                // The opponent's fighter's actions cost plays next turn.
+                else if (effects[i][0] == PEACE_EFFECT) {
+                    opponent->affect(effects[i][0]);
+                    announce(PEACE_ANNOUNCEMENT);
+                }
             }
             
             // The supporter card is moved to the trash (usually).
@@ -13189,7 +13194,13 @@ class Player: public Affectable {
                 energy_button.blit_to(display);
                 effects_button.blit_to(display);
                 
-                if (fighters[0].ability_usable()) {
+                if (
+                    fighters[0].ability_usable()
+                    && (
+                        !effect_search(PEACE_EFFECT).size()
+                        || plays
+                    )
+                ) {
                     ability_button.blit_to(display);
                 }
                 
@@ -13197,6 +13208,10 @@ class Player: public Affectable {
                     !effect_search(PREPARATION_EFFECT).size()
                     && !attacked
                     && fighters[0].attack_usable(discount)
+                    && (
+                        !effect_search(PEACE_EFFECT).size()
+                        || plays
+                    )
                 ) {
                     attack_button.blit_to(display);
                 }
@@ -13209,6 +13224,10 @@ class Player: public Affectable {
                             AGILITY_AURA_EFFECT
                         )
                         + discount
+                    )
+                    && (
+                        !effect_search(PEACE_EFFECT).size()
+                        || plays
                     )
                 ) {
                     retreat_button.blit_to(display);
@@ -13244,6 +13263,10 @@ class Player: public Affectable {
                     // The ability can be used by clicking the ability button.
                     else if (
                         fighters[0].ability_usable()
+                        && (
+                            !effect_search(PEACE_EFFECT).size()
+                            || plays
+                        )
                         && ability_button.get_rectangle().unclick()
                     ) {
                         use_ability(0);
@@ -13260,6 +13283,10 @@ class Player: public Affectable {
                             )
                             + discount
                         )
+                        && (
+                            !effect_search(PEACE_EFFECT).size()
+                            || plays
+                        )
                         && retreat_button.get_rectangle().unclick()
                     ) {
                         retreat();
@@ -13272,6 +13299,10 @@ class Player: public Affectable {
                         !effect_search(PREPARATION_EFFECT).size()
                         && !attacked
                         && fighters[0].attack_usable(discount)
+                        && (
+                            !effect_search(PEACE_EFFECT).size()
+                            || plays
+                        )
                         && attack_button.get_rectangle().unclick()
                     ) {
                         // The opponent is notified of the attack.
@@ -13396,7 +13427,13 @@ class Player: public Affectable {
                     name_buttons[i].blit_to(display);
                     
                     // The ability button is displayed, if it is usable.
-                    if (fighters[BENCH_INDEX + page * PAGE_COUNT + i].ability_usable()) {
+                    if (
+                        fighters[BENCH_INDEX + page * PAGE_COUNT + i].ability_usable()
+                        && (
+                            !effect_search(PEACE_EFFECT).size()
+                            || plays
+                        )
+                    ) {
                         ability_buttons[i].blit_to(display);
                     }
                 }
@@ -13470,6 +13507,10 @@ class Player: public Affectable {
                             // Uses a fighter's ability.
                             else if (
                                 fighters[BENCH_INDEX + page * PAGE_COUNT + i].ability_usable()
+                                && (
+                                    !effect_search(PEACE_EFFECT).size()
+                                    || plays
+                                )
                                 && ability_buttons[i].get_rectangle().unclick()
                             ) {
                                 use_ability(BENCH_INDEX + page * PAGE_COUNT + i);
@@ -13487,267 +13528,6 @@ class Player: public Affectable {
                     Events::update();
                 }
             }
-        }
-        
-        /**
-         * Allows the user to view the effects on the player.
-         */
-        void view_effects() const noexcept {
-            // The left button is initialised.
-            Button left_button(
-                Sprite(
-                    LEFT_SOURCE,
-                    LEFT_WIDTH * display.width(),
-                    LEFT_HEIGHT * display.height()
-                ),
-                display,
-                LEFT_X,
-                LEFT_Y
-            );
-            
-            // The right button is initialised.
-            Button right_button(
-                Sprite(
-                    RIGHT_SOURCE,
-                    RIGHT_WIDTH * display.width(),
-                    RIGHT_HEIGHT * display.height()
-                ),
-                display,
-                RIGHT_X,
-                RIGHT_Y
-            );
-            
-            // The vectors of effects and values are inItialised.
-            std::vector<std::string> effect_names;
-            std::vector<std::string> effect_values;
-            
-            for (int i = 0; i < PLAYER_EXPLANATION_COUNT; ++i) {
-                // A filtered effect store for macros to use.
-                std::vector<std::vector<std::string>> filtered;
-                int value;
-            
-                if (PLAYER_EFFECT_CONDITIONS(i)) {
-                    effect_names.push_back(PLAYER_EFFECT_REPRESENTATIONS[i]);
-                    effect_values.push_back(PLAYER_EFFECT_VALUES(i));
-                }
-            }
-            
-            // Determines which effects are displayed.
-            int page = 0;
-            
-            // True if the function should return.
-            bool end = false;
-            
-            while (!end) {
-                // The sprites are blitted to the display.
-                display.fill();
-                back_button.blit_to(display);
-                
-                if (page > 0) {
-                    left_button.blit_to(display);
-                }
-                
-                if (page < (static_cast<int>(effect_names.size()) - 1) / PAGE_COUNT) {
-                    right_button.blit_to(display);
-                }
-                
-                // A vector of buttons for the names is generated.
-                std::vector<Button> name_buttons;
-                
-                // The cards' names on the page are displayed.
-                for (
-                    int i = 0;
-                    i < PAGE_COUNT
-                    && page * PAGE_COUNT + i < effect_names.size();
-                    ++i
-                ) {
-                    // The name button is stored in the vector.
-                    name_buttons.push_back(
-                        Button(
-                            renderer.render(
-                                effect_names[page * PAGE_COUNT + i],
-                                PAGE_WIDTH * display.width(),
-                                PAGE_HEIGHT * display.height(),
-                                PAGE_SEPARATION * display.width()
-                            ),
-                            display,
-                            PAGE_NAME_X,
-                            PAGE_Y + i * PAGE_Y_SHIFT
-                        )
-                    );
-                    
-                    // The name is displayed.
-                    name_buttons[i].blit_to(display);
-                    
-                    // The value of the effect is displayed.
-                    display.blit(
-                        renderer.render(
-                            display,
-                            EFFECT_VALUE_STRING,
-                            EFFECT_VALUE_WIDTH,
-                            EFFECT_VALUE_HEIGHT,
-                            EFFECT_VALUE_SEPARATION
-                        ),
-                        EFFECT_VALUE_X,
-                        EFFECT_VALUE_Y + i * EFFECT_VALUE_Y_SHIFT
-                    );
-                }
-                
-                // The display is updated.
-                display.update();
-                
-                // Loop to get user input.
-                while (true) {
-                    // The user can return to the previous menu with
-                    //   the use of the back button or submit key.
-                    if (
-                        Events::unpress(SUBMIT_KEY)
-                        || Events::unpress(QUIT_KEY)
-                        || back_button.get_rectangle().unclick()
-                        || message != EMPTY_MESSAGE
-                    ) {
-                        end = true;
-                        break;
-                    }
-                    
-                    // The page number is decremented (if possible).
-                    else if (
-                        (
-                            Events::unpress(Events::LEFT)
-                            || left_button.get_rectangle().unclick()
-                        ) && page > 0
-                    ) {
-                        --page;
-                        break;
-                    }
-                    
-                    // The page number is incremented (if possible).
-                    else if (
-                        (
-                            Events::unpress(Events::RIGHT)
-                            || right_button.get_rectangle().unclick()
-                        ) && page < (static_cast<int>(effect_names.size()) - 1) / PAGE_COUNT
-                    ) {
-                        ++page;
-                        break;
-                    }
-                    
-                    // The other buttons are checked.
-                    else {
-                        // True if the button being clicked was found.
-                        bool found = false;
-                        
-                        // The plus and minus buttons increment or decrement
-                        //   the number of copies of a card in the deck.
-                        // The names display the card's details.
-                        for (
-                            int i = 0;
-                            i < PAGE_COUNT
-                            && page * PAGE_COUNT + i < effect_names.size();
-                            ++i
-                        ) {
-                            // Diplays a card's details.
-                            if (name_buttons[i].get_rectangle().unclick()) {
-                                explain(
-                                    display,
-                                    renderer,
-                                    back_button,
-                                    message,
-                                    effect_names[page * PAGE_COUNT + i],
-                                    effect_values[page * PAGE_COUNT + i]
-                                );
-                                
-                                found = true;
-                                break;
-                            }
-                        }
-                        
-                        if (found) {
-                            break;
-                        }
-                    }
-                    
-                    // The events are updated.
-                    Events::update();
-                }
-            }
-        }
-        
-        /**
-         * Displays the announcement passed.
-         * The function returns if the user chooses to advance or
-         *   the passed string is no longer equal to EMPTY_MESSAGE.
-         */
-        void announce(const std::string& announcement, bool skippable = true) noexcept {
-            display.fill();
-            display.blit(
-                renderer.lined_render(
-                    ANNOUNCEMENT_STRING,
-                    ANNOUNCEMENT_WIDTH * display.width(),
-                    ANNOUNCEMENT_HEIGHT * display.height(),
-                    ANNOUNCEMENT_SEPARATION_X * display.width(),
-                    ANNOUNCEMENT_MAX_WIDTH * display.width(),
-                    ANNOUNCEMENT_SEPARATION_Y * display.height(),
-                    ANNOUNCEMENT_JUSTIFICATION
-                ),
-                ANNOUNCEMENT_X,
-                ANNOUNCEMENT_Y
-            );
-            
-            if (skippable) {
-                next_button.blit_to(display);
-            }
-            
-            display.update();
-            
-            // The player proceeds at their own discretion
-            //   or if the opponent took an action.
-            if (skippable) {
-                while (
-                    !Events::unpress(BACK_KEY)
-                    && !Events::unpress(NEXT_KEY)
-                    && !next_button.get_rectangle().unclick()
-                    && message == EMPTY_MESSAGE
-                ) {
-                    Events::update();
-                }
-            }
-            
-            // The player proceeds when the opponent takes an action.
-            else {
-                // The player informs AUTO to make a move.
-                if (AUTO) {
-                    messenger.send(AUTO_TURN);
-                }
-                
-                while (message == EMPTY_MESSAGE) {
-                    Events::update();
-                }
-            }
-        }
-        
-        /**
-         * Resets the player's attack, retreat, and ability uses.
-         * Performs other end of turn effects on the player.
-         */
-        void reset() noexcept {
-            attacked = false;
-            retreated = false;
-            
-            reset_plays();
-            reset_abilities();
-            prepare();
-            depower();
-            end_discard();
-            banishment();
-            vincible();
-            curse();
-            heal_aura();
-            unroot();
-            reset_agility();
-            uncripple();
-            unimpair();
-            end_draw();
         }
         
         /**
@@ -14987,6 +14767,11 @@ class Player: public Affectable {
                     }
                 }
             }
+            
+            // Fighter use costs plays during peacetime.
+            if (effect_search(PEACE_EFFECT).size()) {
+                --plays;
+            }
         }
         
         /**
@@ -15006,20 +14791,6 @@ class Player: public Affectable {
                 if (clear) {
                     fighters[index].clear_effects();
                     announce(SWITCH_IN_ANNOUNCEMENT);
-                }
-            }
-        }
-        
-        /**
-         * Removes all power effects from this player and their fighters.
-         * This only takes effect at the end of the player's turn.
-         */
-        void depower() noexcept {
-            if (turn == opposing) {
-                unaffect(POWER_EFFECT);
-                
-                for (int i = 0; i < fighters.size(); ++i) {
-                    fighters[i].unaffect(POWER_EFFECT);
                 }
             }
         }
@@ -15236,6 +15007,11 @@ class Player: public Affectable {
                 
                 messenger.send(RETREAT_MESSAGE);
                 messenger.send(std::to_string(index));
+            }
+            
+            // Fighter use costs plays during peacetime.
+            if (effect_search(PEACE_EFFECT).size()) {
+                --plays;
             }
             
             announce(RETREAT_ANNOUNCEMENT);
@@ -16221,11 +15997,292 @@ class Player: public Affectable {
                     }
                 }
             }
+            
+            // Fighter use costs plays during peacetime.
+            if (effect_search(PEACE_EFFECT).size()) {
+                --plays;
+            }
         }
         //}
         
         // Miscellaneous
         //{
+        /**
+         * Allows the user to view the effects on the player.
+         */
+        void view_effects() const noexcept {
+            // The left button is initialised.
+            Button left_button(
+                Sprite(
+                    LEFT_SOURCE,
+                    LEFT_WIDTH * display.width(),
+                    LEFT_HEIGHT * display.height()
+                ),
+                display,
+                LEFT_X,
+                LEFT_Y
+            );
+            
+            // The right button is initialised.
+            Button right_button(
+                Sprite(
+                    RIGHT_SOURCE,
+                    RIGHT_WIDTH * display.width(),
+                    RIGHT_HEIGHT * display.height()
+                ),
+                display,
+                RIGHT_X,
+                RIGHT_Y
+            );
+            
+            // The vectors of effects and values are inItialised.
+            std::vector<std::string> effect_names;
+            std::vector<std::string> effect_values;
+            
+            for (int i = 0; i < PLAYER_EXPLANATION_COUNT; ++i) {
+                // A filtered effect store for macros to use.
+                std::vector<std::vector<std::string>> filtered;
+                int value;
+            
+                if (PLAYER_EFFECT_CONDITIONS(i)) {
+                    effect_names.push_back(PLAYER_EFFECT_REPRESENTATIONS[i]);
+                    effect_values.push_back(PLAYER_EFFECT_VALUES(i));
+                }
+            }
+            
+            // Determines which effects are displayed.
+            int page = 0;
+            
+            // True if the function should return.
+            bool end = false;
+            
+            while (!end) {
+                // The sprites are blitted to the display.
+                display.fill();
+                back_button.blit_to(display);
+                
+                if (page > 0) {
+                    left_button.blit_to(display);
+                }
+                
+                if (page < (static_cast<int>(effect_names.size()) - 1) / PAGE_COUNT) {
+                    right_button.blit_to(display);
+                }
+                
+                // A vector of buttons for the names is generated.
+                std::vector<Button> name_buttons;
+                
+                // The cards' names on the page are displayed.
+                for (
+                    int i = 0;
+                    i < PAGE_COUNT
+                    && page * PAGE_COUNT + i < effect_names.size();
+                    ++i
+                ) {
+                    // The name button is stored in the vector.
+                    name_buttons.push_back(
+                        Button(
+                            renderer.render(
+                                effect_names[page * PAGE_COUNT + i],
+                                PAGE_WIDTH * display.width(),
+                                PAGE_HEIGHT * display.height(),
+                                PAGE_SEPARATION * display.width()
+                            ),
+                            display,
+                            PAGE_NAME_X,
+                            PAGE_Y + i * PAGE_Y_SHIFT
+                        )
+                    );
+                    
+                    // The name is displayed.
+                    name_buttons[i].blit_to(display);
+                    
+                    // The value of the effect is displayed.
+                    display.blit(
+                        renderer.render(
+                            display,
+                            EFFECT_VALUE_STRING,
+                            EFFECT_VALUE_WIDTH,
+                            EFFECT_VALUE_HEIGHT,
+                            EFFECT_VALUE_SEPARATION
+                        ),
+                        EFFECT_VALUE_X,
+                        EFFECT_VALUE_Y + i * EFFECT_VALUE_Y_SHIFT
+                    );
+                }
+                
+                // The display is updated.
+                display.update();
+                
+                // Loop to get user input.
+                while (true) {
+                    // The user can return to the previous menu with
+                    //   the use of the back button or submit key.
+                    if (
+                        Events::unpress(SUBMIT_KEY)
+                        || Events::unpress(QUIT_KEY)
+                        || back_button.get_rectangle().unclick()
+                        || message != EMPTY_MESSAGE
+                    ) {
+                        end = true;
+                        break;
+                    }
+                    
+                    // The page number is decremented (if possible).
+                    else if (
+                        (
+                            Events::unpress(Events::LEFT)
+                            || left_button.get_rectangle().unclick()
+                        ) && page > 0
+                    ) {
+                        --page;
+                        break;
+                    }
+                    
+                    // The page number is incremented (if possible).
+                    else if (
+                        (
+                            Events::unpress(Events::RIGHT)
+                            || right_button.get_rectangle().unclick()
+                        ) && page < (static_cast<int>(effect_names.size()) - 1) / PAGE_COUNT
+                    ) {
+                        ++page;
+                        break;
+                    }
+                    
+                    // The other buttons are checked.
+                    else {
+                        // True if the button being clicked was found.
+                        bool found = false;
+                        
+                        // The plus and minus buttons increment or decrement
+                        //   the number of copies of a card in the deck.
+                        // The names display the card's details.
+                        for (
+                            int i = 0;
+                            i < PAGE_COUNT
+                            && page * PAGE_COUNT + i < effect_names.size();
+                            ++i
+                        ) {
+                            // Diplays a card's details.
+                            if (name_buttons[i].get_rectangle().unclick()) {
+                                explain(
+                                    display,
+                                    renderer,
+                                    back_button,
+                                    message,
+                                    effect_names[page * PAGE_COUNT + i],
+                                    effect_values[page * PAGE_COUNT + i]
+                                );
+                                
+                                found = true;
+                                break;
+                            }
+                        }
+                        
+                        if (found) {
+                            break;
+                        }
+                    }
+                    
+                    // The events are updated.
+                    Events::update();
+                }
+            }
+        }
+        
+        /**
+         * Displays the announcement passed.
+         * The function returns if the user chooses to advance or
+         *   the passed string is no longer equal to EMPTY_MESSAGE.
+         */
+        void announce(const std::string& announcement, bool skippable = true) noexcept {
+            display.fill();
+            display.blit(
+                renderer.lined_render(
+                    ANNOUNCEMENT_STRING,
+                    ANNOUNCEMENT_WIDTH * display.width(),
+                    ANNOUNCEMENT_HEIGHT * display.height(),
+                    ANNOUNCEMENT_SEPARATION_X * display.width(),
+                    ANNOUNCEMENT_MAX_WIDTH * display.width(),
+                    ANNOUNCEMENT_SEPARATION_Y * display.height(),
+                    ANNOUNCEMENT_JUSTIFICATION
+                ),
+                ANNOUNCEMENT_X,
+                ANNOUNCEMENT_Y
+            );
+            
+            if (skippable) {
+                next_button.blit_to(display);
+            }
+            
+            display.update();
+            
+            // The player proceeds at their own discretion
+            //   or if the opponent took an action.
+            if (skippable) {
+                while (
+                    !Events::unpress(BACK_KEY)
+                    && !Events::unpress(NEXT_KEY)
+                    && !next_button.get_rectangle().unclick()
+                    && message == EMPTY_MESSAGE
+                ) {
+                    Events::update();
+                }
+            }
+            
+            // The player proceeds when the opponent takes an action.
+            else {
+                // The player informs AUTO to make a move.
+                if (AUTO) {
+                    messenger.send(AUTO_TURN);
+                }
+                
+                while (message == EMPTY_MESSAGE) {
+                    Events::update();
+                }
+            }
+        }
+        
+        /**
+         * Resets the player's attack, retreat, and ability uses.
+         * Performs other end of turn effects on the player.
+         */
+        void reset() noexcept {
+            attacked = false;
+            retreated = false;
+            
+            reset_plays();
+            reset_abilities();
+            prepare();
+            depower();
+            end_discard();
+            banishment();
+            vincible();
+            curse();
+            heal_aura();
+            unroot();
+            reset_agility();
+            uncripple();
+            unimpair();
+            end_draw();
+            battlecry();
+        }
+        
+        /**
+         * Removes all power effects from this player and their fighters.
+         * This only takes effect at the end of the player's turn.
+         */
+        void depower() noexcept {
+            if (turn == opposing) {
+                unaffect(POWER_EFFECT);
+                
+                for (int i = 0; i < fighters.size(); ++i) {
+                    fighters[i].unaffect(POWER_EFFECT);
+                }
+            }
+        }
+        
         /**
          * Checks for defeated fighters.
          * Also performs end of action effects.
@@ -17544,6 +17601,15 @@ class Player: public Affectable {
                 else {
                     fighters[0].unaffect(ROOT_EFFECT);
                 }
+            }
+        }
+        
+        /**
+         * Removes the peace effect from the player at the end of their turn.
+         */
+        void battlecry() noexcept {
+            if (turn == opposing) {
+                unaffect(PEACE_EFFECT);
             }
         }
         //}
@@ -19986,8 +20052,7 @@ class Player: public Affectable {
         CardStore hand; // The player's hand (where cards that can be played go).
         CardStore trash; // The player's trash (where discarded cards are stored).
         CardStore life_cards; // If the player draws all of these cards, they lose.
-        // The player's active and benched fighters are stored here.
-        std::vector<Fighter> fighters;
+        std::vector<Fighter> fighters; // The player's active and benched fighters are stored here.
         int mulligan_count = 0; // The number of mulligans performed.
         std::unique_ptr<Card> last_drawn; // A copy of the last "drawn" card.
         int last_draws; // The number of cards "drawn" most recently.
@@ -21119,8 +21184,7 @@ const DeckCode CONTROL_COMBO_DECK(
     "However, if all of them are in play simultaneously, "
     "they can fuse into the Omega Elemental!\n\n"
     "The Omega Elemental is an exceptionally powerful fighter that can "
-    "heal itself and generate copies of your opponent's cards!\n\n"
-    "Omega Elemental is also capable of using the OTK Combo!",
+    "heal itself and generate copies of your opponent's cards!",
     {
         // Fighter Cards
         0, // DRIVER
@@ -21167,11 +21231,11 @@ const DeckCode CONTROL_COMBO_DECK(
         1, // OMEGA ELEMENTAL
         
         // Supporter Cards
-        1, // PROFESSOR
+        0, // PROFESSOR
         1, // LECTURER
         1, // INVESTOR
-        1, // RESEARCHER
-        1, // GAMBLER
+        0, // RESEARCHER
+        0, // GAMBLER
         1, // RECRUITER
         
         1, // CHEF
@@ -21182,16 +21246,16 @@ const DeckCode CONTROL_COMBO_DECK(
         0, // SCAPEGOAT
         
         0, // ELECTRICIAN
-        0, // ALCHEMIST
-        0, // TIME TRAVELLER
+        1, // ALCHEMIST
+        1, // TIME TRAVELLER
         1, // BANKER
-        0, // GLUTTON
+        1, // GLUTTON
         
-        1, // SUBSTITUTE
+        0, // SUBSTITUTE
         0, // BOUNTY HUNTER
         
         1, // NURSE
-        0, // INNKEEPER
+        1, // INNKEEPER
         1, // MIRACLE WORKER
         1, // DOCTOR
         0, // ESCAPE ARTIST
@@ -21201,14 +21265,14 @@ const DeckCode CONTROL_COMBO_DECK(
         
         0, // CHEERLEADER
         0, // ARMS SMUGGLER
-        1, // MANIAC
+        0, // MANIAC
         
         1, // PEACEMAKER
         0, // MATCHMAKER
         1, // PLUMBER
         1, // LOCKSMITH
         1, // LOCK PICKER
-        0, // GATEKEEPER
+        1, // GATEKEEPER
         0, // MILLER
         0, // ARSONIST
         
@@ -25766,6 +25830,13 @@ int main(int argc, char** argv) noexcept {
 //}
 
 /* CHANGELOG:
+     v2.4:
+       Tailwind's effect now resets all friendly fighters' ability uses.
+       Hurricane's damage was increased from 250 to 400.
+       Maniac's power boost was decreased from 10000 to 2000.
+       Peacemaker's effect now makes the opponent's fighters'
+        actions cost plays during their next turn.
+       Changes to the built-in decklists.
      v2.3.0.1:
        Fixed the next plays effect for max plays and overload.
      v2.3:
