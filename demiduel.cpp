@@ -10,7 +10,7 @@
 // System Constants
 //{
 // The current version of the program.
-constexpr int VERSION[] = {2, 4, 0, 0};
+constexpr int VERSION[] = {2, 4, 1, 0};
 
 // The title of the game in string form.
 constexpr const char* TITLE_STRING = "Demi Duel";
@@ -3640,10 +3640,16 @@ constexpr int PYROMANCER_RETREAT_COST = 2000;
 constexpr const char* PYROMANCER_OLD_RANK = MAGE_NAME;
 constexpr const char* PYROMANCER_ABILITY_NAME = "Incinerate";
 constexpr const char* PYROMANCER_ABILITY_DESCRIPTION =
-    "Once a turn, you may discard the top card of your opponent's deck."
+    "Once a turn, you may discard the top card of both players' decks."
 ;
 const std::string PYROMANCER_ABILITY_EFFECTS(
     std::string(MILL_EFFECT) // mill
+    + EFFECT_SEPARATOR       //
+    + SELF_EFFECT            // self
+    + EFFECT_SEPARATOR       //
+    + "1"                    // 1
+    + EFFECT_TERMINATOR
+    + MILL_EFFECT            // mill
     + EFFECT_SEPARATOR       //
     + "1"                    // 1
 );
@@ -3651,21 +3657,21 @@ constexpr bool PYROMANCER_ABILITY_PASSIVE = false;
 constexpr int PYROMANCER_ABILITY_USES = 1;
 constexpr const char* PYROMANCER_ATTACK_NAME = "Heat Wave";
 constexpr const char* PYROMANCER_ATTACK_DESCRIPTION =
-    "Deal 200 damage to all other fighters."
+    "Deal 500 damage to all other fighters."
 ;
 const std::string PYROMANCER_ATTACK_EFFECTS(
     std::string(SPLASH_EFFECT) // splash
     + EFFECT_SEPARATOR         //
-    + "200"                    // 200
+    + "500"                    // 500
     + EFFECT_TERMINATOR
     + SPLASH_EFFECT            // splash
     + EFFECT_SEPARATOR         //
     + SELF_EFFECT              // self
     + EFFECT_SEPARATOR         //
-    + "200"                    // 200
+    + "500"                    // 500
 );
-constexpr int PYROMANCER_ATTACK_DAMAGE = 200;
-constexpr int PYROMANCER_ATTACK_COST = 0;
+constexpr int PYROMANCER_ATTACK_DAMAGE = 500;
+constexpr int PYROMANCER_ATTACK_COST = 2000;
 //}
 
 // Warlock
@@ -21393,10 +21399,10 @@ const DeckCode OTK_COMBO_DECK(
         // Energy Cards
         0, // FIRE ENERGY
         2, // AIR ENERGY
-        1, // WATER ENERGY
+        0, // WATER ENERGY
         2, // EARTH ENERGY
         
-        0, // UNIVERSAL ENERGY
+        1, // UNIVERSAL ENERGY
         2, // ALPHA ENERGY
         0, // OMEGA ENERGY
         0  // BOND ENERGY
@@ -25830,6 +25836,11 @@ int main(int argc, char** argv) noexcept {
 //}
 
 /* CHANGELOG:
+     v2.4.1:
+       Incinerate now also discards the top card of the player's deck.
+       Heatwave's damage was increased from 200 to 500.
+       Heatwave's cost was increased from 0 to 2000.
+       Changes to the built-in decklists.
      v2.4:
        Tailwind's effect now resets all friendly fighters' ability uses.
        Hurricane's damage was increased from 250 to 400.
