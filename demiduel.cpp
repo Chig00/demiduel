@@ -10,7 +10,7 @@
 // System Constants
 //{
 // The current version of the program.
-constexpr int VERSION[] = {2, 4, 1, 0};
+constexpr int VERSION[] = {2, 4, 2, 0};
 
 // The title of the game in string form.
 constexpr const char* TITLE_STRING = "Demi Duel";
@@ -4393,7 +4393,7 @@ constexpr bool SAMURAI_ABILITY_PASSIVE = APPRENTICE_FINAL_RANK_ABILITY_PASSIVE;
 constexpr int SAMURAI_ABILITY_USES = APPRENTICE_FINAL_RANK_ABILITY_USES;
 constexpr const char* SAMURAI_ATTACK_NAME = "Subjugate";
 constexpr const char* SAMURAI_ATTACK_DESCRIPTION =
-    "Deal 250 damage to your opponent's active fighter.\n"
+    "Deal 300 damage to your opponent's active fighter.\n"
     "Flip a coin.\n"
     "If heads, your opponent's active fighter can't attack.\n"
     "If tails, your opponent's active fighter can't retreat."
@@ -4411,7 +4411,7 @@ const std::string SAMURAI_ATTACK_EFFECTS(
     + EFFECT_SEPARATOR       //
     + CRIPPLE_EFFECT         // cripple
 );
-constexpr int SAMURAI_ATTACK_DAMAGE = 250;
+constexpr int SAMURAI_ATTACK_DAMAGE = 300;
 constexpr int SAMURAI_ATTACK_COST = 1000;
 //}
 //}
@@ -16002,11 +16002,11 @@ class Player: public Affectable {
                         }
                     }
                 }
-            }
             
-            // Fighter use costs plays during peacetime.
-            if (effect_search(PEACE_EFFECT).size()) {
-                --plays;
+                // Fighter use costs plays during peacetime.
+                if (effect_search(PEACE_EFFECT).size()) {
+                    --plays;
+                }
             }
         }
         //}
@@ -25836,6 +25836,9 @@ int main(int argc, char** argv) noexcept {
 //}
 
 /* CHANGELOG:
+     v2.4.2:
+       Combo Attack is no longer affected by Duel Tax.
+       Subjugate's damage was increased from 250 to 300.
      v2.4.1:
        Incinerate now also discards the top card of the player's deck.
        Heatwave's damage was increased from 200 to 500.
