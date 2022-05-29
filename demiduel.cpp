@@ -10,7 +10,7 @@
 // System Constants
 //{
 // The current version of the program.
-constexpr int VERSION[] = {2, 4, 3, 0};
+constexpr int VERSION[] = {2, 4, 4, 0};
 
 // The title of the game in string form.
 constexpr const char* TITLE_STRING = "Demi Duel";
@@ -4542,14 +4542,14 @@ constexpr int OMEGA_ELEMENTAL_RETREAT_COST = 0;
 constexpr const char* OMEGA_ELEMENTAL_OLD_RANK = ELEMENTAL_ABILITY_NAME;
 constexpr const char* OMEGA_ELEMENTAL_ABILITY_NAME = "Synthesise";
 constexpr const char* OMEGA_ELEMENTAL_ABILITY_DESCRIPTION =
-    "Once a turn, you may search your opponent's hand for a card and draw a copy of it."
+    "Once a turn, you may search your opponent's trash for a card and draw a copy of it."
 ;
 const std::string OMEGA_ELEMENTAL_ABILITY_EFFECTS(
     std::string(SEARCH_EFFECT) // search
     + EFFECT_SEPARATOR         //
     + OPPONENT_EFFECT          // opponent
     + EFFECT_SEPARATOR         //
-    + HAND_EFFECT              // hand
+    + TRASH_EFFECT             // trash
     + EFFECT_SEPARATOR         //
     + "1"                      // 1
 );
@@ -13635,19 +13635,13 @@ class Player: public Affectable {
                     }
                 }
                 
-                // Allows the player to search for cards in their deck.
+                // Allows the player to search for cards.
                 else if (effects[i][0] == SEARCH_EFFECT) {
-                    // The card is stolen from the opponent.
+                    // The card is copied from the opponent.
                     if (effects[i][1] == OPPONENT_EFFECT) {
                         // The trash is searched for a card to draw.
                         if (effects[i][2] == TRASH_EFFECT) {
                             int searches = std::stoi(effects[i][3]);
-                            
-                            // The number of searches can't exceed
-                            //   the number of cards in the card store.
-                            if (searches > opponent->trash.size()) {
-                                searches = opponent->trash.size();
-                            }
                             
                             // The player chooses cards to search for.
                             for (int i = 0; i < searches; ++i) {
@@ -13682,8 +13676,7 @@ class Player: public Affectable {
                                     );
                                 }
                                 
-                                announce(SEARCH_OPPONENT_TRASH_PEEK_ANNOUNCEMENT);
-                                hand.store(opponent->trash.remove(index));
+                                hand.store(opponent->trash[index]);
                             }
                             
                             announce(SEARCH_ANNOUNCEMENT);
@@ -13692,12 +13685,6 @@ class Player: public Affectable {
                         // The hand is searched for a card to draw a copy of.
                         else if (effects[i][2] == HAND_EFFECT) {
                             int searches = std::stoi(effects[i][3]);
-                            
-                            // The number of searches can't exceed
-                            //   the number of cards in the card store.
-                            if (searches > opponent->hand.size()) {
-                                searches = opponent->hand.size();
-                            }
                             
                             // The player chooses cards to search for.
                             for (int i = 0; i < searches; ++i) {
@@ -21349,7 +21336,7 @@ const DeckCode OTK_COMBO_DECK(
         0, // PERSONAL TRAINER
         1, // SCAPEGOAT
         
-        0, // ELECTRICIAN
+        1, // ELECTRICIAN
         1, // ALCHEMIST
         1, // TIME TRAVELLER
         1, // BANKER
@@ -21371,7 +21358,7 @@ const DeckCode OTK_COMBO_DECK(
         0, // ARMS SMUGGLER
         1, // MANIAC
         
-        1, // PEACEMAKER
+        0, // PEACEMAKER
         0, // MATCHMAKER
         0, // PLUMBER
         0, // LOCKSMITH
@@ -25820,6 +25807,9 @@ int main(int argc, char** argv) noexcept {
 //}
 
 /* CHANGELOG:
+     v2.4.4:
+       Synthesise now searches the opponent's trash instead of their hand.
+       Changes to the built-in decklists.
      v2.4.3:
        Incinerate now shows the effect on the opponent first.
        Gatekeeper's play reduction was increased from 1 to 2.
