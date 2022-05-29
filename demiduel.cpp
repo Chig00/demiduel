@@ -10,7 +10,7 @@
 // System Constants
 //{
 // The current version of the program.
-constexpr int VERSION[] = {2, 4, 4, 0};
+constexpr int VERSION[] = {2, 4, 4, 1};
 
 // The title of the game in string form.
 constexpr const char* TITLE_STRING = "Demi Duel";
@@ -13643,6 +13643,11 @@ class Player: public Affectable {
                         if (effects[i][2] == TRASH_EFFECT) {
                             int searches = std::stoi(effects[i][3]);
                             
+                            // The opponent's trash is empty and no cards may be drawn.
+                            if (!opponent->trash.size()) {
+                                searches = 0;
+                            }
+                            
                             // The player chooses cards to search for.
                             for (int i = 0; i < searches; ++i) {
                                 int index;
@@ -13685,6 +13690,11 @@ class Player: public Affectable {
                         // The hand is searched for a card to draw a copy of.
                         else if (effects[i][2] == HAND_EFFECT) {
                             int searches = std::stoi(effects[i][3]);
+                            
+                            // The opponent's hand is empty and no cards may be drawn.
+                            if (!opponent->hand.size()) {
+                                searches = 0;
+                            }
                             
                             // The player chooses cards to search for.
                             for (int i = 0; i < searches; ++i) {
@@ -25807,6 +25817,8 @@ int main(int argc, char** argv) noexcept {
 //}
 
 /* CHANGELOG:
+     v2.4.4.1:
+       Synthesise no longer prompts the player to choose a card in an empty trash.
      v2.4.4:
        Synthesise now searches the opponent's trash instead of their hand.
        Changes to the built-in decklists.
