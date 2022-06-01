@@ -10,7 +10,7 @@
 // System Constants
 //{
 // The current version of the program.
-constexpr int VERSION[] = {2, 5, 0, 1};
+constexpr int VERSION[] = {2, 5, 1, 0};
 
 // The title of the game in string form.
 constexpr const char* TITLE_STRING = "Demi Duel";
@@ -4587,12 +4587,12 @@ constexpr int OMEGA_ELEMENTAL_RETREAT_COST = 0;
 constexpr const char* OMEGA_ELEMENTAL_OLD_RANK = ELEMENTAL_ABILITY_NAME;
 constexpr const char* OMEGA_ELEMENTAL_ABILITY_NAME = "Void Core";
 constexpr const char* OMEGA_ELEMENTAL_ABILITY_DESCRIPTION =
-    "At the end of your turn, shuffle a random card from the void into your deck."
+    "At the end of your turn, shuffle 3 random cards from the void into your deck."
 ;
 const std::string OMEGA_ELEMENTAL_ABILITY_EFFECTS(
     std::string(VOID_CORE_EFFECT) // void_core
     + EFFECT_SEPARATOR            //
-    + "1"                         // 1
+    + "3"                         // 3
 );
 constexpr bool OMEGA_ELEMENTAL_ABILITY_PASSIVE = true;
 constexpr int OMEGA_ELEMENTAL_ABILITY_USES = PASSIVE_USES;
@@ -13109,20 +13109,25 @@ class Player: public Affectable {
          * Ranks up a fighter at the given index using the given rank up card.
          */
         void rank_up(Fighter new_rank, int index, bool to_life = false) noexcept {
+            // The new rank inherits from the old rank.
             fighters[index].rank_up(new_rank);
             
+            // If the flag is set, the old rank is stored in the life cards.
             if (to_life) {
                 life_cards.store(fighters[index]);
             }
             
+            // Else, if the new rank inherited bond energy, the old rank returns to the hand.
             else if (new_rank.energy_effect_search(BOND_EFFECT)) {
                 hand.store(fighters[index]);
             }
             
+            // Otherwise, the old rank is discarded.
             else {
                 trash.store(fighters[index]);
             }
             
+            // The rank up is announced and the old rank is replaced.
             announce(RANK_UP_ANNOUNCEMENT);
             fighters[index] = new_rank;
         }
@@ -25927,6 +25932,8 @@ int main(int argc, char** argv) noexcept {
 //}
 
 /* CHANGELOG:
+     v2.5.1:
+       Void Core's shuffles were increased from 1 to 3.
      v2.5.0.1:
        Fixed an error with custom decks displaying the wrong size.
        Moved the custom decklists from decks to data/decks.
