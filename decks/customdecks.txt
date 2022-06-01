@@ -1,0 +1,13 @@
+Custom Deck Count:
+9
+
+Custom Deck Filenames:
+customdeck1
+customdeck2
+customdeck3
+customdeck4
+customdeck5
+customdeck6
+customdeck7
+customdeck8
+customdeck9
