@@ -10,7 +10,7 @@
 // System Constants
 //{
 // The current version of the program.
-constexpr int VERSION[] = {2, 4, 4, 1};
+constexpr int VERSION[] = {2, 5, 0, 0};
 
 // The title of the game in string form.
 constexpr const char* TITLE_STRING = "Demi Duel";
@@ -254,6 +254,7 @@ constexpr const char* LOST_EFFECT = "lost";
 constexpr const char* PLANK_EFFECT = "plank";
 constexpr const char* DONATE_EFFECT = "donate";
 constexpr const char* PEACE_EFFECT = "peace";
+constexpr const char* VOID_CORE_EFFECT = "void_core";
 //}
 
 // The constants for effect explanations.
@@ -717,6 +718,20 @@ constexpr const char* PEACE_EXPLANATION =
     "This player's fighters' actions cost plays."
 ;
 //}
+
+// The constants for the void core explanation.
+//{
+#define VOID_CORE_CONDITION (value = fighter_effect_count(VOID_CORE_EFFECT))
+constexpr const char* VOID_CORE_REPRESENTATION = "Void Core";
+#define VOID_CORE_VALUE std::to_string(value)
+#define VOID_CORE_EXPLANATION (                                  \
+    "This player shuffles "                                      \
+    + effect_value                                               \
+    + " random card"                                             \
+    + (effect_value == "1" ? "" : "s")                           \
+    + " from the void into their deck at the end of their turn." \
+)
+//}
 //}
 
 // The total number of fighter-specific explainable effects.
@@ -809,7 +824,7 @@ constexpr const char* EFFECT_REPRESENTATIONS[EXPLANATION_COUNT] = {
 //}
 
 // The total number of player-specific explainable effects.
-constexpr int PLAYER_EXPLANATION_COUNT = 21;
+constexpr int PLAYER_EXPLANATION_COUNT = 22;
 
 // All of the player-specific explainable effect conditions.
 //{
@@ -834,7 +849,8 @@ constexpr int PLAYER_EXPLANATION_COUNT = 21;
     : X == 17 ? static_cast<bool>(BANKER_END_DISCARD_CONDITION)       \
     : X == 18 ? static_cast<bool>(GATEKEEPER_END_DISCARD_CONDITION)   \
     : X == 19 ? static_cast<bool>(MILLER_END_DISCARD_CONDITION)       \
-    : static_cast<bool>(PEACE_CONDITION)                              \
+    : X == 20 ? static_cast<bool>(PEACE_CONDITION)                    \
+    : static_cast<bool>(VOID_CORE_CONDITION)                          \
 )
 //}
 
@@ -860,7 +876,8 @@ constexpr const char* PLAYER_EFFECT_REPRESENTATIONS[PLAYER_EXPLANATION_COUNT] = 
     END_DISCARD_REPRESENTATION,
     END_DISCARD_REPRESENTATION,
     END_DISCARD_REPRESENTATION,
-    PEACE_REPRESENTATION
+    PEACE_REPRESENTATION,
+    VOID_CORE_REPRESENTATION
 };
 
 // All of the player-specific explainable effect values.
@@ -886,7 +903,8 @@ constexpr const char* PLAYER_EFFECT_REPRESENTATIONS[PLAYER_EXPLANATION_COUNT] = 
     : X == 17 ? BANKER_END_DISCARD_VALUE       \
     : X == 18 ? GATEKEEPER_END_DISCARD_VALUE   \
     : X == 19 ? MILLER_END_DISCARD_VALUE       \
-    : PEACE_VALUE                              \
+    : X == 20 ? PEACE_VALUE                    \
+    : VOID_CORE_VALUE                          \
 )
 //}
 
@@ -913,7 +931,8 @@ constexpr const char* PLAYER_EFFECT_REPRESENTATIONS[PLAYER_EXPLANATION_COUNT] = 
     : X == 17 ? END_DISCARD_EXPLANATION         \
     : X == 18 ? END_DISCARD_EXPLANATION         \
     : X == 19 ? END_DISCARD_EXPLANATION         \
-    : PEACE_EXPLANATION                         \
+    : X == 20 ? PEACE_EXPLANATION               \
+    : VOID_CORE_EXPLANATION                     \
 )
 //}
 //}
@@ -3187,6 +3206,32 @@ constexpr const char* BANISH_TRASH_ANNOUNCEMENT =
     + " next turn!"                                    \
 )
 //}
+
+// Announcement to display the last card shuffled into the deck from the void.
+//{
+#define VOID_CORE_PEEK_ANNOUNCEMENT (               \
+    std::string(opposing ? "Your opponent" : "You") \
+    + " shuffled "                                  \
+    + last_drawn->get_name()                        \
+    + " into "                                      \
+    + (opposing ? "their" : "your")                 \
+    + " deck."                                      \
+)
+//}
+
+// Announcement to display the total number of cards shuffled into the deck from the void.
+//{
+#define VOID_CORE_ANNOUNCEMENT (                    \
+    std::string(opposing ? "Your opponent" : "You") \
+    + " shuffled "                                  \
+    + std::to_string(shuffles)                      \
+    + " card"                                       \
+    + (shuffles == 1 ? "" : "s")                    \
+    + " into "                                      \
+    + (opposing ? "their" : "your")                 \
+    + " deck."                                      \
+)
+//}
 //}
 
 // Universal Effect Explanation Constants
@@ -4540,21 +4585,17 @@ constexpr const char* OMEGA_ELEMENTAL_ELEMENT = NO_ELEMENT;
 constexpr int OMEGA_ELEMENTAL_HEALTH = 2000;
 constexpr int OMEGA_ELEMENTAL_RETREAT_COST = 0;
 constexpr const char* OMEGA_ELEMENTAL_OLD_RANK = ELEMENTAL_ABILITY_NAME;
-constexpr const char* OMEGA_ELEMENTAL_ABILITY_NAME = "Synthesise";
+constexpr const char* OMEGA_ELEMENTAL_ABILITY_NAME = "Void Core";
 constexpr const char* OMEGA_ELEMENTAL_ABILITY_DESCRIPTION =
-    "Once a turn, you may search your opponent's trash for a card and draw a copy of it."
+    "At the end of your turn, shuffle a random card from the void into your deck."
 ;
 const std::string OMEGA_ELEMENTAL_ABILITY_EFFECTS(
-    std::string(SEARCH_EFFECT) // search
-    + EFFECT_SEPARATOR         //
-    + OPPONENT_EFFECT          // opponent
-    + EFFECT_SEPARATOR         //
-    + TRASH_EFFECT             // trash
-    + EFFECT_SEPARATOR         //
-    + "1"                      // 1
+    std::string(VOID_CORE_EFFECT) // void_core
+    + EFFECT_SEPARATOR            //
+    + "1"                         // 1
 );
-constexpr bool OMEGA_ELEMENTAL_ABILITY_PASSIVE = false;
-constexpr int OMEGA_ELEMENTAL_ABILITY_USES = 1;
+constexpr bool OMEGA_ELEMENTAL_ABILITY_PASSIVE = true;
+constexpr int OMEGA_ELEMENTAL_ABILITY_USES = PASSIVE_USES;
 constexpr const char* OMEGA_ELEMENTAL_ATTACK_NAME = "Assimilate";
 constexpr const char* OMEGA_ELEMENTAL_ATTACK_DESCRIPTION =
     "Randomly distribute 500 damage between your opponent's fighters.\n"
@@ -16254,6 +16295,7 @@ class Player: public Affectable {
             unimpair();
             end_draw();
             battlecry();
+            void_core();
         }
         
         /**
@@ -17597,6 +17639,36 @@ class Player: public Affectable {
         void battlecry() noexcept {
             if (turn == opposing) {
                 unaffect(PEACE_EFFECT);
+            }
+        }
+        
+        /**
+         * Shuffles a random card from the void into the player's deck.
+         */
+        void void_core() noexcept {
+            // Void core only takes effect at the end of the player's turn.
+            if (turn == opposing) {
+                // The amount to shuffle is found.
+                int shuffles = fighter_effect_count(VOID_CORE_EFFECT);
+                
+                // Only non-zero shuffles are considered.
+                if (shuffles) {
+                    // The player can't shuffle more cards
+                    //   than the number in the void.
+                    if (shuffles > the_void.size()) {
+                        shuffles = the_void.size();
+                    }
+                    
+                    // The cards are shuffled and displayed.
+                    for (int i = 0; i < shuffles; ++i) {
+                        last_drawn = the_void.draw(generator);
+                        deck.store(last_drawn);
+                        announce(VOID_CORE_PEEK_ANNOUNCEMENT);
+                    }
+                    
+                    // The total number of cards shuffled is displayed.
+                    announce(VOID_CORE_ANNOUNCEMENT);
+                }
             }
         }
         //}
@@ -21171,7 +21243,7 @@ const DeckCode CONTROL_COMBO_DECK(
     "However, if all of them are in play simultaneously, "
     "they can fuse into the Omega Elemental!\n\n"
     "The Omega Elemental is an exceptionally powerful fighter that can "
-    "heal itself and generate copies of your opponent's cards!",
+    "heal itself and return cards from the void to your deck!",
     {
         // Fighter Cards
         0, // DRIVER
@@ -21236,7 +21308,7 @@ const DeckCode CONTROL_COMBO_DECK(
         1, // ALCHEMIST
         1, // TIME TRAVELLER
         1, // BANKER
-        1, // GLUTTON
+        0, // GLUTTON
         
         0, // SUBSTITUTE
         0, // BOUNTY HUNTER
@@ -21261,7 +21333,7 @@ const DeckCode CONTROL_COMBO_DECK(
         1, // LOCK PICKER
         1, // GATEKEEPER
         0, // MILLER
-        0, // ARSONIST
+        1, // ARSONIST
         
         // Energy Cards
         0, // FIRE ENERGY
@@ -21496,20 +21568,10 @@ const DeckCode CLEAR_DECK(
         0  // BOND ENERGY
     }
 );
-
-const DeckCode CUSTOM_DECK_1("data/customdeck1.txt");
-const DeckCode CUSTOM_DECK_2("data/customdeck2.txt");
-const DeckCode CUSTOM_DECK_3("data/customdeck3.txt");
-const DeckCode CUSTOM_DECK_4("data/customdeck4.txt");
-const DeckCode CUSTOM_DECK_5("data/customdeck5.txt");
-const DeckCode CUSTOM_DECK_6("data/customdeck6.txt");
-const DeckCode CUSTOM_DECK_7("data/customdeck7.txt");
-const DeckCode CUSTOM_DECK_8("data/customdeck8.txt");
-const DeckCode CUSTOM_DECK_9("data/customdeck9.txt");
 //}
 
 // All of the deck codes.
-constexpr int DECK_CODE_COUNT = 20;
+constexpr int DECK_CODE_COUNT = 11;
 const DeckCode* const ALL_DECK_CODES[DECK_CODE_COUNT] = {
 //  &TEST_DECK,
     &RANDOM_DECK,
@@ -21522,17 +21584,19 @@ const DeckCode* const ALL_DECK_CODES[DECK_CODE_COUNT] = {
     &AGGRO_COMBO_DECK,
     &CONTROL_COMBO_DECK,
     &OTK_COMBO_DECK,
-    &CLEAR_DECK,
-    &CUSTOM_DECK_1,
-    &CUSTOM_DECK_2,
-    &CUSTOM_DECK_3,
-    &CUSTOM_DECK_4,
-    &CUSTOM_DECK_5,
-    &CUSTOM_DECK_6,
-    &CUSTOM_DECK_7,
-    &CUSTOM_DECK_8,
-    &CUSTOM_DECK_9
+    &CLEAR_DECK
 };
+
+// The directory and extension of decklist sources.
+constexpr const char* DECK_DIRECTORY = "decks/";
+constexpr const char* DECK_EXTENSION = ".txt";
+
+// The file containing the list of custom decks.
+const std::string CUSTOM_DECKS(
+    DECK_DIRECTORY
+    + std::string("customdecks")
+    + DECK_EXTENSION
+);
 //}
 
 #ifdef DEMI_DUEL_DEBUG
@@ -24143,6 +24207,50 @@ void generate(
     int& card_count,
     const std::string& message
 ) noexcept {
+    // The custom decks are generated.
+    //{
+    // The input file stream is initialised.
+    std::ifstream file(CUSTOM_DECKS);
+    
+    // A string to store and skip lines.
+    std::string string;
+    
+    // The "Custom Deck Count:" line is skipped.
+    std::getline(file, string);
+    
+    // The number of custom decks is extracted.
+    int count;
+    file >> count;
+    
+    // The remainder of the line, the next empty line,
+    //   and the "Custom Deck Filenames:" line are skipped.
+    std::getline(file, string);
+    std::getline(file, string);
+    std::getline(file, string);
+    
+    // The custom decklists are stored here.
+    std::vector<DeckCode> custom_deck_codes;
+    
+    // The custom decklists are loaded.
+    for (int i = 0; i < count; ++i) {
+        std::getline(file, string);
+        custom_deck_codes.push_back(DeckCode(DECK_DIRECTORY + string + DECK_EXTENSION));
+    }
+    
+    // The built-in decklist array is replaced with
+    //   a vector containing custom decks as well.
+    std::vector<const DeckCode*> temp(ALL_DECK_CODES, ALL_DECK_CODES + DECK_CODE_COUNT);
+    std::vector<const DeckCode*>& ALL_DECK_CODES = temp;
+    
+    for (DeckCode& d: custom_deck_codes) {
+        ALL_DECK_CODES.push_back(&d);
+    }
+    
+    // The built-in deck code count is replaced with the count including the custom decks.
+    int temp2 = DECK_CODE_COUNT + count;
+    int DECK_CODE_COUNT = temp2;
+    //}
+    
     // The components of the display are extracted.
     Sprite& display_sprite = display.get_sprite();
     int display_width = display_sprite.get_width();
@@ -25817,6 +25925,12 @@ int main(int argc, char** argv) noexcept {
 //}
 
 /* CHANGELOG:
+     v2.5.0:
+       The number of custom decklists is now unbounded.
+       The number and filenames of custom decklists in use can be defined in customdecks.txt.
+       Synthesise was replaced with Void Core: this ability shuffles a random
+         card from the void into the player's deck at the end of their turn.
+       Changes to the built-in decklists.
      v2.4.4.1:
        Synthesise no longer prompts the player to choose a card in an empty trash.
      v2.4.4:
@@ -25841,7 +25955,7 @@ int main(int argc, char** argv) noexcept {
        Hurricane's damage was increased from 250 to 400.
        Maniac's power boost was decreased from 10000 to 2000.
        Peacemaker's effect now makes the opponent's fighters'
-        actions cost plays during their next turn.
+         actions cost plays during their next turn.
        Changes to the built-in decklists.
      v2.3.0.1:
        Fixed the next plays effect for max plays and overload.
