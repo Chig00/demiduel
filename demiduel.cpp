@@ -10,7 +10,7 @@
 // System Constants
 //{
 // The current version of the program.
-constexpr int VERSION[] = {2, 5, 0, 0};
+constexpr int VERSION[] = {2, 5, 0, 1};
 
 // The title of the game in string form.
 constexpr const char* TITLE_STRING = "Demi Duel";
@@ -20168,7 +20168,9 @@ class DeckCode {
         /**
          * Constructs a deck code from the given source file.
          */
-        DeckCode(const std::string& source) {
+        DeckCode(const std::string& source):
+            size()
+        {
             // The input file stream is initialised.
             std::ifstream file(source);
             
@@ -21588,7 +21590,7 @@ const DeckCode* const ALL_DECK_CODES[DECK_CODE_COUNT] = {
 };
 
 // The directory and extension of decklist sources.
-constexpr const char* DECK_DIRECTORY = "decks/";
+constexpr const char* DECK_DIRECTORY = "data/decks/";
 constexpr const char* DECK_EXTENSION = ".txt";
 
 // The file containing the list of custom decks.
@@ -25925,6 +25927,9 @@ int main(int argc, char** argv) noexcept {
 //}
 
 /* CHANGELOG:
+     v2.5.0.1:
+       Fixed an error with custom decks displaying the wrong size.
+       Moved the custom decklists from decks to data/decks.
      v2.5.0:
        The number of custom decklists is now unbounded.
        The number and filenames of custom decklists in use can be defined in customdecks.txt.
