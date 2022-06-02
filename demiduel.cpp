@@ -10,7 +10,7 @@
 // System Constants
 //{
 // The current version of the program.
-constexpr int VERSION[] = {2, 5, 1, 0};
+constexpr int VERSION[] = {2, 5, 2, 0};
 
 // The title of the game in string form.
 constexpr const char* TITLE_STRING = "Demi Duel";
@@ -721,9 +721,9 @@ constexpr const char* PEACE_EXPLANATION =
 
 // The constants for the void core explanation.
 //{
-#define VOID_CORE_CONDITION (value = fighter_effect_count(VOID_CORE_EFFECT))
+#define VOID_CORE_CONDITION (fighter_effect_count(VOID_CORE_EFFECT))
 constexpr const char* VOID_CORE_REPRESENTATION = "Void Core";
-#define VOID_CORE_VALUE std::to_string(value)
+#define VOID_CORE_VALUE std::to_string(value = void_core_count() * fighter_effect_count(VOID_CORE_EFFECT))
 #define VOID_CORE_EXPLANATION (                                  \
     "This player shuffles "                                      \
     + effect_value                                               \
@@ -4587,12 +4587,13 @@ constexpr int OMEGA_ELEMENTAL_RETREAT_COST = 0;
 constexpr const char* OMEGA_ELEMENTAL_OLD_RANK = ELEMENTAL_ABILITY_NAME;
 constexpr const char* OMEGA_ELEMENTAL_ABILITY_NAME = "Void Core";
 constexpr const char* OMEGA_ELEMENTAL_ABILITY_DESCRIPTION =
-    "At the end of your turn, shuffle 3 random cards from the void into your deck."
+    "At the end of your turn, shuffle 2 random cards from the void into your deck, "
+    "for each fighter in the void with an ability that this fighter ranks up from."
 ;
 const std::string OMEGA_ELEMENTAL_ABILITY_EFFECTS(
     std::string(VOID_CORE_EFFECT) // void_core
     + EFFECT_SEPARATOR            //
-    + "3"                         // 3
+    + "2"                         // 2
 );
 constexpr bool OMEGA_ELEMENTAL_ABILITY_PASSIVE = true;
 constexpr int OMEGA_ELEMENTAL_ABILITY_USES = PASSIVE_USES;
@@ -17648,13 +17649,15 @@ class Player: public Affectable {
         }
         
         /**
-         * Shuffles a random card from the void into the player's deck.
+         * Shuffles random cards from the void into the player's deck.
+         * The amount to shuffle is determined by the ability and
+         *   the number of fighters with Omega Fusion in the void.
          */
         void void_core() noexcept {
             // Void core only takes effect at the end of the player's turn.
             if (turn == opposing) {
                 // The amount to shuffle is found.
-                int shuffles = fighter_effect_count(VOID_CORE_EFFECT);
+                int shuffles = void_core_count() * fighter_effect_count(VOID_CORE_EFFECT);
                 
                 // Only non-zero shuffles are considered.
                 if (shuffles) {
@@ -17675,6 +17678,21 @@ class Player: public Affectable {
                     announce(VOID_CORE_ANNOUNCEMENT);
                 }
             }
+        }
+        
+        /**
+         * Returns the number of fighters with Omega Fusion in the void.
+         */
+        int void_core_count() const noexcept {
+            int count = 0;
+            
+            for (const Fighter& f: the_void.get_fighters()) {
+                if (f.get_ability_name() == ELEMENTAL_ABILITY_NAME) {
+                    ++count;
+                }
+            }
+            
+            return count;
         }
         //}
         
@@ -25932,6 +25950,8 @@ int main(int argc, char** argv) noexcept {
 //}
 
 /* CHANGELOG:
+     v2.5.2:
+       Void Core now shuffles 2 cards for each fighter with Omega Fusion in the void.
      v2.5.1:
        Void Core's shuffles were increased from 1 to 3.
      v2.5.0.1:
