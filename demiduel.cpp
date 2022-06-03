@@ -10,7 +10,7 @@
 // System Constants
 //{
 // The current version of the program.
-constexpr int VERSION[] = {2, 5, 2, 0};
+constexpr int VERSION[] = {2, 5, 2, 1};
 
 // The title of the game in string form.
 constexpr const char* TITLE_STRING = "Demi Duel";
@@ -954,7 +954,7 @@ constexpr double TITLE_SEPARATION = TITLE_WIDTH / 20;
     "2020 Chigozie Agomo\nv" \
     + version_string         \
 )
-constexpr double CREDITS_X = 0.25;
+constexpr double CREDITS_X = 0.2625;
 constexpr double CREDITS_Y = 0.925;
 constexpr double CREDITS_WIDTH = 0.025;
 constexpr double CREDITS_HEIGHT = 2 * CREDITS_WIDTH;
@@ -21315,11 +21315,11 @@ const DeckCode CONTROL_COMBO_DECK(
         1, // OMEGA ELEMENTAL
         
         // Supporter Cards
-        0, // PROFESSOR
-        1, // LECTURER
-        1, // INVESTOR
-        0, // RESEARCHER
-        0, // GAMBLER
+        1, // PROFESSOR
+        0, // LECTURER
+        0, // INVESTOR
+        1, // RESEARCHER
+        1, // GAMBLER
         1, // RECRUITER
         
         1, // CHEF
@@ -21332,7 +21332,7 @@ const DeckCode CONTROL_COMBO_DECK(
         0, // ELECTRICIAN
         1, // ALCHEMIST
         1, // TIME TRAVELLER
-        1, // BANKER
+        0, // BANKER
         0, // GLUTTON
         
         0, // SUBSTITUTE
@@ -21443,7 +21443,7 @@ const DeckCode OTK_COMBO_DECK(
         0, // PERSONAL TRAINER
         1, // SCAPEGOAT
         
-        1, // ELECTRICIAN
+        0, // ELECTRICIAN
         1, // ALCHEMIST
         1, // TIME TRAVELLER
         1, // BANKER
@@ -21482,7 +21482,7 @@ const DeckCode OTK_COMBO_DECK(
         
         1, // UNIVERSAL ENERGY
         2, // ALPHA ENERGY
-        0, // OMEGA ENERGY
+        1, // OMEGA ENERGY
         0  // BOND ENERGY
     }
 );
@@ -25950,6 +25950,9 @@ int main(int argc, char** argv) noexcept {
 //}
 
 /* CHANGELOG:
+     v2.5.2.1:
+       Adjusted the positioning of the main menu version text.
+       Changes to the decklists.
      v2.5.2:
        Void Core now shuffles 2 cards for each fighter with Omega Fusion in the void.
      v2.5.1:
