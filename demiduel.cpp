@@ -10,7 +10,7 @@
 // System Constants
 //{
 // The current version of the program.
-constexpr int VERSION[] = {2, 5, 2, 1};
+constexpr int VERSION[] = {2, 5, 3, 0};
 
 // The title of the game in string form.
 constexpr const char* TITLE_STRING = "Demi Duel";
@@ -4118,14 +4118,15 @@ constexpr int BOXER_RETREAT_COST = 0;
 constexpr const char* BOXER_OLD_RANK = NO_OLD_RANK;
 constexpr const char* BOXER_ABILITY_NAME = "Aggressive";
 constexpr const char* BOXER_ABILITY_DESCRIPTION =
-    "If this fighter is on your bench, switch it into the active position."
+    "If this fighter is on your bench during your opponent's turn, "
+    "switch it into the active position."
 ;
 constexpr const char* BOXER_ABILITY_EFFECTS = AGGRESSIVE_EFFECT; // aggressive
 constexpr bool BOXER_ABILITY_PASSIVE = true;
 constexpr int BOXER_ABILITY_USES = PASSIVE_USES;
 constexpr const char* BOXER_ATTACK_NAME = "Haymaker";
 constexpr const char* BOXER_ATTACK_DESCRIPTION =
-    "Deal 600 damage to your opponent's active fighter. "
+    "Deal 600 damage to your opponent's active fighter.\n"
     "Deal 50 less damage for each card in your hand, "
     "for a maximum of 400 less damage."
 ;
@@ -4270,18 +4271,18 @@ constexpr bool CULTIST_ABILITY_PASSIVE = VOID_SERVANT_ABILITY_PASSIVE;
 constexpr int CULTIST_ABILITY_USES = VOID_SERVANT_ABILITY_USES;
 constexpr const char* CULTIST_ATTACK_NAME = "Ancient Power";
 constexpr const char* CULTIST_ATTACK_DESCRIPTION =
-    "Randomly distribute 50 damage between your opponent's fighters, "
-    "for each card in the void, for a maximum of 500 damage.\n"
-    "Heal 0.8 damage from this fighter multiplied by the damage dealt."
+    "Randomly distribute 60 damage between your opponent's fighters, "
+    "for each card in the void, for a maximum of 600 damage.\n"
+    "Heal this fighter half of the damage dealt."
 ;
 const std::string CULTIST_ATTACK_EFFECTS(
     std::string(DISTRIBUTE_EFFECT) // distribute
     + EFFECT_SEPARATOR             //
     + VOID_EFFECT                  // void
     + EFFECT_SEPARATOR             //
-    + "50"                         // 50
+    + "60"                         // 60
     + EFFECT_SEPARATOR             //
-    + "500"                        // 500
+    + "600"                        // 600
     + EFFECT_TERMINATOR
     + HEAL_EFFECT                  // heal
     + EFFECT_SEPARATOR             //
@@ -4289,7 +4290,7 @@ const std::string CULTIST_ATTACK_EFFECTS(
     + EFFECT_SEPARATOR             //
     + DAMAGE_EFFECT                // damage
     + EFFECT_SEPARATOR             //
-    + "0.8"                        // 0.8
+    + "0.5"                        // 0.5
 );
 constexpr int CULTIST_ATTACK_DAMAGE = 0;
 constexpr int CULTIST_ATTACK_COST = 0;
@@ -4465,7 +4466,7 @@ constexpr int SAMURAI_ATTACK_COST = 1000;
 //{
 // Basic Elemental Universal Constants
 //{
-constexpr int ELEMENTAL_HEALTH = 1000;
+constexpr int ELEMENTAL_HEALTH = 1200;
 constexpr int ELEMENTAL_RETREAT_COST = 1000;
 constexpr const char* ELEMENTAL_OLD_RANK = NO_OLD_RANK;
 constexpr const char* ELEMENTAL_ABILITY_NAME = "Omega Fusion";
@@ -4484,21 +4485,21 @@ const std::string ELEMENTAL_ABILITY_EFFECTS(
 constexpr bool ELEMENTAL_ABILITY_PASSIVE = false;
 constexpr int ELEMENTAL_ABILITY_USES = 1;
 constexpr const char* ELEMENTAL_ATTACK_DESCRIPTION =
-    "Deal 250 damage to your opponent's active fighter.\n"
-    "Both players draw a card."
+    "Deal 200 damage to your opponent's active fighter.\n"
+    "Both players draw 2 cards."
 ;
 const std::string ELEMENTAL_ATTACK_EFFECTS(
     std::string(DRAW_EFFECT) // draw
     + EFFECT_SEPARATOR       //
     + OPPONENT_EFFECT        // opponent
     + EFFECT_SEPARATOR       //
-    + "1"                    // 1
+    + "2"                    // 2
     + EFFECT_TERMINATOR
     + DRAW_EFFECT            // draw
     + EFFECT_SEPARATOR       //
-    + "1"                    // 1
+    + "2"                    // 2
 );
-constexpr int ELEMENTAL_ATTACK_DAMAGE = 250;
+constexpr int ELEMENTAL_ATTACK_DAMAGE = 200;
 constexpr int ELEMENTAL_ATTACK_COST = 1000;
 //}
 
@@ -4582,30 +4583,30 @@ constexpr int EARTH_ELEMENTAL_ATTACK_COST = ELEMENTAL_ATTACK_COST;
 //{
 constexpr const char* OMEGA_ELEMENTAL_NAME = "Omega Elemental";
 constexpr const char* OMEGA_ELEMENTAL_ELEMENT = NO_ELEMENT;
-constexpr int OMEGA_ELEMENTAL_HEALTH = 2000;
+constexpr int OMEGA_ELEMENTAL_HEALTH = 1800;
 constexpr int OMEGA_ELEMENTAL_RETREAT_COST = 0;
 constexpr const char* OMEGA_ELEMENTAL_OLD_RANK = ELEMENTAL_ABILITY_NAME;
 constexpr const char* OMEGA_ELEMENTAL_ABILITY_NAME = "Void Core";
 constexpr const char* OMEGA_ELEMENTAL_ABILITY_DESCRIPTION =
-    "At the end of your turn, shuffle 2 random cards from the void into your deck, "
+    "At the end of your turn, shuffle a random card from the void into your deck, "
     "for each fighter in the void with an ability that this fighter ranks up from."
 ;
 const std::string OMEGA_ELEMENTAL_ABILITY_EFFECTS(
     std::string(VOID_CORE_EFFECT) // void_core
     + EFFECT_SEPARATOR            //
-    + "2"                         // 2
+    + "1"                         // 1
 );
 constexpr bool OMEGA_ELEMENTAL_ABILITY_PASSIVE = true;
 constexpr int OMEGA_ELEMENTAL_ABILITY_USES = PASSIVE_USES;
 constexpr const char* OMEGA_ELEMENTAL_ATTACK_NAME = "Assimilate";
 constexpr const char* OMEGA_ELEMENTAL_ATTACK_DESCRIPTION =
-    "Randomly distribute 500 damage between your opponent's fighters.\n"
-    "Heal 0.8 damage from this fighter multiplied by the damage dealt."
+    "Randomly distribute 600 damage between your opponent's fighters.\n"
+    "Heal this fighter half of the damage dealt."
 ;
 const std::string OMEGA_ELEMENTAL_ATTACK_EFFECTS(
     std::string(DISTRIBUTE_EFFECT) // distribute
     + EFFECT_SEPARATOR             //
-    + "500"                        // 500
+    + "600"                        // 600
     + EFFECT_TERMINATOR
     + HEAL_EFFECT                  // heal
     + EFFECT_SEPARATOR             //
@@ -4613,7 +4614,7 @@ const std::string OMEGA_ELEMENTAL_ATTACK_EFFECTS(
     + EFFECT_SEPARATOR             //
     + DAMAGE_EFFECT                // damage
     + EFFECT_SEPARATOR             //
-    + "0.8"                        // 0.8
+    + "0.5"                        // 0.5
 );
 constexpr int OMEGA_ELEMENTAL_ATTACK_DAMAGE = 0;
 constexpr int OMEGA_ELEMENTAL_ATTACK_COST = 2000;
@@ -17468,11 +17469,14 @@ class Player: public Affectable {
         /**
          * Switches in all fighters with the aggressive effect.
          * This effect happens at the end of each action.
+         * This only takes effect during the opponent's turn.
          */
         void aggressive() noexcept {
-            for (int index = 1; index < fighters.size(); ++index) {
-                if (fighters[index].effect_search(AGGRESSIVE_EFFECT).size()) {
-                    switch_in(index);
+            if (turn != opposing) {
+                for (int index = 1; index < fighters.size(); ++index) {
+                    if (fighters[index].effect_search(AGGRESSIVE_EFFECT).size()) {
+                        switch_in(index);
+                    }
                 }
             }
         }
@@ -21327,7 +21331,7 @@ const DeckCode CONTROL_COMBO_DECK(
         1, // LIBRARIAN
         1, // EXPERIMENTER
         0, // PERSONAL TRAINER
-        0, // SCAPEGOAT
+        1, // SCAPEGOAT
         
         0, // ELECTRICIAN
         1, // ALCHEMIST
@@ -21354,7 +21358,7 @@ const DeckCode CONTROL_COMBO_DECK(
         1, // PEACEMAKER
         0, // MATCHMAKER
         1, // PLUMBER
-        1, // LOCKSMITH
+        0, // LOCKSMITH
         1, // LOCK PICKER
         1, // GATEKEEPER
         0, // MILLER
@@ -25950,6 +25954,20 @@ int main(int argc, char** argv) noexcept {
 //}
 
 /* CHANGELOG:
+     v2.5.3:
+       Aggressive now only takes effect during the opponent's turn.
+       Ancient Power's damage scaling was increased from 50 to 60.
+       Ancient Power's damage cap was increased from 500 to 600.
+       Ancient Power's healing ratio was decreased from 0.8 to 0.5.
+       The health of the elementals was increased from 1000 to 1200.
+       The damage of the elementals' attack was decreased from 250 to 200.
+       The draw of the elementals' attack was increased from 1 to 2.
+       Omega Elemental's health was decreased from 2000 to 1800.
+       Void Core's shuffles were decreased from 2 to 1.
+       Assimilate's damage was increased from 500 to 600.
+       Assimilate's healing ratio was decreased from 0.8 to 0.5.
+       Changes to the decklists.
+       demiduellocal.cpp now offers commandline sizing.
      v2.5.2.1:
        Adjusted the positioning of the main menu version text.
        Changes to the decklists.
