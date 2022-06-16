@@ -10,7 +10,7 @@
 // System Constants
 //{
 // The current version of the program.
-constexpr int VERSION[] = {2, 6, 0, 0};
+constexpr int VERSION[] = {2, 6, 0, 1};
 
 // The title of the game in string form.
 constexpr const char* TITLE_STRING = "Demi Duel";
@@ -724,7 +724,7 @@ constexpr const char* PEACE_EXPLANATION =
 //{
 #define VOID_CORE_CONDITION (fighter_effect_count(VOID_CORE_EFFECT))
 constexpr const char* VOID_CORE_REPRESENTATION = "Void Core";
-#define VOID_CORE_VALUE std::to_string(value = void_core_count() * fighter_effect_count(VOID_CORE_EFFECT))
+#define VOID_CORE_VALUE std::to_string(value = void_core_count())
 #define VOID_CORE_EXPLANATION (                                  \
     "This player shuffles "                                      \
     + effect_value                                               \
@@ -3246,7 +3246,7 @@ constexpr const char* BANISH_TRASH_ANNOUNCEMENT =
 //{
 #define CLONE_ANNOUNCEMENT (                  \
     (opposing ? "Your " : "Your opponent's ") \
-    + opponent->fighters[index].get_name()    \
+    + opponent->fighters[findex].get_name()    \
     + "'s ability was copied!"                \
 )
 //}
@@ -5872,7 +5872,7 @@ class Affectable {
         }
         
         /**
-         * Returns a subset of the effects that begin with the two given effects.
+         * Returns a subset of the effects that begin with the given effects.
          * This function uses the overridable virtual member function
          *   effect_search() as a basis for the initial filtering.
          */
@@ -17709,7 +17709,7 @@ class Player: public Affectable {
             // Void core only takes effect at the end of the player's turn.
             if (turn == opposing) {
                 // The amount to shuffle is found.
-                int shuffles = void_core_count() * fighter_effect_count(VOID_CORE_EFFECT);
+                int shuffles = void_core_count();
                 
                 // Only non-zero shuffles are considered.
                 if (shuffles) {
@@ -17733,17 +17733,37 @@ class Player: public Affectable {
         }
         
         /**
-         * Returns the number of fighters with Omega Fusion in the void.
+         * Returns the total number of shuffles due to Void Core for the player.
          */
         int void_core_count() const noexcept {
+            // The number of shuffles.
             int count = 0;
             
-            for (const Fighter& f: the_void.get_fighters()) {
-                if (f.get_ability_name() == ELEMENTAL_ABILITY_NAME) {
-                    ++count;
+            // Each fighter is checked individually.
+            for (const Fighter& e: fighters) {
+                // The effect of Void Core is extracted.
+                int ecount = e.effect_count(VOID_CORE_EFFECT);
+                
+                // Further calculations are only performed
+                //   if Void Core's effect is non-zero.
+                if (ecount) {
+                    // The number of fighters in the void with an ability
+                    //   that fighter with Void Core ranks up from.
+                    int fcount = 0;
+                    
+                    // fcount is calculated.
+                    for (const Fighter& f: the_void.get_fighters()) {
+                        if (f.get_ability_name() == e.get_old_rank()) {
+                            ++fcount;
+                        }
+                    }
+                    
+                    // The fighter's contribution is added to the total.
+                    count += ecount * fcount;
                 }
             }
             
+            // The number of shuffles is returned.
             return count;
         }
         //}
@@ -26002,6 +26022,10 @@ int main(int argc, char** argv) noexcept {
 //}
 
 /* CHANGELOG:
+     v2.6.0.1:
+       Condense's announcement now refers to the correct fighter.
+       Void Core is no longer hardcoded for Omega Fusion
+         and now checks the user's previous rank.
      v2.6:
        Tailwind was replaced with Condense, which replaces
          itself with an opposing fighter's ability on play.
