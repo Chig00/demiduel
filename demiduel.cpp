@@ -10,7 +10,7 @@
 // System Constants
 //{
 // The current version of the program.
-constexpr int VERSION[] = {2, 5, 3, 0};
+constexpr int VERSION[] = {2, 6, 0, 0};
 
 // The title of the game in string form.
 constexpr const char* TITLE_STRING = "Demi Duel";
@@ -255,6 +255,7 @@ constexpr const char* PLANK_EFFECT = "plank";
 constexpr const char* DONATE_EFFECT = "donate";
 constexpr const char* PEACE_EFFECT = "peace";
 constexpr const char* VOID_CORE_EFFECT = "void_core";
+constexpr const char* CLONE_EFFECT = "clone";
 //}
 
 // The constants for effect explanations.
@@ -2389,7 +2390,7 @@ constexpr const char* DRAW_LIFE_ANNOUNCEMENT = "Choose a life card to draw.";
 )
 //}
 
-// Announcement for a fighter being damage from a snipe.
+// Announcement for a fighter being damaged by a snipe.
 //{
 #define SNIPE_ANNOUNCEMENT (                  \
     (opposing ? "Your " : "Your opponent's ") \
@@ -3230,6 +3231,23 @@ constexpr const char* BANISH_TRASH_ANNOUNCEMENT =
     + " into "                                      \
     + (opposing ? "their" : "your")                 \
     + " deck."                                      \
+)
+//}
+
+// Announcement to declare that a fighter ability will be copied.
+//{
+#define TO_CLONE_ANNOUNCEMENT (                                         \
+    opposing ? "Your opponent is choosing a fighter's ability to copy." \
+    : "Choose a fighter's ability to copy."                             \
+)
+//}
+
+// Announcement for a fighter's ability being copied.
+//{
+#define CLONE_ANNOUNCEMENT (                  \
+    (opposing ? "Your " : "Your opponent's ") \
+    + opponent->fighters[index].get_name()    \
+    + "'s ability was copied!"                \
 )
 //}
 //}
@@ -4080,15 +4098,15 @@ constexpr const char* CLOUD_SURFER_ELEMENT = AIR_ELEMENT;
 constexpr int CLOUD_SURFER_HEALTH = 1100;
 constexpr int CLOUD_SURFER_RETREAT_COST = 0;
 constexpr const char* CLOUD_SURFER_OLD_RANK = WIND_RUNNER_NAME;
-constexpr const char* CLOUD_SURFER_ABILITY_NAME = "Tailwind";
+constexpr const char* CLOUD_SURFER_ABILITY_NAME = "Condense";
 constexpr const char* CLOUD_SURFER_ABILITY_DESCRIPTION =
     "When this fighter card is played from your hand, "
-    "reset your fighters' ability uses."
+    "replace this ability with an opposing fighter's ability."
 ;
 const std::string CLOUD_SURFER_ABILITY_EFFECTS(
     std::string(PLAY_EFFECT) // play
     + EFFECT_SEPARATOR       //
-    + RESET_EFFECT           // reset
+    + CLONE_EFFECT           // clone
 );
 constexpr bool CLOUD_SURFER_ABILITY_PASSIVE = true;
 constexpr int CLOUD_SURFER_ABILITY_USES = PASSIVE_USES;
@@ -7104,6 +7122,13 @@ class Fighter: public Card {
          */
         const Ability& get_ability() const noexcept {
             return ability;
+        }
+        
+        /**
+         * Sets the fighter's ability to the given ability.
+         */
+        void set_ability(const Ability& source) noexcept {
+            ability = source;
         }
         
         /**
@@ -10570,7 +10595,7 @@ class Player: public Affectable {
             
             rank_up(f, index);
             
-            // A constant pointer to the effects of the fighter upon being played.
+            // A vector of the effects of the fighter upon being played.
             std::vector<std::vector<std::string>> filtered(
                 fighters[index].effect_search(PLAY_EFFECT)
             );
@@ -10712,6 +10737,35 @@ class Player: public Affectable {
                     }
                     
                     announce(CONVERSION_ANNOUNCEMENT);
+                }
+                
+                // The ability is replaced with an enemy's.
+                else if (filtered[i][1] == CLONE_EFFECT) {
+                    int findex;
+                    
+                    // The target must be the active, if it is the only fighter.
+                    if (opponent->fighters.size() == 1) {
+                        findex = 0;
+                    }
+                    
+                    // The player chooses a fighter to ability clone.
+                    else if (!opposing) {
+                        announce(TO_CLONE_ANNOUNCEMENT);
+                        findex = opponent->choose_fighter();
+                        messenger.send(std::to_string(findex));
+                    }
+                    
+                    // The opponent waits for the player to choose.
+                    else {
+                        // The choice is waited for.
+                        announce(TO_CLONE_ANNOUNCEMENT, false);
+                        findex = std::stoi(message);
+                        get_message();
+                    }
+                    
+                    // The ability cloning is performed and announced.
+                    fighters[index].set_ability(opponent->fighters[findex].get_ability());
+                    announce(CLONE_ANNOUNCEMENT);
                 }
             }
         }
@@ -12319,13 +12373,7 @@ class Player: public Affectable {
                         // The snipe choice is waited for.
                         announce(TO_SNIPE_ANNOUNCEMENT, false);
                         index = std::stoi(message);
-                        
-                        // A message is waited for in another thread.
-                        message = EMPTY_MESSAGE;
-                        messenger_thread.new_thread(
-                            MessengerPackage::get_message,
-                            &messenger_package
-                        );
+                        get_message();
                     }
                     
                     int snipe = std::stoi(effects[i][1]);
@@ -25954,6 +26002,9 @@ int main(int argc, char** argv) noexcept {
 //}
 
 /* CHANGELOG:
+     v2.6:
+       Tailwind was replaced with Condense, which replaces
+         itself with an opposing fighter's ability on play.
      v2.5.3:
        Aggressive now only takes effect during the opponent's turn.
        Ancient Power's damage scaling was increased from 50 to 60.
@@ -25978,7 +26029,7 @@ int main(int argc, char** argv) noexcept {
      v2.5.0.1:
        Fixed an error with custom decks displaying the wrong size.
        Moved the custom decklists from decks to data/decks.
-     v2.5.0:
+     v2.5:
        The number of custom decklists is now unbounded.
        The number and filenames of custom decklists in use can be defined in customdecks.txt.
        Synthesise was replaced with Void Core: this ability shuffles a random
