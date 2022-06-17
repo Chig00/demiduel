@@ -10,7 +10,7 @@
 // System Constants
 //{
 // The current version of the program.
-constexpr int VERSION[] = {2, 6, 0, 1};
+constexpr int VERSION[] = {2, 6, 1, 0};
 
 // The title of the game in string form.
 constexpr const char* TITLE_STRING = "Demi Duel";
@@ -5295,12 +5295,12 @@ constexpr const char* LOCK_PICKER_EFFECTS = ENERGY_BOUNCE_EFFECT; // energy_boun
 //{
 constexpr const char* GATEKEEPER_NAME = "Gatekeeper";
 constexpr const char* GATEKEEPER_DESCRIPTION =
-    "Your opponent can play 2 fewer cards next turn."
+    "Both players can only play 1 card during their next turn."
 ;
 const std::string GATEKEEPER_EFFECTS(
     std::string(DEPLAY_EFFECT) // deplay
     + EFFECT_SEPARATOR         //
-    + "2"                      // 2
+    + "1"                      // 1
 );
 //}
 
@@ -12500,21 +12500,38 @@ class Player: public Affectable {
                     break;
                 }
             
-                // Reduces the opponent's number of plays for next turn.
+                // Reduces both players' number of plays for their next turn.
                 else if (effects[i][0] == DEPLAY_EFFECT) {
-                    // The number of deplays are found.
-                    int deplays = std::stoi(effects[i][1]);
+                    // The number of opposing deplays is calculated.
+                    int deplays = opponent->plays - std::stoi(effects[i][1]);
                     
                     // The opponent's plays are reduced.
                     opponent->plays -= deplays;
                     
-                    // The opponent's cannot have a negative number of plays.
-                    if (opponent->plays < 0) {
-                        opponent->plays = 0;
-                    }
-                    
                     // The deplays are announced.
                     announce(DEPLAY_ANNOUNCEMENT);
+                    
+                    // The number of plays the player had next turn is calculated.
+                    int next_plays = (
+                        card_limit + CARD_LIMIT_INCREMENT < MAX_PLAYS
+                        ? card_limit + CARD_LIMIT_INCREMENT
+                        : MAX_PLAYS
+                    ) - effect_count(OVERLOAD_EFFECT);
+                    
+                    // The nunber of friendly deplays is calculated.
+                    std::string overload = std::to_string(
+                        next_plays - std::stoi(effects[i][1])
+                    );
+                    
+                    // The player is overloaded to set their number of plays next turn to 1.
+                    affect(
+                        std::string(OVERLOAD_EFFECT)
+                        + EFFECT_SEPARATOR
+                        + overload
+                    );
+                    
+                    // The overload is announced.
+                    announce(OVERLOAD_ANNOUNCEMENT);
                 }
             
                 // Modifies the number of card plays for this turn.
@@ -21407,7 +21424,7 @@ const DeckCode CONTROL_COMBO_DECK(
         0, // BANKER
         0, // GLUTTON
         
-        0, // SUBSTITUTE
+        1, // SUBSTITUTE
         0, // BOUNTY HUNTER
         
         1, // NURSE
@@ -21428,7 +21445,7 @@ const DeckCode CONTROL_COMBO_DECK(
         1, // PLUMBER
         0, // LOCKSMITH
         1, // LOCK PICKER
-        1, // GATEKEEPER
+        0, // GATEKEEPER
         0, // MILLER
         1, // ARSONIST
         
@@ -26022,6 +26039,10 @@ int main(int argc, char** argv) noexcept {
 //}
 
 /* CHANGELOG:
+     v2.6.1:
+       Gatekeeper now reduces the number of plays for
+         both players to 1 during their next turn.
+       Changes to the decklists.
      v2.6.0.1:
        Condense's announcement now refers to the correct fighter.
        Void Core is no longer hardcoded for Omega Fusion
