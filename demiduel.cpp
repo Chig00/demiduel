@@ -10,7 +10,7 @@
 // System Constants
 //{
 // The current version of the program.
-constexpr int VERSION[] = {2, 6, 1, 0};
+constexpr int VERSION[] = {2, 6, 1, 1};
 
 // The title of the game in string form.
 constexpr const char* TITLE_STRING = "Demi Duel";
@@ -5435,7 +5435,7 @@ constexpr const char* OMEGA_ENERGY_NAME = "Omega Energy";
 constexpr const char* OMEGA_ENERGY_DESCRIPTION =
     "Provides 10000 energy for fighters of all elements.\n"
     "When this energy card is played, discard a card from your hand.\n"
-    "You can play 1 less card this turn."
+    "You can play 1 less card next turn."
 ;
 constexpr const char* OMEGA_ENERGY_ELEMENT = NO_ELEMENT;
 const std::string OMEGA_ENERGY_EFFECTS(
@@ -26039,6 +26039,8 @@ int main(int argc, char** argv) noexcept {
 //}
 
 /* CHANGELOG:
+     v2.6.1.1:
+       Omega Energy now correctly states that the lost play is next turn.
      v2.6.1:
        Gatekeeper now reduces the number of plays for
          both players to 1 during their next turn.
