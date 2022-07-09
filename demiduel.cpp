@@ -10,7 +10,7 @@
 // System Constants
 //{
 // The current version of the program.
-constexpr int VERSION[] = {2, 6, 1, 1};
+constexpr int VERSION[] = {2, 6, 2, 0};
 
 // The title of the game in string form.
 constexpr const char* TITLE_STRING = "Demi Duel";
@@ -545,7 +545,7 @@ constexpr const char* CARD_PLAYS_REPRESENTATION = "Plays";
     "This player can play "                     \
     + effect_value                              \
     + " more card"                              \
-    + (std::stoi(effect_value) == 1 ? "" : "s") \
+    + (effect_value == "1" ? "" : "s") \
     + " this turn."                             \
 )
 //}
@@ -677,13 +677,15 @@ constexpr const char* OVERLOAD_REPRESENTATION = "Overloaded";
 
 // The constants for the root explanation.
 //{
-#define ROOT_CONDITION effect_search(ROOT_EFFECT).size()
+#define ROOT_CONDITION (value = effect_count(ROOT_EFFECT))
 constexpr const char* ROOT_REPRESENTATION = "Rooted";
-#define ROOT_VALUE (effect_search(DOUBLE_ROOT_EFFECT).size() ? " " : "")
-#define ROOT_EXPLANATION (                                  \
-    "This fighter can't be switched out until its player's" \
-    + std::string(effect_value.length() ? " next " : " ")   \
-    + "next turn."                                          \
+#define ROOT_VALUE std::to_string(value)
+#define ROOT_EXPLANATION (                    \
+    "This fighter can't be switched out for " \
+    + effect_value                            \
+    + " turn"                                 \
+    + (effect_value == "1" ? "" : "s")        \
+    + "."                                     \
 )
 //}
 
@@ -3161,23 +3163,27 @@ constexpr const char* BANISH_LIFE_ANNOUNCEMENT = "Choose a life card to banish."
 
 // Announcement for a rooting.
 //{
-#define ROOT_ANNOUNCEMENT (                        \
-    (opposing ? "Your opponent's " : "Your ")      \
-    + fighters[index].get_name()                   \
-    + " can't be switched out until the start of " \
-    + (opposing ? "their" : "your")                \
-    + " next turn!"                                \
+#define ROOT_ANNOUNCEMENT (                   \
+    (opposing ? "Your opponent's " : "Your ") \
+    + fighters[0].get_name()                  \
+    + " can't be switched out for "           \
+    + roots                                   \
+    + " turn"                                 \
+    + (roots == "1" ? "" : "s")               \
+    + "!"                                     \
 )
 //}
 
 // Announcement for opposing rooting.
 //{
-#define ROOT_OPPONENT_ANNOUNCEMENT (             \
-    (!opposing ? "Your opponent's " : "Your ")   \
-    + opponent->fighters[0].get_name()           \
-    + " can't be switched out until the end of " \
-    + (opposing ? "their" : "your")              \
-    + " next turn!"                              \
+#define ROOT_OPPONENT_ANNOUNCEMENT (           \
+    (!opposing ? "Your opponent's " : "Your ") \
+    + opponent->fighters[0].get_name()         \
+    + " can't be switched out for "            \
+    + roots                                    \
+    + " turn"                                  \
+    + (roots == "1" ? "" : "s")                \
+    + "!"                                      \
 )
 //}
 
@@ -3819,7 +3825,7 @@ constexpr const char* HYDROMANCER_ABILITY_NAME = "Whirlpool";
 constexpr const char* HYDROMANCER_ABILITY_DESCRIPTION =
     "You may banish a random fighter in your trash that ranks up into this one.\n"
     "If you do, switch in one of your opponent's benched fighters.\n"
-    "Your opponent's active fighter can't switch out during your opponent's next turn."
+    "Your opponent's active fighter can't switch out for 2 turns."
 ;
 const std::string HYDROMANCER_ABILITY_EFFECTS(
     std::string(ABANDON_EFFECT) // abandon
@@ -3829,6 +3835,8 @@ const std::string HYDROMANCER_ABILITY_EFFECTS(
     + HOOK_EFFECT               // hook
     + EFFECT_SEPARATOR          //
     + ROOT_EFFECT               // root
+    + EFFECT_SEPARATOR          //
+    + "2"                       // 2
 );
 constexpr bool HYDROMANCER_ABILITY_PASSIVE = false;
 constexpr int HYDROMANCER_ABILITY_USES = 1;
@@ -3969,7 +3977,7 @@ constexpr const char* SCUBA_DIVER_ABILITY_NAME = "Submerge";
 constexpr const char* SCUBA_DIVER_ABILITY_DESCRIPTION =
     "When this fighter card is played from your hand, "
     "if this fighter is your active fighter, "
-    "it can't be damaged or switched out until your next turn."
+    "it can't be damaged or switched out for 2 turns."
 ;
 const std::string SCUBA_DIVER_ABILITY_EFFECTS(
     std::string(PLAY_EFFECT) // play
@@ -3983,6 +3991,8 @@ const std::string SCUBA_DIVER_ABILITY_EFFECTS(
     + ACTIVE_EFFECT          // active
     + EFFECT_SEPARATOR       //
     + ROOT_EFFECT            // root
+    + EFFECT_SEPARATOR       //
+    + "2"                    // 2
 );
 constexpr bool SCUBA_DIVER_ABILITY_PASSIVE = true;
 constexpr int SCUBA_DIVER_ABILITY_USES = PASSIVE_USES;
@@ -5234,9 +5244,13 @@ constexpr const char* PEACEMAKER_EFFECTS = PEACE_EFFECT; // peace
 //{
 constexpr const char* MATCHMAKER_NAME = "Matchmaker";
 constexpr const char* MATCHMAKER_DESCRIPTION =
-    "Your opponent's active fighter can't be switched out during their next turn."
+    "Your opponent's active fighter can't be switched out for 2 turns."
 ;
-constexpr const char* MATCHMAKER_EFFECTS = ROOT_EFFECT;
+const std::string MATCHMAKER_EFFECTS(
+    std::string(ROOT_EFFECT) // root
+    + EFFECT_SEPARATOR       //
+    + "2"                    // 2
+);
 //}
 
 // Plumber
@@ -6974,7 +6988,7 @@ class Fighter: public Card {
         bool retreat_usable(int agility = 0) const noexcept {
             return
                 !effect_search(CRIPPLE_EFFECT).size()
-                && !effect_search(ROOT_EFFECT).size()
+                && !effect_count(ROOT_EFFECT)
                 && energy_value() >= retreat_cost - effect_count(AGILITY_EFFECT) - agility
             ;
         }
@@ -10625,7 +10639,17 @@ class Player: public Affectable {
                     
                     // The fighter is rooted.
                     else if (filtered[i][2] == ROOT_EFFECT) {
-                        fighters[index].affect(filtered[i][2]);
+                        // The root effect is applied.
+                        fighters[index].affect(
+                            filtered[i][2]
+                            + EFFECT_SEPARATOR
+                            + filtered[i][3]
+                        );
+                        
+                        // The root length is extracted.
+                        std::string roots = filtered[i][3];
+                        
+                        // The root is announced.
                         announce(ROOT_ANNOUNCEMENT);
                     }
                 }
@@ -12555,8 +12579,17 @@ class Player: public Affectable {
             
                 // Roots the opponent's active fighter (no switch).
                 else if (effects[i][0] == ROOT_EFFECT) {
-                    opponent->fighters[0].affect(effects[i][0]);
-                    opponent->fighters[0].affect(DOUBLE_ROOT_EFFECT);
+                    // The root effect is applied.
+                    opponent->fighters[0].affect(
+                        effects[i][0]
+                        + EFFECT_SEPARATOR
+                        + effects[i][1]
+                    );
+                    
+                    // The root length is extracted.
+                    std::string roots = effects[i][1];
+                    
+                    // The root is announced.
                     announce(ROOT_OPPONENT_ANNOUNCEMENT);
                 }
             
@@ -13698,7 +13731,7 @@ class Player: public Affectable {
                 if (effects[i][0] == SWITCH_IN_EFFECT) {
                     // Switching in can only work from the bench.
                     // Switches don't work when the active fighter is rooted.
-                    if (index && !fighters[0].effect_search(ROOT_EFFECT).size()) {
+                    if (index && !fighters[0].effect_count(ROOT_EFFECT)) {
                         switch_in(index);
                         
                         // The fighter is now in the active position.
@@ -14732,8 +14765,17 @@ class Player: public Affectable {
                             
                             // Roots the opponent's active fighter (no switch).
                             else if (effects[i].size() > 3 && effects[i][3] == ROOT_EFFECT) {
-                                opponent->fighters[0].affect(effects[i][3]);
-                                opponent->fighters[0].affect(DOUBLE_ROOT_EFFECT);
+                                // The root effect is applied.
+                                opponent->fighters[0].affect(
+                                    effects[i][3]
+                                    + EFFECT_SEPARATOR
+                                    + effects[i][4]
+                                );
+                    
+                                // The root length is extracted.
+                                std::string roots = effects[i][4];
+                    
+                                // The root is announced.
                                 announce(ROOT_OPPONENT_ANNOUNCEMENT);
                             }
                         }
@@ -14882,7 +14924,7 @@ class Player: public Affectable {
          */
         void switch_in(int index, bool clear = true) noexcept {
             // Combo Attack switches still work when rooted.
-            if (!clear || !fighters[0].effect_search(ROOT_EFFECT).size()) {
+            if (!clear || !fighters[0].effect_count(ROOT_EFFECT)) {
                 Fighter temporary(fighters[index]);
                 fighters[index] = fighters[0];
                 fighters[0] = temporary;
@@ -17697,14 +17739,24 @@ class Player: public Affectable {
          * This function only takes effect after the opponent's turn.
          */
         void unroot() noexcept {
-            if (turn != opposing) {
-                if (fighters[0].effect_search(DOUBLE_ROOT_EFFECT).size()) {
-                    fighters[0].unaffect(DOUBLE_ROOT_EFFECT);
-                }
-                
-                else {
-                    fighters[0].unaffect(ROOT_EFFECT);
-                }
+            // Only the active fighter can be rooted.
+            int index = 0;
+            
+            // The number of root turns is calculated.
+            int roots = fighters[index].effect_count(ROOT_EFFECT);
+            
+            // The fighter's root count is removed if it is 1.
+            if (roots == 1) {
+                fighters[index].unaffect(ROOT_EFFECT);
+            }
+            
+            // The fighter's root count is decremented.
+            else if (roots) {
+                fighters[index].affect(
+                    std::string(ROOT_EFFECT)
+                    + EFFECT_SEPARATOR
+                    + "-1"
+                );
             }
         }
         
@@ -21404,7 +21456,7 @@ const DeckCode CONTROL_COMBO_DECK(
         1, // OMEGA ELEMENTAL
         
         // Supporter Cards
-        1, // PROFESSOR
+        0, // PROFESSOR
         0, // LECTURER
         0, // INVESTOR
         1, // RESEARCHER
@@ -21443,7 +21495,7 @@ const DeckCode CONTROL_COMBO_DECK(
         1, // PEACEMAKER
         0, // MATCHMAKER
         1, // PLUMBER
-        0, // LOCKSMITH
+        1, // LOCKSMITH
         1, // LOCK PICKER
         0, // GATEKEEPER
         0, // MILLER
@@ -26039,6 +26091,10 @@ int main(int argc, char** argv) noexcept {
 //}
 
 /* CHANGELOG:
+     v2.6.2:
+       All root effects now prevent switching for 2 turns.
+       All root effects now stack.
+       Changes to the built-in decklists.
      v2.6.1.1:
        Omega Energy now correctly states that the lost play is next turn.
      v2.6.1:
