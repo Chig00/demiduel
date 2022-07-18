@@ -10,7 +10,7 @@
 // System Constants
 //{
 // The current version of the program.
-constexpr int VERSION[] = {2, 6, 2, 0};
+constexpr int VERSION[] = {2, 7, 0, 0};
 
 // The title of the game in string form.
 constexpr const char* TITLE_STRING = "Demi Duel";
@@ -4713,7 +4713,7 @@ constexpr const char* RESEARCHER_NAME = "Researcher";
 constexpr const char* RESEARCHER_DESCRIPTION = "Draw 2 cards.";
 const std::string RESEARCHER_EFFECTS(
     std::string(DRAW_EFFECT) // draw
-    + EFFECT_SEPARATOR
+    + EFFECT_SEPARATOR       //
     + "2"                    // 2
 );
 //}
@@ -4882,7 +4882,8 @@ constexpr const char* PERSONAL_TRAINER_EFFECTS = TRAIN_EFFECT; // train
 //{
 constexpr const char* SCAPEGOAT_NAME = "Scapegoat";
 constexpr const char* SCAPEGOAT_DESCRIPTION =
-    "Swap this card with one of your life cards."
+    "Swap this card with one of your life cards.\n"
+    "You can play 1 less card during your next turn."
 ;
 const std::string SCAPEGOAT_EFFECTS(
     std::string(SEARCH_EFFECT) // search
@@ -4894,6 +4895,10 @@ const std::string SCAPEGOAT_EFFECTS(
     + RECYCLE_EFFECT           // recycle
     + EFFECT_SEPARATOR         //
     + LIFE_EFFECT              // life
+    + EFFECT_TERMINATOR
+    + OVERLOAD_EFFECT          // overload
+    + EFFECT_SEPARATOR         //
+    + "1"                      // 1
 );
 //}
 //}
@@ -4942,7 +4947,7 @@ const std::string ALCHEMIST_EFFECTS(
 constexpr const char* TIME_TRAVELLER_NAME = "Time Traveller";
 constexpr const char* TIME_TRAVELLER_DESCRIPTION =
     "Search your trash for a card and draw it.\n"
-    "You can play 1 less card next turn."
+    "You can play 1 less card during your next turn."
 ;
 const std::string TIME_TRAVELLER_EFFECTS(
     std::string(SEARCH_EFFECT) // search
@@ -5449,7 +5454,7 @@ constexpr const char* OMEGA_ENERGY_NAME = "Omega Energy";
 constexpr const char* OMEGA_ENERGY_DESCRIPTION =
     "Provides 10000 energy for fighters of all elements.\n"
     "When this energy card is played, discard a card from your hand.\n"
-    "You can play 1 less card next turn."
+    "You can play 1 less card during your next turn."
 ;
 constexpr const char* OMEGA_ENERGY_ELEMENT = NO_ELEMENT;
 const std::string OMEGA_ENERGY_EFFECTS(
@@ -5482,6 +5487,46 @@ const std::string BOND_ENERGY_EFFECTS(
 );
 constexpr int BOND_ENERGY_VALUE = 750;
 //}
+//}
+//}
+
+// Life Cards
+//{
+// Biologist
+//{
+constexpr const char* BIOLOGIST_NAME = "Biologist";
+constexpr const char* BIOLOGIST_DESCRIPTION =
+    "Heal 900 damage from one of your fighters."
+;
+const std::string BIOLOGIST_EFFECTS(
+    std::string(HEAL_EFFECT) // heal
+    + EFFECT_SEPARATOR       //
+    + "900"                  // 900
+);
+//}
+
+// Chemist
+//{
+constexpr const char* CHEMIST_NAME = "Chemist";
+constexpr const char* CHEMIST_DESCRIPTION =
+    "Attacks deal 150 more damage this turn."
+;
+const std::string CHEMIST_EFFECTS(
+    std::string(POWER_EFFECT) // power
+    + EFFECT_SEPARATOR        //
+    + "150"                   // 150
+);
+//}
+
+// Physicist
+//{
+constexpr const char* PHYSICIST_NAME = "Physicist";
+constexpr const char* PHYSICIST_DESCRIPTION = "Draw 3 cards.";
+const std::string PHYSICIST_EFFECTS(
+    std::string(DRAW_EFFECT) // draw
+    + EFFECT_SEPARATOR       //
+    + "3"                    // 3
+);
 //}
 //}
 //}
@@ -8615,6 +8660,33 @@ const Energy* const ALL_ENERGY[ENERGY_COUNT] = {
 };
 //}
 
+// Life Cards
+//{
+const Supporter BIOLOGIST(
+    BIOLOGIST_NAME,
+    BIOLOGIST_DESCRIPTION,
+    BIOLOGIST_EFFECTS
+);
+
+const Supporter CHEMIST(
+    CHEMIST_NAME,
+    CHEMIST_DESCRIPTION,
+    CHEMIST_EFFECTS
+);
+
+const Supporter PHYSICIST(
+    PHYSICIST_NAME,
+    PHYSICIST_DESCRIPTION,
+    PHYSICIST_EFFECTS
+);
+
+const Supporter* const ALL_LIFE_CARDS[LIFE_SIZE] = {
+    &BIOLOGIST,
+    &CHEMIST,
+    &PHYSICIST
+};
+//}
+
 constexpr int CARD_COUNT = FIGHTER_COUNT + SUPPORTER_COUNT + ENERGY_COUNT;
 //}
 
@@ -10077,21 +10149,9 @@ class Player: public Affectable {
          * Reveals the life cards if the player owns them.
          */
         void set_life_cards() noexcept {
+            // Life cards are chosen from the pre-defined set.
             for (int i = 0; i < LIFE_SIZE; ++i) {
-                // Supporter cards are the 1st priority.
-                if (deck.size<Supporter>()) {
-                    life_cards.store(deck.draw<Supporter>(generator));
-                }
-                
-                // Energy cards are the 2nd priority.
-                else if (deck.size<Energy>()) {
-                    life_cards.store(deck.draw<Energy>(generator));
-                }
-                
-                // Fighter cards are the 3rd priority.
-                else {
-                    life_cards.store(deck.draw<Fighter>(generator));
-                }
+                life_cards.store(*ALL_LIFE_CARDS[i]);
             }
             
             // The components of the display are extracted.
@@ -26091,6 +26151,11 @@ int main(int argc, char** argv) noexcept {
 //}
 
 /* CHANGELOG:
+     v2.7:
+       Life cards are no longer taken from the deck.
+       The new cards, Biologist, Chemist, and Physicist always start as life cards.
+       Scapegoat now reduces the number of card plays on the user's next turn by one.
+       Overload cards now correctly state that the effect is during the user's next turn.
      v2.6.2:
        All root effects now prevent switching for 2 turns.
        All root effects now stack.
