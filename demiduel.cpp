@@ -10,7 +10,7 @@
 // System Constants
 //{
 // The current version of the program.
-constexpr int VERSION[] = {2, 7, 0, 0};
+constexpr int VERSION[] = {2, 7, 1, 0};
 
 // The title of the game in string form.
 constexpr const char* TITLE_STRING = "Demi Duel";
@@ -12494,7 +12494,7 @@ class Player: public Affectable {
                     announce(ENERGY_BOUNCE_ANNOUNCEMENT);
                 }
                 
-                // Maximally ranks up a fighter with cards from the deck.
+                // Maximally ranks up a fighter with cards from the deck or hand.
                 else if (effects[i][0] == TRAIN_EFFECT) {
                     // The index of the fighter to rank up.
                     int index;
@@ -12523,7 +12523,7 @@ class Player: public Affectable {
                         // The indices of fighters that can rank up from the chosen fighter.
                         std::vector<int> indices;
                         
-                        // The indices are found.
+                        // The deck indices are found.
                         for (int i = 0; i < deck.get_fighters().size(); ++i) {
                             if (
                                 deck.get_fighters()[i].get_old_rank()
@@ -12542,8 +12542,30 @@ class Player: public Affectable {
                         }
                         
                         // No fighters in the deck can rank up into this fighter.
+                        // The hand is checked instead.
                         else {
-                            break;
+                            // The hand indices are found.
+                            for (int i = 0; i < hand.get_fighters().size(); ++i) {
+                                if (
+                                    hand.get_fighters()[i].get_old_rank()
+                                    == fighters[index].get_name()
+                                ) {
+                                    indices.push_back(i);
+                                }
+                            }
+                            
+                            // A fighter can rank up from this fighter.
+                            if (indices.size()) {
+                                std::unique_ptr<Card> card(hand.remove(indices[
+                                    Random::get_int(generator, 0, indices.size() - 1)
+                                ]));
+                                rank_up(static_cast<Fighter&>(*card), index);
+                            }
+                            
+                            // No fighters in the deck or hand can rank up into this fighter.
+                            else {
+                                break;
+                            }
                         }
                     }
                 }
@@ -21356,8 +21378,8 @@ const DeckCode AGGRO_COMBO_DECK(
     "Ninja and Samurai both rank up from the same "
     "fighter, so Bond Energy can help to get them "
     "both in play without dicarding their old ranks.\n\n"
-    "Lost Soul, Personal Trainer, and Ascension can "
-    "help to get the combo attackers in play quickly.",
+    "Personal Trainer and Ascension can help to "
+    "get the combo attackers in play quickly.",
     {
         // Fighter Cards
         0, // DRIVER
@@ -21386,7 +21408,7 @@ const DeckCode AGGRO_COMBO_DECK(
         0, // CLOUD SURFER
         
         0, // BOXER
-        1, // LOST SOUL
+        0, // LOST SOUL
         
         0, // BANISHER
         0, // BANSHEE
@@ -21407,8 +21429,8 @@ const DeckCode AGGRO_COMBO_DECK(
         0, // PROFESSOR
         1, // LECTURER
         1, // INVESTOR
-        1, // RESEARCHER
-        1, // GAMBLER
+        0, // RESEARCHER
+        0, // GAMBLER
         0, // RECRUITER
         
         1, // CHEF
@@ -21416,7 +21438,7 @@ const DeckCode AGGRO_COMBO_DECK(
         1, // LIBRARIAN
         0, // EXPERIMENTER
         1, // PERSONAL TRAINER
-        0, // SCAPEGOAT
+        1, // SCAPEGOAT
         
         1, // ELECTRICIAN
         1, // ALCHEMIST
@@ -21425,28 +21447,28 @@ const DeckCode AGGRO_COMBO_DECK(
         0, // GLUTTON
         
         0, // SUBSTITUTE
-        0, // BOUNTY HUNTER
+        1, // BOUNTY HUNTER
         
         1, // NURSE
         0, // INNKEEPER
         1, // MIRACLE WORKER
-        0, // DOCTOR
+        1, // DOCTOR
         0, // ESCAPE ARTIST
         
-        0, // ASSASSIN
-        0, // SNIPER
+        1, // ASSASSIN
+        1, // SNIPER
         
         1, // CHEERLEADER
         1, // ARMS SMUGGLER
         0, // MANIAC
         
-        1, // PEACEMAKER
+        0, // PEACEMAKER
         1, // MATCHMAKER
-        1, // PLUMBER
-        1, // LOCKSMITH
+        0, // PLUMBER
+        0, // LOCKSMITH
         0, // LOCK PICKER
         1, // GATEKEEPER
-        0, // MILLER
+        1, // MILLER
         0, // ARSONIST
         
         // Energy Cards
@@ -26151,6 +26173,9 @@ int main(int argc, char** argv) noexcept {
 //}
 
 /* CHANGELOG:
+     v2.7.1:
+       Personal Trainer now uses cards from hand when no cards in the deck can be used.
+       Changes to the decklists.
      v2.7:
        Life cards are no longer taken from the deck.
        The new cards, Biologist, Chemist, and Physicist always start as life cards.
