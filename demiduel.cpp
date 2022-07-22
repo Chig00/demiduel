@@ -10,7 +10,7 @@
 // System Constants
 //{
 // The current version of the program.
-constexpr int VERSION[] = {2, 7, 1, 0};
+constexpr int VERSION[] = {2, 7, 1, 1};
 
 // The title of the game in string form.
 constexpr const char* TITLE_STRING = "Demi Duel";
@@ -4873,7 +4873,7 @@ const std::string EXPERIMENTER_EFFECTS(
 //{
 constexpr const char* PERSONAL_TRAINER_NAME = "Personal Trainer";
 constexpr const char* PERSONAL_TRAINER_DESCRIPTION =
-    "Fully rank up one of your fighters using cards in your deck."
+    "Fully rank up one of your fighters using cards in your deck and hand."
 ;
 constexpr const char* PERSONAL_TRAINER_EFFECTS = TRAIN_EFFECT; // train
 //}
@@ -26173,6 +26173,8 @@ int main(int argc, char** argv) noexcept {
 //}
 
 /* CHANGELOG:
+     v2.7.1.1:
+       Personal Trainer's card text was updated to match its new effect.
      v2.7.1:
        Personal Trainer now uses cards from hand when no cards in the deck can be used.
        Changes to the decklists.
