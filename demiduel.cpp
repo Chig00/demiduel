@@ -10,7 +10,7 @@
 // System Constants
 //{
 // The current version of the program.
-constexpr int VERSION[] = {2, 7, 1, 1};
+constexpr int VERSION[] = {2, 7, 1, 2};
 
 // The title of the game in string form.
 constexpr const char* TITLE_STRING = "Demi Duel";
@@ -2938,7 +2938,7 @@ constexpr const char* ENERGY_BOUNCE_ANNOUNCEMENT =
 //{
 #define TRAIN_ANNOUNCEMENT (                                     \
     opposing ? "Your opponent is choosing a fighter to rank up." \
-    : "Choose a fighter to rank up (with cards from your deck)." \
+    : "Choose a fighter to rank up."                             \
 )
 //}
 
@@ -26173,6 +26173,8 @@ int main(int argc, char** argv) noexcept {
 //}
 
 /* CHANGELOG:
+     v2.7.1.2:
+       Personal Trainer's announcement was updated to match its new effect.
      v2.7.1.1:
        Personal Trainer's card text was updated to match its new effect.
      v2.7.1:
