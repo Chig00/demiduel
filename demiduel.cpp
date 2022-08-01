@@ -10,7 +10,7 @@
 // System Constants
 //{
 // The current version of the program.
-constexpr int VERSION[] = {2, 7, 1, 2};
+constexpr int VERSION[] = {2, 7, 1, 3};
 
 // The title of the game in string form.
 constexpr const char* TITLE_STRING = "Demi Duel";
@@ -4846,7 +4846,7 @@ constexpr const char* EXPERIMENTER_DESCRIPTION =
     "Search your deck for a card and draw it.\n"
     "Banish the top card of your deck.\n"
     "Return this card to your hand.\n"
-    "At the end of your turn, discard this card."
+    "At the end of your turn, discard an Experimenter from your hand."
 ;
 const std::string EXPERIMENTER_EFFECTS(
     std::string(SEARCH_EFFECT) // search
@@ -4968,7 +4968,7 @@ constexpr const char* BANKER_NAME = "Banker";
 constexpr const char* BANKER_DESCRIPTION =
     "Shuffle a card from your hand into your deck.\n"
     "Return this card to your hand.\n"
-    "At the end of your turn, discard this card."
+    "At the end of your turn, discard a Banker from your hand."
 ;
 const std::string BANKER_EFFECTS(
     std::string(SHUFFLE_EFFECT) // shuffle
@@ -21086,23 +21086,23 @@ const DeckCode CONTROL_DECK(
         
         // Supporter Cards
         0, // PROFESSOR
-        0, // LECTURER
-        0, // INVESTOR
-        1, // RESEARCHER
-        1, // GAMBLER
-        0, // RECRUITER
+        1, // LECTURER
+        1, // INVESTOR
+        0, // RESEARCHER
+        0, // GAMBLER
+        1, // RECRUITER
         
-        1, // CHEF
-        0, // TRADER
+        0, // CHEF
+        1, // TRADER
         0, // LIBRARIAN
         0, // EXPERIMENTER
-        0, // PERSONAL TRAINER
+        1, // PERSONAL TRAINER
         0, // SCAPEGOAT
         
         0, // ELECTRICIAN
         1, // ALCHEMIST
         1, // TIME TRAVELLER
-        0, // BANKER
+        1, // BANKER
         1, // GLUTTON
         
         0, // SUBSTITUTE
@@ -21121,9 +21121,9 @@ const DeckCode CONTROL_DECK(
         0, // ARMS SMUGGLER
         0, // MANIAC
         
-        1, // PEACEMAKER
+        0, // PEACEMAKER
         0, // MATCHMAKER
-        1, // PLUMBER
+        0, // PLUMBER
         1, // LOCKSMITH
         1, // LOCK PICKER
         0, // GATEKEEPER
@@ -21132,14 +21132,14 @@ const DeckCode CONTROL_DECK(
         
         // Energy Cards
         0, // FIRE ENERGY
-        1, // AIR ENERGY
+        2, // AIR ENERGY
         0, // WATER ENERGY
         2, // EARTH ENERGY
         
         0, // UNIVERSAL ENERGY
         2, // ALPHA ENERGY
         0, // OMEGA ENERGY
-        2  // BOND ENERGY
+        0  // BOND ENERGY
     }
 );
 
@@ -26173,6 +26173,10 @@ int main(int argc, char** argv) noexcept {
 //}
 
 /* CHANGELOG:
+     v2.7.1.3:
+       Updated Experimenter and Banker's card text to clarify end
+        discard's interaction with multiple copies of the same card.
+       Changes to the built-in decklists.
      v2.7.1.2:
        Personal Trainer's announcement was updated to match its new effect.
      v2.7.1.1:
