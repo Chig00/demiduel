@@ -10,7 +10,7 @@
 // System Constants
 //{
 // The current version of the program.
-constexpr int VERSION[] = {2, 7, 1, 3};
+constexpr int VERSION[] = {2, 7, 2, 0};
 
 // The title of the game in string form.
 constexpr const char* TITLE_STRING = "Demi Duel";
@@ -4141,7 +4141,7 @@ constexpr int CLOUD_SURFER_ATTACK_COST = 2000;
 //{
 constexpr const char* BOXER_NAME = "Boxer";
 constexpr const char* BOXER_ELEMENT = FIRE_ELEMENT;
-constexpr int BOXER_HEALTH = 1000;
+constexpr int BOXER_HEALTH = 1200;
 constexpr int BOXER_RETREAT_COST = 0;
 constexpr const char* BOXER_OLD_RANK = NO_OLD_RANK;
 constexpr const char* BOXER_ABILITY_NAME = "Aggressive";
@@ -26173,6 +26173,8 @@ int main(int argc, char** argv) noexcept {
 //}
 
 /* CHANGELOG:
+     v2.7.2:
+       Boxer's health was increased from 1000 to 1200.
      v2.7.1.3:
        Updated Experimenter and Banker's card text to clarify end
         discard's interaction with multiple copies of the same card.
