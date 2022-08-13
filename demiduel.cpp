@@ -10,7 +10,7 @@
 // System Constants
 //{
 // The current version of the program.
-constexpr int VERSION[] = {2, 7, 2, 0};
+constexpr int VERSION[] = {2, 7, 3, 0};
 
 // The title of the game in string form.
 constexpr const char* TITLE_STRING = "Demi Duel";
@@ -2555,7 +2555,7 @@ constexpr const char* DRAW_LIFE_ANNOUNCEMENT = "Choose a life card to draw.";
     std::string(!opposing ? "Your opponent's " : "Your ")  \
     + opponent->fighters[0].get_name()                     \
     + "'s retreat cost was "                               \
-    + (std::stoi(agility) < 0 ? "increased" : "decreased") \
+    + (std::stoi(agility) > 0 ? "decreased" : "increased") \
     + " by "                                               \
     + std::to_string(abs(std::stoi(agility)))              \
     + "!"                                                  \
@@ -3618,12 +3618,12 @@ constexpr int PILOT_ABILITY_USES = PASSIVE_USES;
 constexpr const char* PILOT_ATTACK_NAME = "Divebomb";
 constexpr const char* PILOT_ATTACK_DESCRIPTION =
     "Deal 350 damage to your opponent's active fighter.\n"
-    "It needs 1000 more energy to retreat next turn."
+    "It needs 1.5x as much energy to retreat next turn."
 ;
 const std::string PILOT_ATTACK_EFFECTS(
     std::string(AGILITY_EFFECT) // agility
     + EFFECT_SEPARATOR          //
-    + "-1000"                   // -1000
+    + "0.5"                     // 0.5
 );
 constexpr int PILOT_ATTACK_DAMAGE = 350;
 constexpr int PILOT_ATTACK_COST = 1000;
@@ -3653,12 +3653,12 @@ constexpr int ASTRONAUT_ABILITY_USES = PASSIVE_USES;
 constexpr const char* ASTRONAUT_ATTACK_NAME = "Gravity Flip";
 constexpr const char* ASTRONAUT_ATTACK_DESCRIPTION =
     "Deal 450 damage to your opponent's active fighter.\n"
-    "It needs 1000 more energy to retreat next turn."
+    "It needs twice as much energy to retreat next turn."
 ;
 const std::string ASTRONAUT_ATTACK_EFFECTS(
     std::string(AGILITY_EFFECT) // agility
     + EFFECT_SEPARATOR          //
-    + "-1000"                   // -1000
+    + "1"                       // 1
 );
 constexpr int ASTRONAUT_ATTACK_DAMAGE = 450;
 constexpr int ASTRONAUT_ATTACK_COST = 1000;
@@ -7533,6 +7533,13 @@ class Fighter: public Card {
          */
         int get_max_health() const noexcept {
             return max_health;
+        }
+        
+        /**
+         * Returns this fighter's retreat cost.
+         */
+        int get_retreat_cost() const noexcept {
+            return retreat_cost;
         }
         
     private:
@@ -15423,12 +15430,13 @@ class Player: public Affectable {
 
                 // The target's retreat cost is changed for a turn.
                 else if (effects[i][0] == AGILITY_EFFECT) {
+                    int weight = -std::stod(effects[i][1]) * opponent->fighters[0].get_retreat_cost();
+                    std::string agility(std::to_string(weight));
                     opponent->fighters[0].affect(
                         effects[i][0]
                         + EFFECT_SEPARATOR
-                        + effects[i][1]
+                        + agility
                     );
-                    std::string agility(effects[i][1]);
                     announce(AGILITY_ANNOUNCEMENT);
                 }
             
@@ -26173,6 +26181,9 @@ int main(int argc, char** argv) noexcept {
 //}
 
 /* CHANGELOG:
+     v2.7.3:
+       Divebomb now increases the retreat cost by 50% instead of 1000.
+       Gravity Flip now doubles the retreat cost instead of increasing it by 1000.
      v2.7.2:
        Boxer's health was increased from 1000 to 1200.
      v2.7.1.3:
