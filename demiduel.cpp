@@ -1,8 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <type_traits>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_net.h>
+#include <cstdio>
 #include "sdlandnet.hpp"
 
 // Constants
@@ -10,7 +9,7 @@
 // System Constants
 //{
 // The current version of the program.
-constexpr int VERSION[] = {2, 7, 3, 0};
+constexpr int VERSION[] = {3, 0, 0, 0};
 
 // The title of the game in string form.
 constexpr const char* TITLE_STRING = "Demi Duel";
@@ -96,8 +95,16 @@ constexpr bool HEADS = true;
 constexpr bool TAILS = false;
 
 // The file paths of the default address and port.
-constexpr const char* DEFAULT_ADDRESS = "data/address.txt";
-constexpr const char* DEFAULT_PORT = "data/port.txt";
+#if ANDROID == 1
+    #define DEFAULT_ADDRESS (SDL_AndroidGetExternalStoragePath() + std::string("/address.txt"))
+    #define DEFAULT_PORT (SDL_AndroidGetExternalStoragePath() + std::string("/port.txt"))
+#else
+    constexpr const char* DEFAULT_ADDRESS = "data/address.txt";
+    constexpr const char* DEFAULT_PORT = "data/port.txt";
+#endif
+
+constexpr const char* DEFAULT_ADDRESS_CONTENTS = "127.0.0.1\n";
+constexpr const char* DEFAULT_PORT_CONTENTS = "1234\n";
 //}
 
 // Game Constants
@@ -129,7 +136,7 @@ constexpr const char* FIRE_ELEMENT = "Fire";
 constexpr const char* AIR_ELEMENT = "Air";
 constexpr const char* WATER_ELEMENT = "Water";
 constexpr const char* EARTH_ELEMENT = "Earth";
-constexpr const char* NO_ELEMENT = "Null";
+constexpr const char* NO_ELEMENT = "?";
 //}
 
 // Card Types
@@ -1044,6 +1051,18 @@ constexpr double WAIT_SEPARATION_X = PORT_SEPARATION;
 constexpr double WAIT_SEPARATION_Y = 50 * WAIT_SEPARATION_X;
 constexpr Renderer::Justification WAIT_JUSTIFICATION = Renderer::CENTRE_JUSTIFY;
 
+// The constants for the server wait sprite.
+constexpr const char* SERVER_WAIT_STRING = "Waiting for the opponent on:";
+constexpr double SERVER_WAIT_X = 0.5;
+constexpr double SERVER_WAIT_Y = 0.5;
+constexpr double SERVER_WAIT_WIDTH = WAIT_WIDTH / 2;
+constexpr double SERVER_WAIT_HEIGHT = WAIT_HEIGHT / 2;
+constexpr double SERVER_WAIT_MAX_WIDTH = 0;
+constexpr double SERVER_WAIT_SEPARATION_X = WAIT_SEPARATION_X / 2;
+constexpr double SERVER_WAIT_SEPARATION_Y = WAIT_SEPARATION_Y / 2;
+constexpr Renderer::Justification SERVER_WAIT_JUSTIFICATION = Renderer::CENTRE_JUSTIFY;
+
+
 // The constants for the no server sprite.
 constexpr const char* NO_SERVER_STRING = "The host could\nnot be resolved.";
 constexpr double NO_SERVER_X = WAIT_X;
@@ -1188,7 +1207,7 @@ constexpr double GENERATE_HEIGHT = PAGE_HEIGHT;
 constexpr double GENERATE_SEPARATION = PAGE_SEPARATION;
 
 // The constants for the description button.
-#define DESCRIPTION_STRING (ALL_DECK_CODES[page * PAGE_COUNT + i]->get_description())
+#define DESCRIPTION_STRING (all_deck_codes[page * PAGE_COUNT + i]->get_description())
 constexpr double DESCRIPTION_X = CARD_X;
 constexpr double DESCRIPTION_Y = CARD_Y;
 constexpr double DESCRIPTION_WIDTH = CARD_WIDTH;
@@ -1420,7 +1439,7 @@ constexpr double STORE_SIZE_SEPARATION = STORE_SIZE_WIDTH / 20;
 //{
 // Constants for the player's deck button.
 constexpr const char* YOUR_DECK_STRING = "Your\nDeck";
-constexpr double YOUR_DECK_X = 0.85;
+constexpr double YOUR_DECK_X = DONE_X;
 constexpr double YOUR_DECK_Y = 0.6;
 constexpr double YOUR_DECK_WIDTH = 0.02;
 constexpr double YOUR_DECK_HEIGHT = 2 * YOUR_DECK_WIDTH;
@@ -1431,7 +1450,7 @@ constexpr Renderer::Justification YOUR_DECK_JUSTIFICATION = Renderer::CENTRE_JUS
 
 // Constants for the player's trash button.
 constexpr const char* YOUR_TRASH_STRING = "Your\nTrash";
-constexpr double YOUR_TRASH_X = YOUR_DECK_X;
+constexpr double YOUR_TRASH_X = DONE_X;
 constexpr double YOUR_TRASH_Y = YOUR_DECK_Y + 0.175;
 constexpr double YOUR_TRASH_WIDTH = YOUR_DECK_WIDTH;
 constexpr double YOUR_TRASH_HEIGHT = YOUR_DECK_HEIGHT;
@@ -1441,9 +1460,9 @@ constexpr double YOUR_TRASH_SEPARATION_Y = YOUR_DECK_SEPARATION_Y;
 constexpr Renderer::Justification YOUR_TRASH_JUSTIFICATION = YOUR_DECK_JUSTIFICATION;
 
 // Constants for the player's hand button.
-constexpr const char* YOUR_HAND_STRING = "Your Hand";
+constexpr const char* YOUR_HAND_STRING = "Your\nHand";
 constexpr double YOUR_HAND_X = 0.5;
-constexpr double YOUR_HAND_Y = 0.95;
+constexpr double YOUR_HAND_Y = QUIT_Y;
 constexpr double YOUR_HAND_WIDTH = YOUR_DECK_WIDTH;
 constexpr double YOUR_HAND_HEIGHT = YOUR_DECK_HEIGHT;
 constexpr double YOUR_HAND_MAX_WIDTH = YOUR_DECK_MAX_WIDTH;
@@ -1453,7 +1472,7 @@ constexpr Renderer::Justification YOUR_HAND_JUSTIFICATION = YOUR_DECK_JUSTIFICAT
 
 // Constants for the player's life cards button.
 constexpr const char* YOUR_LIFE_STRING = "Your\nLife\nCards";
-constexpr double YOUR_LIFE_X = 1 - YOUR_DECK_X;
+constexpr double YOUR_LIFE_X = QUIT_X_ALT;
 constexpr double YOUR_LIFE_Y = 0.7;
 constexpr double YOUR_LIFE_WIDTH = YOUR_DECK_WIDTH;
 constexpr double YOUR_LIFE_HEIGHT = YOUR_DECK_HEIGHT;
@@ -1500,7 +1519,7 @@ constexpr Renderer::Justification YOUR_EFFECTS_JUSTIFICATION = YOUR_DECK_JUSTIFI
 //{
 // Constants for the opponent's deck button.
 constexpr const char* OPPONENT_DECK_STRING = "Opponent's\nDeck";
-constexpr double OPPONENT_DECK_X = YOUR_DECK_X;
+constexpr double OPPONENT_DECK_X = DONE_X;
 constexpr double OPPONENT_DECK_Y = 1 - YOUR_DECK_Y;
 constexpr double OPPONENT_DECK_WIDTH = YOUR_DECK_WIDTH;
 constexpr double OPPONENT_DECK_HEIGHT = YOUR_DECK_HEIGHT;
@@ -1511,7 +1530,7 @@ constexpr Renderer::Justification OPPONENT_DECK_JUSTIFICATION = YOUR_DECK_JUSTIF
 
 // Constants for the opponent's trash button.
 constexpr const char* OPPONENT_TRASH_STRING = "Opponent's\nTrash";
-constexpr double OPPONENT_TRASH_X = OPPONENT_DECK_X;
+constexpr double OPPONENT_TRASH_X = DONE_X;
 constexpr double OPPONENT_TRASH_Y = 1 - YOUR_TRASH_Y;
 constexpr double OPPONENT_TRASH_WIDTH = OPPONENT_DECK_WIDTH;
 constexpr double OPPONENT_TRASH_HEIGHT = OPPONENT_DECK_HEIGHT;
@@ -1521,7 +1540,7 @@ constexpr double OPPONENT_TRASH_SEPARATION_Y = OPPONENT_DECK_SEPARATION_Y;
 constexpr Renderer::Justification OPPONENT_TRASH_JUSTIFICATION = OPPONENT_DECK_JUSTIFICATION;
 
 // Constants for the opponent's hand button.
-constexpr const char* OPPONENT_HAND_STRING = "Opponent's Hand";
+constexpr const char* OPPONENT_HAND_STRING = "Opponent's\nHand";
 constexpr double OPPONENT_HAND_X = 0.5;
 constexpr double OPPONENT_HAND_Y = 1 - YOUR_HAND_Y;
 constexpr double OPPONENT_HAND_WIDTH = OPPONENT_DECK_WIDTH;
@@ -1533,7 +1552,7 @@ constexpr Renderer::Justification OPPONENT_HAND_JUSTIFICATION = OPPONENT_DECK_JU
 
 // Constants for the opponent's life cards button.
 constexpr const char* OPPONENT_LIFE_STRING = "Opponent's\nLife\nCards";
-constexpr double OPPONENT_LIFE_X = 1 - OPPONENT_DECK_X;
+constexpr double OPPONENT_LIFE_X = QUIT_X_ALT;
 constexpr double OPPONENT_LIFE_Y = 1 - YOUR_LIFE_Y;
 constexpr double OPPONENT_LIFE_WIDTH = OPPONENT_DECK_WIDTH;
 constexpr double OPPONENT_LIFE_HEIGHT = OPPONENT_DECK_HEIGHT;
@@ -1568,23 +1587,26 @@ constexpr Renderer::Justification OPPONENT_BENCH_JUSTIFICATION = OPPONENT_DECK_J
 constexpr const char* OPPONENT_EFFECTS_STRING = "Opponent's\nEffects";
 constexpr double OPPONENT_EFFECTS_X = QUIT_X_ALT;
 constexpr double OPPONENT_EFFECTS_Y = 1 - QUIT_Y;
-constexpr double OPPONENT_EFFECTS_WIDTH = YOUR_DECK_WIDTH;
-constexpr double OPPONENT_EFFECTS_HEIGHT = YOUR_DECK_HEIGHT;
-constexpr double OPPONENT_EFFECTS_MAX_WIDTH = YOUR_DECK_MAX_WIDTH;
-constexpr double OPPONENT_EFFECTS_SEPARATION_X = YOUR_DECK_SEPARATION_X;
-constexpr double OPPONENT_EFFECTS_SEPARATION_Y = YOUR_DECK_SEPARATION_Y;
-constexpr Renderer::Justification OPPONENT_EFFECTS_JUSTIFICATION = YOUR_DECK_JUSTIFICATION;
+constexpr double OPPONENT_EFFECTS_WIDTH = OPPONENT_DECK_WIDTH;
+constexpr double OPPONENT_EFFECTS_HEIGHT = OPPONENT_DECK_HEIGHT;
+constexpr double OPPONENT_EFFECTS_MAX_WIDTH = OPPONENT_DECK_MAX_WIDTH;
+constexpr double OPPONENT_EFFECTS_SEPARATION_X = OPPONENT_DECK_SEPARATION_X;
+constexpr double OPPONENT_EFFECTS_SEPARATION_Y = OPPONENT_DECK_SEPARATION_Y;
+constexpr Renderer::Justification OPPONENT_EFFECTS_JUSTIFICATION = OPPONENT_DECK_JUSTIFICATION;
 //}
 
 // Other buttons
 //{
 // Constants for the void button.
-constexpr const char* THE_VOID_STRING = "The Void";
-constexpr double THE_VOID_X = YOUR_LIFE_X;
+constexpr const char* THE_VOID_STRING = "The\nVoid";
+constexpr double THE_VOID_X = QUIT_X_ALT;
 constexpr double THE_VOID_Y = 0.5;
 constexpr double THE_VOID_WIDTH = YOUR_DECK_WIDTH;
 constexpr double THE_VOID_HEIGHT = YOUR_DECK_HEIGHT;
-constexpr double THE_VOID_SEPARATION = YOUR_DECK_SEPARATION_X;
+constexpr double THE_VOID_MAX_WIDTH = YOUR_DECK_MAX_WIDTH;
+constexpr double THE_VOID_SEPARATION_X = YOUR_DECK_SEPARATION_X;
+constexpr double THE_VOID_SEPARATION_Y = YOUR_DECK_SEPARATION_Y;
+constexpr Renderer::Justification THE_VOID_JUSTIFICATION = YOUR_DECK_JUSTIFICATION;
 
     
 // Constants for the end turn button.
@@ -2232,6 +2254,26 @@ constexpr const char* DRAW_LIFE_ANNOUNCEMENT = "Choose a life card to draw.";
 )
 //}
 
+// Announcement to declare that a card must be shuffled into the opponent's deck from their hand.
+//{
+#define TO_SHUFFLE_OPPONENT_ANNOUNCEMENT (                                                \
+    opposing ? "Your opponent is choosing a card in your hand to shuffle into your deck." \
+    : "Choose a card from your opponent's hand to shuffle into their deck."               \
+)
+//}
+
+// Announcement to declare which opposing card was shuffled into the deck.
+//{
+#define SHUFFLE_OPPONENT_PEEK_ANNOUNCEMENT (        \
+    std::string(opposing ? "Your opponent" : "You") \
+    + " shuffled "                                  \
+    + opponent->hand[index].get_name()              \
+    + " into "                                      \
+    + (opposing ? "your" : "their")                 \
+    + " deck."                                      \
+)
+//}
+
 // Announcement to declare that a card must be shuffled into the deck from the trash.
 //{
 #define TO_SHUFFLE_TRASH_ANNOUNCEMENT (                                                            \
@@ -2248,7 +2290,7 @@ constexpr const char* DRAW_LIFE_ANNOUNCEMENT = "Choose a life card to draw.";
     + trash[index].get_name()                       \
     + " into "                                      \
     + (opposing ? "their" : "your")                 \
-    + "deck."                                       \
+    + " deck."                                      \
 )
 //}
 
@@ -2262,6 +2304,20 @@ constexpr const char* DRAW_LIFE_ANNOUNCEMENT = "Choose a life card to draw.";
     + (shuffles == 1 ? "" : "s")                    \
     + " into "                                      \
     + (opposing ? "their" : "your")                 \
+    + " deck."                                      \
+)
+//}
+
+// Announcement to announce the number of opposing cards shuffled.
+//{
+#define SHUFFLE_OPPONENT_ANNOUNCEMENT (             \
+    std::string(opposing ? "Your opponent" : "You") \
+    + " shuffled "                                  \
+    + std::to_string(shuffles)                      \
+    + " card"                                       \
+    + (shuffles == 1 ? "" : "s")                    \
+    + " into "                                      \
+    + (opposing ? "your" : "their")                 \
     + " deck."                                      \
 )
 //}
@@ -3346,7 +3402,7 @@ constexpr double DOT_Y = NUMBER_Y;
 // Driver
 //{
 constexpr const char* DRIVER_NAME = "Driver";
-constexpr const char* DRIVER_ELEMENT = FIRE_ELEMENT;
+constexpr const char* DRIVER_ELEMENT = NO_ELEMENT;
 constexpr int DRIVER_HEALTH = 1000;
 constexpr int DRIVER_RETREAT_COST = 1000;
 constexpr const char* DRIVER_OLD_RANK = NO_OLD_RANK;
@@ -3397,9 +3453,10 @@ constexpr bool RACER_ABILITY_PASSIVE = false;
 constexpr int RACER_ABILITY_USES = 1;
 constexpr const char* RACER_ATTACK_NAME = "Nitro Boost";
 constexpr const char* RACER_ATTACK_DESCRIPTION =
-    "Deal 450 damage to your opponent's active fighter."
+    "Deal 450 damage to your opponent's active fighter.\n"
+    "Switch in a fighter from your bench."
 ;
-constexpr const char* RACER_ATTACK_EFFECTS = NO_EFFECTS;
+constexpr const char* RACER_ATTACK_EFFECTS = SWITCH_EFFECT; // switch
 constexpr int RACER_ATTACK_DAMAGE = 450;
 constexpr int RACER_ATTACK_COST = 1000;
 //}
@@ -3427,9 +3484,10 @@ constexpr bool HOT_RODDER_ABILITY_PASSIVE = false;
 constexpr int HOT_RODDER_ABILITY_USES = 1;
 constexpr const char* HOT_RODDER_ATTACK_NAME = "Super Nitro";
 constexpr const char* HOT_RODDER_ATTACK_DESCRIPTION =
-    "Deal 600 damage to your opponent's active fighter."
+    "Deal 600 damage to your opponent's active fighter.\n"
+    "Switch in a fighter from your bench."
 ;
-constexpr const char* HOT_RODDER_ATTACK_EFFECTS = NO_EFFECTS;
+constexpr const char* HOT_RODDER_ATTACK_EFFECTS = SWITCH_EFFECT; // switch
 constexpr int HOT_RODDER_ATTACK_DAMAGE = 600;
 constexpr int HOT_RODDER_ATTACK_COST = 1000;
 //}
@@ -3671,7 +3729,7 @@ constexpr int ASTRONAUT_ATTACK_COST = 1000;
 // Mage
 //{
 constexpr const char* MAGE_NAME = "Mage";
-constexpr const char* MAGE_ELEMENT = AIR_ELEMENT;
+constexpr const char* MAGE_ELEMENT = NO_ELEMENT;
 constexpr int MAGE_HEALTH = 900;
 constexpr int MAGE_RETREAT_COST = 1000;
 constexpr const char* MAGE_OLD_RANK = NO_OLD_RANK;
@@ -3824,29 +3882,36 @@ constexpr const char* HYDROMANCER_OLD_RANK = MAGE_NAME;
 constexpr const char* HYDROMANCER_ABILITY_NAME = "Whirlpool";
 constexpr const char* HYDROMANCER_ABILITY_DESCRIPTION =
     "You may banish a random fighter in your trash that ranks up into this one.\n"
-    "If you do, switch in one of your opponent's benched fighters.\n"
-    "Your opponent's active fighter can't switch out for 2 turns."
+    "If you do, search your opponent's hand for a card and shuffle it into their deck."
 ;
 const std::string HYDROMANCER_ABILITY_EFFECTS(
     std::string(ABANDON_EFFECT) // abandon
     + EFFECT_SEPARATOR          //
     + "1"                       // 1
     + EFFECT_SEPARATOR          //
-    + HOOK_EFFECT               // hook
+    + SHUFFLE_EFFECT            // shuffle
     + EFFECT_SEPARATOR          //
-    + ROOT_EFFECT               // root
+    + OPPONENT_EFFECT           // opponent
     + EFFECT_SEPARATOR          //
-    + "2"                       // 2
+    + "1"                       // 1
 );
 constexpr bool HYDROMANCER_ABILITY_PASSIVE = false;
 constexpr int HYDROMANCER_ABILITY_USES = 1;
-constexpr const char* HYDROMANCER_ATTACK_NAME = "Slipstream";
+constexpr const char* HYDROMANCER_ATTACK_NAME = "Cryogenic Missiles";
 constexpr const char* HYDROMANCER_ATTACK_DESCRIPTION =
-    "Deal 600 to your opponent's active fighter.\n"
-    "Switch in a fighter from your bench."
+    "Deal 500 damage in 250 damage bursts to your opponent's "
+    "fighters in a distribution of your choosing."
 ;
-constexpr const char* HYDROMANCER_ATTACK_EFFECTS = SWITCH_EFFECT; // switch
-constexpr int HYDROMANCER_ATTACK_DAMAGE = 600;
+const std::string HYDROMANCER_ATTACK_EFFECTS(
+    std::string(SNIPE_EFFECT) // snipe
+    + EFFECT_SEPARATOR        //
+    + "250"                   // 250
+    + EFFECT_TERMINATOR
+    + SNIPE_EFFECT            // snipe
+    + EFFECT_SEPARATOR        //
+    + "250"                   // 250
+);
+constexpr int HYDROMANCER_ATTACK_DAMAGE = 0;
 constexpr int HYDROMANCER_ATTACK_COST = 1000;
 //}
 //}
@@ -4353,7 +4418,7 @@ constexpr int APPRENTICE_FINAL_RANK_ABILITY_USES = PASSIVE_USES;
 // Apprentice
 //{
 constexpr const char* APPRENTICE_NAME = "Apprentice";
-constexpr const char* APPRENTICE_ELEMENT = AIR_ELEMENT;
+constexpr const char* APPRENTICE_ELEMENT = NO_ELEMENT;
 constexpr int APPRENTICE_HEALTH = 1000;
 constexpr int APPRENTICE_RETREAT_COST = 1000;
 constexpr const char* APPRENTICE_OLD_RANK = NO_OLD_RANK;
@@ -4374,7 +4439,7 @@ constexpr int APPRENTICE_ATTACK_COST = 1000;
 // Sensei's Chosen
 //{
 constexpr const char* SENSEIS_CHOSEN_NAME = "Sensei's Chosen";
-constexpr const char* SENSEIS_CHOSEN_ELEMENT = EARTH_ELEMENT;
+constexpr const char* SENSEIS_CHOSEN_ELEMENT = NO_ELEMENT;
 constexpr int SENSEIS_CHOSEN_HEALTH = 1200;
 constexpr int SENSEIS_CHOSEN_RETREAT_COST = 1000;
 constexpr const char* SENSEIS_CHOSEN_OLD_RANK = APPRENTICE_NAME;
@@ -5614,11 +5679,17 @@ constexpr int INVESTOR_THRESHOLD = 14;
 // The minimum number of cards in the deck necessary to use Librarian.
 constexpr int LIBRARIAN_THRESHOLD = 6;
 
+// The minimum number of cards in the deck necessary to use Physicist.
+constexpr int PHYSICIST_THRESHOLD = 8;
+
 // The amount of healing provided by Nurse.
 constexpr int NURSE_HEALING = 600;
 
 // The amount of healing provided by Miracle Worker.
 constexpr int MIRACLE_WORKER_HEALING = 800;
+
+// The amount of healing provided by Biologist.
+constexpr int BIOLOGIST_HEALING = 900;
 
 // The health threshold for a successful assassination.
 constexpr double ASSASSINATION_THRESHOLD = 0.2;
@@ -5628,6 +5699,9 @@ constexpr int SNIPER_DAMAGE = 150;
 
 // The power boost from Cheerleader.
 constexpr int CHEER_BOOST = 100;
+
+// The power boost from Chemist.
+constexpr int CHEM_BOOST = 150;
 //}
 
 // Attack Evaluation
@@ -5679,6 +5753,7 @@ class Evaluation {
             SNIPER_EVALUATION, // Play Sniper without a kill.
             MIRACLE_WORKER_HALF_EVALUATION, // Play Miracle Worker for half value.
             NURSE_HALF_EVALUATION, // Play Nurse for half value.
+            BIOLOGIST_HALF_EVALUATION, // Play Biologist for half value.
             INVESTOR_EVALUATION, // Play Investor.
             LECTURER_EVALUATION, // Play Lecturer.
             TRADER_ENERGY_EVALUATION, // Play Trader for an energy card.
@@ -5690,6 +5765,7 @@ class Evaluation {
             TIME_TRAVELLER_EVALUATION, // Play Time Traveller.
             TRADER_SUPPORTER_EVALUATION, // Play Trader for a supporter card.
             TRADER_FIGHTER_EVALUATION, // Play Trader for a fighter card.
+            PHYSICIST_EVALUATION, // Play Physicist.
             INVESTOR_FINISH_EVALUATION, // Play Investor as the final card of the turn.
             BASIC_EVALUATION, // Play an unranked fighter onto the bench.
             ENERGY_BENCH_EVALUATION, // Attach energy to bench for attacks.
@@ -5698,10 +5774,12 @@ class Evaluation {
             BOUNTY_HUNTER_EVALUATION, // Play Bounty Hunter to switch in a suboptimal fighter.
             RECRUITER_EVALUATION, // Play Recruiter to draw one fighter.
             CHEERLEADER_EVALUATION, // Play Cheerleader for an attack.
+            CHEMIST_EVALUATION, // Play Chemist for an attack.
             GATEKEEPER_EVALUATION, // Play Gatekeeper to lock out the opponent.
             ELECTRICIAN_HALF_EVALUATION, // Play Electrician for half value.
             MIRACLE_WORKER_EVALUATION, // Play Miracle Worker for full value.
             NURSE_EVALUATION, // Play Nurse for full value.
+            BIOLOGIST_EVALUATION, // Play Biologist for full value.
             LIBRARIAN_GOOD_EVALUATION, // Play Librarian for good value.
             ALCHEMIST_GOOD_EVALUATION, // Play Alchemist for good value.
             TIME_TRAVELLER_GOOD_EVALUATION, // Play Time Traveller for good value.
@@ -5716,6 +5794,7 @@ class Evaluation {
             ATTACK_LETHAL_EVALUATION, // Attack for lethal damage or Assassin follow-up.
             ASSASSIN_EVALUATION, // Play Assassin when effective.
             SNIPE_EVALUATION, // Play Sniper when it kills.
+            CHEM_LETHAL_EVALUATION, // Play Chemist for lethal damage.
             CHEER_LETHAL_EVALUATION, // Play Cheerleader for lethal damage.
             PIVOT_EVALUATION, // The value of performing a Scuba Diver pivot.
             ARMS_SMUGGLER_EVALUATION, // Play Arms Smuggler when an attack can follow.
@@ -5725,11 +5804,12 @@ class Evaluation {
         /**
          * Constructed to the default evaluation.
          * The default action ends AUTO's turn and has a value of zero.
+         * A zero index allows a valid index to be returned if no improving evaluation is found.
          */
         Evaluation() noexcept:
             option(),
             value(),
-            indices()
+            indices({0})
         {}
         
         /**
@@ -5752,6 +5832,7 @@ class Evaluation {
         
         /**
          * A custom evaluation with multiple indices is initialised.
+         * Duplicated, because some compilers are incompatible with std::array<int, N>.
          */
         Evaluation(Option option, Priority value, const std::array<int, 3>& indices) noexcept:
             option(option),
@@ -5873,8 +5954,8 @@ class Affectable {
                     EXPLANATION_WIDTH,
                     EXPLANATION_HEIGHT,
                     EXPLANATION_SEPARATION_X,
-                    EXPLANATION_MAX_WIDTH,
                     EXPLANATION_SEPARATION_Y,
+                    EXPLANATION_MAX_WIDTH,
                     EXPLANATION_JUSTIFICATION
                 ),
                 EXPLANATION_X,
@@ -5890,7 +5971,8 @@ class Affectable {
                 && !back_button.get_rectangle().unclick()
                 && message == EMPTY_MESSAGE
             ) {
-                Events::update();
+                display.update();
+                while (Event().poll());
             }
         }
         
@@ -6083,8 +6165,8 @@ class Card: public Affectable {
                     CARD_WIDTH * display_width,
                     CARD_HEIGHT * display_height,
                     CARD_SEPARATION_X * display_width,
-                    CARD_MAX_WIDTH * display_width,
                     CARD_SEPARATION_Y * display_height,
+                    CARD_MAX_WIDTH * display_width,
                     CARD_JUSTIFICATION
                 ),
                 CARD_X,
@@ -6520,7 +6602,8 @@ class Fighter: public Card {
                     }
                     
                     // The events are updated.
-                    Events::update();
+                    display.update();
+                    while (Event().poll());
                 }
             }
         }
@@ -6718,7 +6801,8 @@ class Fighter: public Card {
                                     && !back_button.get_rectangle().unclick()
                                     && message == EMPTY_MESSAGE
                                 ) {
-                                    Events::update();
+                                    display.update();
+                                    while (Event().poll());
                                 }
                                 
                                 found = true;
@@ -6732,7 +6816,8 @@ class Fighter: public Card {
                     }
                     
                     // The events are updated.
-                    Events::update();
+                    display.update();
+                    while (Event().poll());
                 }
             }
         }
@@ -6922,7 +7007,8 @@ class Fighter: public Card {
                     }
                     
                     // The events are updated.
-                    Events::update();
+                    display.update();
+                    while (Event().poll());
                 }
             }
         }
@@ -7452,7 +7538,8 @@ class Fighter: public Card {
                                     && !Events::unpress(NEXT_KEY)
                                     && !back_button.get_rectangle().unclick()
                                 ) {
-                                    Events::update();
+                                    display.update();
+                                    while (Event().poll());
                                 }
                                 
                                 found = true;
@@ -7471,7 +7558,8 @@ class Fighter: public Card {
                     }
                     
                     // The events are updated.
-                    Events::update();
+                    display.update();
+                    while (Event().poll());
                 }
             }
         }
@@ -8289,6 +8377,86 @@ const Fighter* const ALL_FIGHTERS[FIGHTER_COUNT] = {
     &WATER_ELEMENTAL,
     &EARTH_ELEMENTAL,
     &OMEGA_ELEMENTAL
+};
+
+// Defines the precedence of each fighter for deck auto-naming.
+constexpr int FIGHTER_IMPORTANCES[FIGHTER_COUNT] = {
+    35,
+    2,
+    4,
+    6,
+    8,
+    10,
+    11,
+    12,
+    13,
+    15,
+    17,
+    19,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    29,
+    30,
+    31,
+    32,
+    33,
+    34,
+    14,
+    16,
+    18,
+    20,
+    1,
+    3,
+    5,
+    7,
+    28,
+    0,
+    9,
+    27
+};
+
+// Defines the abbreviation for each fighter's name for deck auto-naming.
+constexpr const char* FIGHTER_ABBREVIATIONS[FIGHTER_COUNT] = {
+    "Dri",
+    "Rac",
+    "HRd",
+    "Slr",
+    "Pir",
+    "DBk",
+    "MTr",
+    "Plt",
+    "Ast",
+    "Mag",
+    "PyM",
+    "Wlk",
+    "Clr",
+    "Hyd",
+    "Mnr",
+    "Exc",
+    "Swm",
+    "SDv",
+    "Wel",
+    "PyT",
+    "WRn",
+    "CSf",
+    "Bxr",
+    "LSl",
+    "Bnr",
+    "Bne",
+    "Cul",
+    "App",
+    "SCs",
+    "Nin",
+    "Sam",
+    "FEl",
+    "AEl",
+    "WEl",
+    "EEl",
+    "OEl"
 };
 //}
 
@@ -9179,7 +9347,8 @@ class CardStore {
                                     && !back_button.get_rectangle().unclick()
                                     && message == EMPTY_MESSAGE
                                 ) {
-                                    Events::update();
+                                    display.update();
+                                    while (Event().poll());
                                 }
                                 
                                 found = true;
@@ -9193,7 +9362,8 @@ class CardStore {
                     }
                     
                     // The events are updated.
-                    Events::update();
+                    display.update();
+                    while (Event().poll());
                 }
             }
         }
@@ -9384,7 +9554,8 @@ class CardStore {
                                     !Events::unpress(QUIT_KEY)
                                     && !back_button.get_rectangle().unclick()
                                 ) {
-                                    Events::update();
+                                    display.update();
+                                    while (Event().poll());
                                 }
                                 
                                 found = true;
@@ -9409,7 +9580,8 @@ class CardStore {
                     }
                     
                     // The events are updated.
-                    Events::update();
+                    display.update();
+                    while (Event().poll());
                 }
             }
         }
@@ -9425,8 +9597,8 @@ class CardStore {
                     VIEW_SIZE_WIDTH * display.width(),
                     VIEW_SIZE_HEIGHT * display.height(),
                     VIEW_SIZE_SEPARATION_X * display.width(),
-                    VIEW_SIZE_MAX_WIDTH * display.width(),
                     VIEW_SIZE_SEPARATION_Y * display.height(),
+                    VIEW_SIZE_MAX_WIDTH * display.width(),
                     VIEW_SIZE_JUSTIFICATION
                 ),
                 VIEW_SIZE_X,
@@ -9607,7 +9779,8 @@ class CardStore {
                                     !Events::unpress(QUIT_KEY)
                                     && !back_button.get_rectangle().unclick()
                                 ) {
-                                    Events::update();
+                                    display.update();
+                                    while (Event().poll());
                                 }
                                 
                                 found = true;
@@ -9626,7 +9799,8 @@ class CardStore {
                     }
                     
                     // The events are updated.
-                    Events::update();
+                    display.update();
+                    while (Event().poll());
                 }
             }
         }
@@ -9796,7 +9970,8 @@ class CardStore {
                                     !Events::unpress(QUIT_KEY)
                                     && !back_button.get_rectangle().unclick()
                                 ) {
-                                    Events::update();
+                                    display.update();
+                                    while (Event().poll());
                                 }
                                 
                                 found = true;
@@ -9818,7 +9993,8 @@ class CardStore {
                     }
                     
                     // The events are updated.
-                    Events::update();
+                    display.update();
+                    while (Event().poll());
                 }
             }
         }
@@ -10090,8 +10266,8 @@ class Player: public Affectable {
                         MULLIGAN_FAIL_WIDTH * display_width,
                         MULLIGAN_FAIL_HEIGHT * display_height,
                         MULLIGAN_FAIL_SEPARATION_X * display_width,
-                        MULLIGAN_FAIL_MAX_WIDTH * display_width,
                         MULLIGAN_FAIL_SEPARATION_Y * display_height,
+                        MULLIGAN_FAIL_MAX_WIDTH * display_width,
                         MULLIGAN_FAIL_JUSTIFICATION
                     ),
                     MULLIGAN_FAIL_X,
@@ -10105,7 +10281,8 @@ class Player: public Affectable {
                     !Events::unpress(SUBMIT_KEY)
                     && !next_button.get_rectangle().unclick()
                 ) {
-                    Events::update();
+                    display.update();
+                    while (Event().poll());
                 }
                 
                 // The hand is displayed.
@@ -10119,8 +10296,8 @@ class Player: public Affectable {
                         NEW_MULLIGAN_WIDTH * display_width,
                         NEW_MULLIGAN_HEIGHT * display_height,
                         NEW_MULLIGAN_SEPARATION_X * display_width,
-                        NEW_MULLIGAN_MAX_WIDTH * display_width,
                         NEW_MULLIGAN_SEPARATION_Y * display_height,
+                        NEW_MULLIGAN_MAX_WIDTH * display_width,
                         NEW_MULLIGAN_JUSTIFICATION
                     ),
                     NEW_MULLIGAN_X,
@@ -10134,7 +10311,8 @@ class Player: public Affectable {
                     !Events::unpress(SUBMIT_KEY)
                     && !next_button.get_rectangle().unclick()
                 ) {
-                    Events::update();
+                    display.update();
+                    while (Event().poll());
                 }
                 
                 // The hand is shuffled back into the deck.
@@ -10174,8 +10352,8 @@ class Player: public Affectable {
                     LIFE_WIDTH * display_width,
                     LIFE_HEIGHT * display_height,
                     LIFE_SEPARATION_X * display_width,
-                    LIFE_MAX_WIDTH * display_width,
                     LIFE_SEPARATION_Y * display_height,
+                    LIFE_MAX_WIDTH * display_width,
                     LIFE_JUSTIFICATION
                 ),
                 LIFE_X,
@@ -10189,7 +10367,8 @@ class Player: public Affectable {
                 !Events::unpress(SUBMIT_KEY)
                 && !next_button.get_rectangle().unclick()
             ) {
-                Events::update();
+                display.update();
+                while (Event().poll());
             }
             
             // The player may see their own life cards.
@@ -10215,8 +10394,8 @@ class Player: public Affectable {
                     SET_ACTIVE_WIDTH * display_width,
                     SET_ACTIVE_HEIGHT * display_height,
                     SET_ACTIVE_SEPARATION_X * display_width,
-                    SET_ACTIVE_MAX_WIDTH * display_width,
                     SET_ACTIVE_SEPARATION_Y * display_height,
+                    SET_ACTIVE_MAX_WIDTH * display_width,
                     SET_ACTIVE_JUSTIFICATION
                 ),
                 SET_ACTIVE_X,
@@ -10229,7 +10408,8 @@ class Player: public Affectable {
                 !Events::unpress(SUBMIT_KEY)
                 && !next_button.get_rectangle().unclick()
             ) {
-                Events::update();
+                display.update();
+                while (Event().poll());
             }
             
             int choice = hand.choose_basic(display, renderer);
@@ -10266,8 +10446,8 @@ class Player: public Affectable {
                     LAST_DRAWN_WIDTH * display.width(),
                     LAST_DRAWN_HEIGHT * display.height(),
                     LAST_DRAWN_SEPARATION_X * display.width(),
-                    LAST_DRAWN_MAX_WIDTH * display.width(),
                     LAST_DRAWN_SEPARATION_Y * display.height(),
+                    LAST_DRAWN_MAX_WIDTH * display.width(),
                     LAST_DRAWN_JUSTIFICATION
                 ),
                 LAST_DRAWN_X,
@@ -10318,7 +10498,8 @@ class Player: public Affectable {
                 && !back_button.get_rectangle().unclick()
                 && message == EMPTY_MESSAGE
             ) {
-                Events::update();
+                display.update();
+                while (Event().poll());
             }
         }
         
@@ -10337,7 +10518,8 @@ class Player: public Affectable {
                 && !back_button.get_rectangle().unclick()
                 && message == EMPTY_MESSAGE
             ) {
-                Events::update();
+                display.update();
+                while (Event().poll());
             }
         }
         
@@ -10356,7 +10538,8 @@ class Player: public Affectable {
                 && !back_button.get_rectangle().unclick()
                 && message == EMPTY_MESSAGE
             ) {
-                Events::update();
+                display.update();
+                while (Event().poll());
             }
         }
     
@@ -10530,7 +10713,8 @@ class Player: public Affectable {
                     }
                     
                     // The events are updated.
-                    Events::update();
+                    display.update();
+                    while (Event().poll());
                 }
             }
         }
@@ -10649,8 +10833,8 @@ class Player: public Affectable {
                             RANK_UP_WIDTH,
                             RANK_UP_HEIGHT,
                             RANK_UP_SEPARATION_X,
-                            RANK_UP_MAX_WIDTH,
                             RANK_UP_SEPARATION_Y,
+                            RANK_UP_MAX_WIDTH,
                             RANK_UP_JUSTIFICATION
                         ),
                         RANK_UP_X,
@@ -10659,7 +10843,8 @@ class Player: public Affectable {
                     display.update();
                     
                     while (message == EMPTY_MESSAGE) {
-                        Events::update();
+                        display.update();
+                        while (Event().poll());
                     }
                     
                     // The attachment indexed is received.
@@ -13042,7 +13227,8 @@ class Player: public Affectable {
                             && !Events::unpress(BACK_KEY)
                             && !back_button.get_rectangle().unclick()
                         ) {
-                            Events::update();
+                            display.update();
+                            while (Event().poll());
                         }
                         
                         break;
@@ -13086,7 +13272,8 @@ class Player: public Affectable {
                     }
                     
                     // The events are updated.
-                    Events::update();
+                    display.update();
+                    while (Event().poll());
                 }
             }
         }
@@ -13242,7 +13429,8 @@ class Player: public Affectable {
                             && !Events::unpress(BACK_KEY)
                             && !back_button.get_rectangle().unclick()
                         ) {
-                            Events::update();
+                            display.update();
+                            while (Event().poll());
                         }
                         
                         break;
@@ -13289,7 +13477,8 @@ class Player: public Affectable {
                     }
                     
                     // The events are updated.
-                    Events::update();
+                    display.update();
+                    while (Event().poll());
                 }
             }
         }
@@ -13539,7 +13728,8 @@ class Player: public Affectable {
                     }
                     
                     // The events are updated.
-                    Events::update();
+                    display.update();
+                    while (Event().poll());
                 }
             }
         }
@@ -13750,7 +13940,8 @@ class Player: public Affectable {
                     }
                     
                     // The events are updated.
-                    Events::update();
+                    display.update();
+                    while (Event().poll());
                 }
             }
         }
@@ -13778,7 +13969,8 @@ class Player: public Affectable {
                 opposing = true;
                 
                 while (message == EMPTY_MESSAGE) {
-                    Events::update();
+                    display.update();
+                    while (Event().poll());
                 }
                 
                 // The index of the fighter is extracted.
@@ -14763,7 +14955,7 @@ class Player: public Affectable {
                     
                     // Abandon effects only work if the abandons were successful.
                     if (success) {
-                        // The ability allows the player to search for cards in their deck.
+                        // The ability allows the player to search for cards.
                         if (effects[i][2] == SEARCH_EFFECT) {
                             // The trash is searched for a card to draw.
                             if (effects[i][3] == TRASH_EFFECT) {
@@ -14866,6 +15058,68 @@ class Player: public Affectable {
                     
                                 // The root is announced.
                                 announce(ROOT_OPPONENT_ANNOUNCEMENT);
+                            }
+                        }
+                        
+                        // Shuffles cards from a player's hand into the deck.
+                        else if (effects[i][2] == SHUFFLE_EFFECT) {
+                            // Affects the opponent.
+                            if (effects[i][3] == OPPONENT_EFFECT) {
+                                // Number of card shuffles is extracted.
+                                int shuffles = std::stoi(effects[i][4]);
+                        
+                                // Number is limited by hand size.
+                                if (shuffles > opponent->hand.size()) {
+                                    shuffles = opponent->hand.size();
+                                }
+                                
+                                // The player chooses cards to shuffle into the deck.
+                                for (int i = 0; i < shuffles; ++i) {
+                                    int index;
+                                    
+                                    // No choice.
+                                    if (opponent->hand.size() == 1) {
+                                        index = 0;
+                                    }
+                                    
+                                    // Player chooses.
+                                    else if (!opposing) {
+                                        announce(TO_SHUFFLE_OPPONENT_ANNOUNCEMENT);
+                                        
+                                        index = opponent->hand.choose(
+                                            display,
+                                            renderer,
+                                            back_button
+                                        );
+                                        
+                                        messenger.send(std::to_string(index));
+                                    }
+                                    
+                                    // Opponent waits.
+                                    else {
+                                        announce(TO_SHUFFLE_OPPONENT_ANNOUNCEMENT, false);
+                                        
+                                        index = std::stoi(message);
+                                        
+                                        // A message is waited for in another thread.
+                                        message = EMPTY_MESSAGE;
+                                        messenger_thread.new_thread(
+                                            MessengerPackage::get_message,
+                                            &messenger_package
+                                        );
+                                    }
+                                    
+                                    // The opponent sees what was shuffled.
+                                    if (opposing) {
+                                        announce(SHUFFLE_OPPONENT_PEEK_ANNOUNCEMENT);
+                                    }
+                                    
+                                    // Card is shuffled into the deck.
+                                    opponent->deck.store(opponent->hand.remove(index));
+                                }
+                                
+                                // The card shuffle is announced.
+                                announce(SHUFFLE_OPPONENT_ANNOUNCEMENT);
                             }
                         }
                     }
@@ -15231,7 +15485,8 @@ class Player: public Affectable {
                             }
                             
                             // The events are updated.
-                            Events::update();
+                            display.update();
+                            while (Event().poll());
                         }
                     }
                 }
@@ -16418,7 +16673,8 @@ class Player: public Affectable {
                     }
                     
                     // The events are updated.
-                    Events::update();
+                    display.update();
+                    while (Event().poll());
                 }
             }
         }
@@ -16436,8 +16692,8 @@ class Player: public Affectable {
                     ANNOUNCEMENT_WIDTH * display.width(),
                     ANNOUNCEMENT_HEIGHT * display.height(),
                     ANNOUNCEMENT_SEPARATION_X * display.width(),
-                    ANNOUNCEMENT_MAX_WIDTH * display.width(),
                     ANNOUNCEMENT_SEPARATION_Y * display.height(),
+                    ANNOUNCEMENT_MAX_WIDTH * display.width(),
                     ANNOUNCEMENT_JUSTIFICATION
                 ),
                 ANNOUNCEMENT_X,
@@ -16459,7 +16715,8 @@ class Player: public Affectable {
                     && !next_button.get_rectangle().unclick()
                     && message == EMPTY_MESSAGE
                 ) {
-                    Events::update();
+                    display.update();
+                    while (Event().poll());
                 }
             }
             
@@ -16471,7 +16728,8 @@ class Player: public Affectable {
                 }
                 
                 while (message == EMPTY_MESSAGE) {
-                    Events::update();
+                    display.update();
+                    while (Event().poll());
                 }
             }
         }
@@ -16924,7 +17182,8 @@ class Player: public Affectable {
                         }
                         
                         // The events are updated.
-                        Events::update();
+                        display.update();
+                        while (Event().poll());
                     }
                 }
             
@@ -17170,7 +17429,8 @@ class Player: public Affectable {
                     }
                     
                     // The events are updated.
-                    Events::update();
+                    display.update();
+                    while (Event().poll());
                 }
             }
         }
@@ -17374,7 +17634,8 @@ class Player: public Affectable {
                     }
                     
                     // The events are updated.
-                    Events::update();
+                    display.update();
+                    while (Event().poll());
                 }
             }
         }
@@ -17447,7 +17708,8 @@ class Player: public Affectable {
                 // Else, the choice of life cards is waited for.
                 else {
                     while (message == EMPTY_MESSAGE) {
-                        Events::update();
+                        display.update();
+                        while (Event().poll());
                     }
                     
                     // The index is set.
@@ -17523,7 +17785,8 @@ class Player: public Affectable {
                 // Else, the choice of life cards is waited for.
                 else {
                     while (message == EMPTY_MESSAGE) {
-                        Events::update();
+                        display.update();
+                        while (Event().poll());
                     }
                     
                     // The index is set.
@@ -19714,6 +19977,86 @@ class Player: public Affectable {
                         );
                     }
                 }
+                
+                // Biologist
+                else if (store.get_supporters()[i].get_name() == BIOLOGIST_NAME) {
+                    // The maximum lost health of AUTO's fighters.
+                    int max = fighters[0].max_healing();
+                    int index = 0;
+                    
+                    // The value is calculated.
+                    for (int j = 1; j < fighters.size(); ++j) {
+                        int missing = fighters[j].max_healing();
+                        
+                        if (missing > max) {
+                            max = missing;
+                            index = j;
+                        }
+                    }
+                    
+                    // Biologist can get full value.
+                    if (max >= BIOLOGIST_HEALING) {
+                        evaluation.improve<2>(
+                            Evaluation::CARD,
+                            Evaluation::BIOLOGIST_EVALUATION,
+                            {
+                                static_cast<int>(store.get_fighters().size() + i),
+                                index
+                            }
+                        );
+                    }
+                    
+                    // Biologist can get half value.
+                    else if (max >= BIOLOGIST_HEALING / 2) {
+                        evaluation.improve<2>(
+                            Evaluation::CARD,
+                            Evaluation::BIOLOGIST_HALF_EVALUATION,
+                            {
+                                static_cast<int>(store.get_fighters().size() + i),
+                                index
+                            }
+                        );
+                    }
+                }
+                
+                // Chemist
+                else if (store.get_supporters()[i].get_name() == CHEMIST_NAME) {
+                    // Chemist is only useful when an attack is possible.
+                    if (attackable) {
+                        // Chemist provides lethal damage where it would be missed.
+                        if (
+                            damage < opponent->fighters[0].get_health()
+                            && damage + CHEM_BOOST >= opponent->fighters[0].get_health()
+                        ) {
+                            evaluation.improve(
+                                Evaluation::CARD,
+                                Evaluation::CHEM_LETHAL_EVALUATION,
+                                store.get_fighters().size() + i
+                            );
+                        }
+                        
+                        // Chemist can be used with spare plays.
+                        else {
+                            evaluation.improve(
+                                Evaluation::CARD,
+                                Evaluation::CHEMIST_EVALUATION,
+                                store.get_fighters().size() + i
+                            );
+                        }
+                    }
+                }
+                
+                // Physicist
+                else if (store.get_supporters()[i].get_name() == PHYSICIST_NAME) {
+                    // Physicist only holds value if the deck contains enough cards.
+                    if (deck.size() >= PHYSICIST_THRESHOLD) {
+                        evaluation.improve(
+                            Evaluation::CARD,
+                            Evaluation::PHYSICIST_EVALUATION,
+                            store.get_fighters().size() + i
+                        );
+                    }
+                }
             }
             //}
             
@@ -20396,6 +20739,28 @@ std::vector<Player> players;
 
 // Deck Generator
 //{
+// Constants
+//{
+// The directory and extension of decklist sources.
+#if ANDROID == 1
+    #define DECK_DIRECTORY SDL_AndroidGetExternalStoragePath() + std::string("/")
+#else
+    constexpr const char* DECK_DIRECTORY = "data/decks/";
+#endif
+constexpr const char* DECK_EXTENSION = ".txt";
+
+// The file containing the list of custom decks.
+#define CUSTOM_DECKS (           \
+    DECK_DIRECTORY               \
+    + std::string("customdecks") \
+    + DECK_EXTENSION             \
+)
+
+// The partial contents of customdecks.txt.
+constexpr const char* CUSTOM_DECKS_TOP = "Custom Deck Count:\n";
+constexpr const char* CUSTOM_DECKS_MID = "\n\nCustom Deck Filenames:\n";
+//}
+
 /**
  * A class that defines a generatable deck.
  */
@@ -20412,7 +20777,8 @@ class DeckCode {
             name(name),
             description(description),
             code(code),
-            size()
+            size(),
+            source(name)
         {
             for (int i = 0; i < CARD_COUNT; ++i) {
                 size += code[i];
@@ -20421,12 +20787,14 @@ class DeckCode {
         
         /**
          * Constructs a deck code from the given source file.
+         * The directory and extension are added automatically.
          */
         DeckCode(const std::string& source):
-            size()
+            size(),
+            source(source)
         {
             // The input file stream is initialised.
-            std::ifstream file(source);
+            std::ifstream file(DECK_DIRECTORY + source + DECK_EXTENSION);
             
             // The deck's name is extracted ("Name:" is discarded).
             std::getline(file, name);
@@ -20483,11 +20851,41 @@ class DeckCode {
             return size;
         }
         
+        /**
+         * Returns the source of the deck code (omitting the directory and extension).
+         */
+        std::string get_source() const noexcept {
+            return source;
+        }
+        
+        /**
+         * Stores the deck code on disk.
+         */
+        void store() const noexcept {
+            std::ofstream file(DECK_DIRECTORY + source + DECK_EXTENSION);
+            file << "Name:\n" << name << "\n\n";
+            
+            for (int i = 0; i < FIGHTER_COUNT; ++i) {
+                file << code[i] << " (" << ALL_FIGHTERS[i]->get_name() << ")\n";
+            }
+            
+            for (int i = 0; i < SUPPORTER_COUNT; ++i) {
+                file << code[FIGHTER_COUNT + i] << " (" << ALL_SUPPORTERS[i]->get_name() << ")\n";
+            }
+            
+            for (int i = 0; i < ENERGY_COUNT; ++i) {
+                file << code[FIGHTER_COUNT + SUPPORTER_COUNT + i] << " (" << ALL_ENERGY[i]->get_name() << ")\n";
+            }
+            
+            file << "\nDescription:\n" << description;
+        }
+        
     private:
         std::string name;                 // The name of the deck.
         std::string description;          // The description of the deck.
         std::array<int, CARD_COUNT> code; // Corresponds with the deck's contents.
         int size;                         // The number of cards in the deck.
+        std::string source;               // The file corresponding to the deck.
 };
 
 // Deck Codes
@@ -21824,12 +22222,440 @@ const DeckCode CLEAR_DECK(
         0  // BOND ENERGY
     }
 );
+
+const DeckCode CREATE_DECK(
+    "Create Deck",
+    "Makes a new deck using the current decklist.",
+    {
+        // Fighter Cards
+        0, // DRIVER
+        0, // RACER
+        0, // HOT RODDER
+        0, // SAILOR
+        0, // PIRATE
+        0, // DIRT BIKER
+        0, // MONSTER TRUCKER
+        0, // PILOT
+        0, // ASTRONAUT
+        
+        0, // MAGE
+        0, // PYROMANCER
+        0, // WARLOCK
+        0, // CLERIC
+        0, // HYDROMANCER
+        
+        0, // MINER
+        0, // EXCAVATOR
+        0, // SWIMMER
+        0, // SCUBA DIVER
+        0, // WELDER
+        0, // PYROTECHNICIAN
+        0, // WIND RUNNER
+        0, // CLOUD SURFER
+        
+        0, // BOXER
+        0, // LOST SOUL
+        
+        0, // BANISHER
+        0, // BANSHEE
+        0, // CULTIST
+        
+        0, // APPRENTICE
+        0, // SENSEI'S CHOSEN
+        0, // NINJA
+        0, // SAMURAI
+        
+        0, // FIRE ELEMENTAL
+        0, // AIR ELEMENTAL
+        0, // WATER ELEMENTAL
+        0, // EARTH ELEMENTAL
+        0, // OMEGA ELEMENTAL
+        
+        // Supporter Cards
+        0, // PROFESSOR
+        0, // LECTURER
+        0, // INVESTOR
+        0, // RESEARCHER
+        0, // GAMBLER
+        0, // RECRUITER
+        
+        0, // CHEF
+        0, // TRADER
+        0, // LIBRARIAN
+        0, // EXPERIMENTER
+        0, // PERSONAL TRAINER
+        0, // SCAPEGOAT
+        
+        0, // ELECTRICIAN
+        0, // ALCHEMIST
+        0, // TIME TRAVELLER
+        0, // BANKER
+        0, // GLUTTON
+        
+        0, // SUBSTITUTE
+        0, // BOUNTY HUNTER
+        
+        0, // NURSE
+        0, // INNKEEPER
+        0, // MIRACLE WORKER
+        0, // DOCTOR
+        0, // ESCAPE ARTIST
+        
+        0, // ASSASSIN
+        0, // SNIPER
+        
+        0, // CHEERLEADER
+        0, // ARMS SMUGGLER
+        0, // MANIAC
+        
+        0, // PEACEMAKER
+        0, // MATCHMAKER
+        0, // PLUMBER
+        0, // LOCKSMITH
+        0, // LOCK PICKER
+        0, // GATEKEEPER
+        0, // MILLER
+        0, // ARSONIST
+        
+        // Energy Cards
+        0, // FIRE ENERGY
+        0, // AIR ENERGY
+        0, // WATER ENERGY
+        0, // EARTH ENERGY
+        
+        0, // UNIVERSAL ENERGY
+        0, // ALPHA ENERGY
+        0, // OMEGA ENERGY
+        0  // BOND ENERGY
+    }
+);
+
+const DeckCode DELETE_DECK(
+    "Delete Deck",
+    "Deletes the last chosen custom deck.",
+    {
+        // Fighter Cards
+        0, // DRIVER
+        0, // RACER
+        0, // HOT RODDER
+        0, // SAILOR
+        0, // PIRATE
+        0, // DIRT BIKER
+        0, // MONSTER TRUCKER
+        0, // PILOT
+        0, // ASTRONAUT
+        
+        0, // MAGE
+        0, // PYROMANCER
+        0, // WARLOCK
+        0, // CLERIC
+        0, // HYDROMANCER
+        
+        0, // MINER
+        0, // EXCAVATOR
+        0, // SWIMMER
+        0, // SCUBA DIVER
+        0, // WELDER
+        0, // PYROTECHNICIAN
+        0, // WIND RUNNER
+        0, // CLOUD SURFER
+        
+        0, // BOXER
+        0, // LOST SOUL
+        
+        0, // BANISHER
+        0, // BANSHEE
+        0, // CULTIST
+        
+        0, // APPRENTICE
+        0, // SENSEI'S CHOSEN
+        0, // NINJA
+        0, // SAMURAI
+        
+        0, // FIRE ELEMENTAL
+        0, // AIR ELEMENTAL
+        0, // WATER ELEMENTAL
+        0, // EARTH ELEMENTAL
+        0, // OMEGA ELEMENTAL
+        
+        // Supporter Cards
+        0, // PROFESSOR
+        0, // LECTURER
+        0, // INVESTOR
+        0, // RESEARCHER
+        0, // GAMBLER
+        0, // RECRUITER
+        
+        0, // CHEF
+        0, // TRADER
+        0, // LIBRARIAN
+        0, // EXPERIMENTER
+        0, // PERSONAL TRAINER
+        0, // SCAPEGOAT
+        
+        0, // ELECTRICIAN
+        0, // ALCHEMIST
+        0, // TIME TRAVELLER
+        0, // BANKER
+        0, // GLUTTON
+        
+        0, // SUBSTITUTE
+        0, // BOUNTY HUNTER
+        
+        0, // NURSE
+        0, // INNKEEPER
+        0, // MIRACLE WORKER
+        0, // DOCTOR
+        0, // ESCAPE ARTIST
+        
+        0, // ASSASSIN
+        0, // SNIPER
+        
+        0, // CHEERLEADER
+        0, // ARMS SMUGGLER
+        0, // MANIAC
+        
+        0, // PEACEMAKER
+        0, // MATCHMAKER
+        0, // PLUMBER
+        0, // LOCKSMITH
+        0, // LOCK PICKER
+        0, // GATEKEEPER
+        0, // MILLER
+        0, // ARSONIST
+        
+        // Energy Cards
+        0, // FIRE ENERGY
+        0, // AIR ENERGY
+        0, // WATER ENERGY
+        0, // EARTH ENERGY
+        
+        0, // UNIVERSAL ENERGY
+        0, // ALPHA ENERGY
+        0, // OMEGA ENERGY
+        0  // BOND ENERGY
+    }
+);
+
+const DeckCode IMPORT_DECK(
+    "Import Deck",
+    "Sets the current decklist by pasting the clipboard's contents.",
+    {
+        // Fighter Cards
+        0, // DRIVER
+        0, // RACER
+        0, // HOT RODDER
+        0, // SAILOR
+        0, // PIRATE
+        0, // DIRT BIKER
+        0, // MONSTER TRUCKER
+        0, // PILOT
+        0, // ASTRONAUT
+        
+        0, // MAGE
+        0, // PYROMANCER
+        0, // WARLOCK
+        0, // CLERIC
+        0, // HYDROMANCER
+        
+        0, // MINER
+        0, // EXCAVATOR
+        0, // SWIMMER
+        0, // SCUBA DIVER
+        0, // WELDER
+        0, // PYROTECHNICIAN
+        0, // WIND RUNNER
+        0, // CLOUD SURFER
+        
+        0, // BOXER
+        0, // LOST SOUL
+        
+        0, // BANISHER
+        0, // BANSHEE
+        0, // CULTIST
+        
+        0, // APPRENTICE
+        0, // SENSEI'S CHOSEN
+        0, // NINJA
+        0, // SAMURAI
+        
+        0, // FIRE ELEMENTAL
+        0, // AIR ELEMENTAL
+        0, // WATER ELEMENTAL
+        0, // EARTH ELEMENTAL
+        0, // OMEGA ELEMENTAL
+        
+        // Supporter Cards
+        0, // PROFESSOR
+        0, // LECTURER
+        0, // INVESTOR
+        0, // RESEARCHER
+        0, // GAMBLER
+        0, // RECRUITER
+        
+        0, // CHEF
+        0, // TRADER
+        0, // LIBRARIAN
+        0, // EXPERIMENTER
+        0, // PERSONAL TRAINER
+        0, // SCAPEGOAT
+        
+        0, // ELECTRICIAN
+        0, // ALCHEMIST
+        0, // TIME TRAVELLER
+        0, // BANKER
+        0, // GLUTTON
+        
+        0, // SUBSTITUTE
+        0, // BOUNTY HUNTER
+        
+        0, // NURSE
+        0, // INNKEEPER
+        0, // MIRACLE WORKER
+        0, // DOCTOR
+        0, // ESCAPE ARTIST
+        
+        0, // ASSASSIN
+        0, // SNIPER
+        
+        0, // CHEERLEADER
+        0, // ARMS SMUGGLER
+        0, // MANIAC
+        
+        0, // PEACEMAKER
+        0, // MATCHMAKER
+        0, // PLUMBER
+        0, // LOCKSMITH
+        0, // LOCK PICKER
+        0, // GATEKEEPER
+        0, // MILLER
+        0, // ARSONIST
+        
+        // Energy Cards
+        0, // FIRE ENERGY
+        0, // AIR ENERGY
+        0, // WATER ENERGY
+        0, // EARTH ENERGY
+        
+        0, // UNIVERSAL ENERGY
+        0, // ALPHA ENERGY
+        0, // OMEGA ENERGY
+        0  // BOND ENERGY
+    }
+);
+
+const DeckCode EXPORT_DECK(
+    "Export Deck",
+    "Copies the current decklist to the clipboard.",
+    {
+        // Fighter Cards
+        0, // DRIVER
+        0, // RACER
+        0, // HOT RODDER
+        0, // SAILOR
+        0, // PIRATE
+        0, // DIRT BIKER
+        0, // MONSTER TRUCKER
+        0, // PILOT
+        0, // ASTRONAUT
+        
+        0, // MAGE
+        0, // PYROMANCER
+        0, // WARLOCK
+        0, // CLERIC
+        0, // HYDROMANCER
+        
+        0, // MINER
+        0, // EXCAVATOR
+        0, // SWIMMER
+        0, // SCUBA DIVER
+        0, // WELDER
+        0, // PYROTECHNICIAN
+        0, // WIND RUNNER
+        0, // CLOUD SURFER
+        
+        0, // BOXER
+        0, // LOST SOUL
+        
+        0, // BANISHER
+        0, // BANSHEE
+        0, // CULTIST
+        
+        0, // APPRENTICE
+        0, // SENSEI'S CHOSEN
+        0, // NINJA
+        0, // SAMURAI
+        
+        0, // FIRE ELEMENTAL
+        0, // AIR ELEMENTAL
+        0, // WATER ELEMENTAL
+        0, // EARTH ELEMENTAL
+        0, // OMEGA ELEMENTAL
+        
+        // Supporter Cards
+        0, // PROFESSOR
+        0, // LECTURER
+        0, // INVESTOR
+        0, // RESEARCHER
+        0, // GAMBLER
+        0, // RECRUITER
+        
+        0, // CHEF
+        0, // TRADER
+        0, // LIBRARIAN
+        0, // EXPERIMENTER
+        0, // PERSONAL TRAINER
+        0, // SCAPEGOAT
+        
+        0, // ELECTRICIAN
+        0, // ALCHEMIST
+        0, // TIME TRAVELLER
+        0, // BANKER
+        0, // GLUTTON
+        
+        0, // SUBSTITUTE
+        0, // BOUNTY HUNTER
+        
+        0, // NURSE
+        0, // INNKEEPER
+        0, // MIRACLE WORKER
+        0, // DOCTOR
+        0, // ESCAPE ARTIST
+        
+        0, // ASSASSIN
+        0, // SNIPER
+        
+        0, // CHEERLEADER
+        0, // ARMS SMUGGLER
+        0, // MANIAC
+        
+        0, // PEACEMAKER
+        0, // MATCHMAKER
+        0, // PLUMBER
+        0, // LOCKSMITH
+        0, // LOCK PICKER
+        0, // GATEKEEPER
+        0, // MILLER
+        0, // ARSONIST
+        
+        // Energy Cards
+        0, // FIRE ENERGY
+        0, // AIR ENERGY
+        0, // WATER ENERGY
+        0, // EARTH ENERGY
+        
+        0, // UNIVERSAL ENERGY
+        0, // ALPHA ENERGY
+        0, // OMEGA ENERGY
+        0  // BOND ENERGY
+    }
+);
 //}
 
 // All of the deck codes.
-constexpr int DECK_CODE_COUNT = 11;
+constexpr int DECK_CODE_COUNT = 15;
+constexpr int FUNCTIONAL_DECK_INDEX = 10;
 const DeckCode* const ALL_DECK_CODES[DECK_CODE_COUNT] = {
-//  &TEST_DECK,
     &RANDOM_DECK,
     &AGGRO_DECK,
     &TEMPO_DECK,
@@ -21840,26 +22666,13 @@ const DeckCode* const ALL_DECK_CODES[DECK_CODE_COUNT] = {
     &AGGRO_COMBO_DECK,
     &CONTROL_COMBO_DECK,
     &OTK_COMBO_DECK,
-    &CLEAR_DECK
+    &CLEAR_DECK,
+    &CREATE_DECK,
+    &DELETE_DECK,
+    &IMPORT_DECK,
+    &EXPORT_DECK
 };
-
-// The directory and extension of decklist sources.
-constexpr const char* DECK_DIRECTORY = "data/decks/";
-constexpr const char* DECK_EXTENSION = ".txt";
-
-// The file containing the list of custom decks.
-const std::string CUSTOM_DECKS(
-    DECK_DIRECTORY
-    + std::string("customdecks")
-    + DECK_EXTENSION
-);
 //}
-
-#ifdef DEMI_DUEL_DEBUG
-    #define view_hand_size view_hand
-    #define view_deck_size view_deck
-    #define view_life_cards_size view_life_cards
-#endif
 
 // Main Functions
 //{
@@ -21989,7 +22802,8 @@ std::string bonus_draw(
                 }
             }
 
-            Events::update();
+            display.update();
+            while (Event().poll());
         }
     }
     
@@ -22011,8 +22825,8 @@ void display_draw_count(
             OPPONENT_DRAW_WIDTH * display.width(),
             OPPONENT_DRAW_HEIGHT * display.height(),
             OPPONENT_DRAW_SEPARATION_X * display.width(),
-            OPPONENT_DRAW_MAX_WIDTH * display.width(),
             OPPONENT_DRAW_SEPARATION_Y * display.height(),
+            OPPONENT_DRAW_MAX_WIDTH * display.width(),
             OPPONENT_DRAW_JUSTIFICATION
         ),
         OPPONENT_DRAW_X,
@@ -22048,8 +22862,8 @@ void mulligan(
             MULLIGAN_WIDTH * display_width,
             MULLIGAN_HEIGHT * display_height,
             MULLIGAN_SEPARATION_X * display_width,
-            MULLIGAN_MAX_WIDTH * display_width,
             MULLIGAN_SEPARATION_Y * display_height,
+            MULLIGAN_MAX_WIDTH * display_width,
             MULLIGAN_JUSTIFICATION
         ),
         MULLIGAN_X,
@@ -22063,7 +22877,8 @@ void mulligan(
         !Events::unpress(SUBMIT_KEY)
         && !next_button.get_rectangle().unclick()
     ) {
-        Events::update();
+        display.update();
+        while (Event().poll());
     }
     
     // While both players do not have a valid hand, the mulligan continues.
@@ -22105,8 +22920,8 @@ void mulligan(
                 BONUS_DRAW_WIDTH * display_width,
                 BONUS_DRAW_HEIGHT * display_height,
                 BONUS_DRAW_SEPARATION_X * display_width,
-                BONUS_DRAW_MAX_WIDTH * display_width,
                 BONUS_DRAW_SEPARATION_Y * display_height,
+                BONUS_DRAW_MAX_WIDTH * display_width,
                 BONUS_DRAW_JUSTIFICATION
             ),
             BONUS_DRAW_X,
@@ -22120,7 +22935,8 @@ void mulligan(
             !Events::unpress(SUBMIT_KEY)
             && !next_button.get_rectangle().unclick()
         ) {
-            Events::update();
+            display.update();
+            while (Event().poll());
         }
         
         players[PLAYER].view_hand();
@@ -22145,8 +22961,8 @@ void mulligan(
                 NO_BONUS_DRAW_WIDTH * display_width,
                 NO_BONUS_DRAW_HEIGHT * display_height,
                 NO_BONUS_DRAW_SEPARATION_X * display_width,
-                NO_BONUS_DRAW_MAX_WIDTH * display_width,
                 NO_BONUS_DRAW_SEPARATION_Y * display_height,
+                NO_BONUS_DRAW_MAX_WIDTH * display_width,
                 NO_BONUS_DRAW_JUSTIFICATION
             ),
             NO_BONUS_DRAW_X,
@@ -22161,7 +22977,8 @@ void mulligan(
         
         // Events are updated to prevent closure due to app inactivity.
         while (draw_string == EMPTY_MESSAGE) {
-            Events::update();
+            display.update();
+            while (Event().poll());
         }
         
         int draws = std::stoi(draw_string);
@@ -22175,7 +22992,8 @@ void mulligan(
             !Events::unpress(SUBMIT_KEY)
             && !next_button.get_rectangle().unclick()
         ) {
-            Events::update();
+            display.update();
+            while (Event().poll());
         }
         
         // The opponent draws.
@@ -22191,7 +23009,8 @@ void mulligan(
             !Events::unpress(SUBMIT_KEY)
             && !next_button.get_rectangle().unclick()
         ) {
-            Events::update();
+            display.update();
+            while (Event().poll());
         }
     }
 }
@@ -22251,6 +23070,12 @@ void game(
     MessengerPackage& messenger_package,
     Thread& messenger_thread
 ) noexcept {
+    #ifdef DEMI_DUEL_DEBUG
+        #define view_hand_size view_hand
+        #define view_deck_size view_deck
+        #define view_life_cards_size view_life_cards
+    #endif
+
     // Game set up.
     //{
     // The components of the display are extracted.
@@ -22265,8 +23090,8 @@ void game(
             WAIT_WIDTH * display_width,
             WAIT_HEIGHT * display_height,
             WAIT_SEPARATION_X * display_width,
-            WAIT_MAX_WIDTH * display_width,
             WAIT_SEPARATION_Y * display_height,
+            WAIT_MAX_WIDTH * display_width,
             WAIT_JUSTIFICATION
         )
     );
@@ -22311,7 +23136,8 @@ void game(
         // The opponent's message is waited for.
         // Event updating is used to prevent "app inactivity".
         while (message == EMPTY_MESSAGE) {
-            Events::update();
+            display.update();
+            while (Event().poll());
         }
         
         // If the other player quit, the game cannot begin.
@@ -22430,8 +23256,8 @@ void game(
             ORDER_WIDTH * display_width,
             ORDER_HEIGHT * display_height,
             ORDER_SEPARATION_X * display_width,
-            ORDER_MAX_WIDTH * display_width,
             ORDER_SEPARATION_Y * display_height,
+            ORDER_MAX_WIDTH * display_width,
             ORDER_JUSTIFICATION
         ),
         ORDER_X,
@@ -22445,7 +23271,8 @@ void game(
         !Events::unpress(SUBMIT_KEY)
         && !next_button.get_rectangle().unclick()
     ) {
-        Events::update();
+        display.update();
+        while (Event().poll());
     }
     
     // The players perform the mulligan.
@@ -22469,8 +23296,9 @@ void game(
             WAIT_WIDTH * display.width(),
             WAIT_HEIGHT * display.height(),
             WAIT_SEPARATION_X * display.width(),
+            WAIT_SEPARATION_Y * display.height(),
             WAIT_MAX_WIDTH * display.width(),
-            WAIT_SEPARATION_Y * display.height()
+            WAIT_JUSTIFICATION
         ),
         WAIT_X,
         WAIT_Y
@@ -22478,7 +23306,8 @@ void game(
     display.update();
     
     while (message == "") {
-        Events::update();
+        display.update();
+        while (Event().poll());
     }
     
     // The opponent's board is set up.
@@ -22512,8 +23341,8 @@ void game(
             YOUR_DECK_WIDTH * display.width(),
             YOUR_DECK_HEIGHT * display.height(),
             YOUR_DECK_SEPARATION_X * display.width(),
-            YOUR_DECK_MAX_WIDTH * display.width(),
             YOUR_DECK_SEPARATION_Y * display.height(),
+            YOUR_DECK_MAX_WIDTH * display.width(),
             YOUR_DECK_JUSTIFICATION
         ),
         display,
@@ -22528,8 +23357,8 @@ void game(
             YOUR_TRASH_WIDTH * display.width(),
             YOUR_TRASH_HEIGHT * display.height(),
             YOUR_TRASH_SEPARATION_X * display.width(),
-            YOUR_TRASH_MAX_WIDTH * display.width(),
             YOUR_TRASH_SEPARATION_Y * display.height(),
+            YOUR_TRASH_MAX_WIDTH * display.width(),
             YOUR_TRASH_JUSTIFICATION
         ),
         display,
@@ -22544,8 +23373,8 @@ void game(
             YOUR_HAND_WIDTH * display.width(),
             YOUR_HAND_HEIGHT * display.height(),
             YOUR_HAND_SEPARATION_X * display.width(),
-            YOUR_HAND_MAX_WIDTH * display.width(),
             YOUR_HAND_SEPARATION_Y * display.height(),
+            YOUR_HAND_MAX_WIDTH * display.width(),
             YOUR_HAND_JUSTIFICATION
         ),
         display,
@@ -22560,8 +23389,8 @@ void game(
             YOUR_LIFE_WIDTH * display.width(),
             YOUR_LIFE_HEIGHT * display.height(),
             YOUR_LIFE_SEPARATION_X * display.width(),
-            YOUR_LIFE_MAX_WIDTH * display.width(),
             YOUR_LIFE_SEPARATION_Y * display.height(),
+            YOUR_LIFE_MAX_WIDTH * display.width(),
             YOUR_LIFE_JUSTIFICATION
         ),
         display,
@@ -22576,8 +23405,8 @@ void game(
             YOUR_ACTIVE_WIDTH * display.width(),
             YOUR_ACTIVE_HEIGHT * display.height(),
             YOUR_ACTIVE_SEPARATION_X * display.width(),
-            YOUR_ACTIVE_MAX_WIDTH * display.width(),
             YOUR_ACTIVE_SEPARATION_Y * display.height(),
+            YOUR_ACTIVE_MAX_WIDTH * display.width(),
             YOUR_ACTIVE_JUSTIFICATION
         ),
         display,
@@ -22592,8 +23421,8 @@ void game(
             YOUR_BENCH_WIDTH * display.width(),
             YOUR_BENCH_HEIGHT * display.height(),
             YOUR_BENCH_SEPARATION_X * display.width(),
-            YOUR_BENCH_MAX_WIDTH * display.width(),
             YOUR_BENCH_SEPARATION_Y * display.height(),
+            YOUR_BENCH_MAX_WIDTH * display.width(),
             YOUR_BENCH_JUSTIFICATION
         ),
         display,
@@ -22608,8 +23437,8 @@ void game(
             YOUR_EFFECTS_WIDTH * display.width(),
             YOUR_EFFECTS_HEIGHT * display.height(),
             YOUR_EFFECTS_SEPARATION_X * display.width(),
-            YOUR_EFFECTS_MAX_WIDTH * display.width(),
             YOUR_EFFECTS_SEPARATION_Y * display.height(),
+            YOUR_EFFECTS_MAX_WIDTH * display.width(),
             YOUR_EFFECTS_JUSTIFICATION
         ),
         display,
@@ -22627,8 +23456,8 @@ void game(
             OPPONENT_DECK_WIDTH * display.width(),
             OPPONENT_DECK_HEIGHT * display.height(),
             OPPONENT_DECK_SEPARATION_X * display.width(),
-            OPPONENT_DECK_MAX_WIDTH * display.width(),
             OPPONENT_DECK_SEPARATION_Y * display.height(),
+            OPPONENT_DECK_MAX_WIDTH * display.width(),
             OPPONENT_DECK_JUSTIFICATION
         ),
         display,
@@ -22643,8 +23472,8 @@ void game(
             OPPONENT_TRASH_WIDTH * display.width(),
             OPPONENT_TRASH_HEIGHT * display.height(),
             OPPONENT_TRASH_SEPARATION_X * display.width(),
-            OPPONENT_TRASH_MAX_WIDTH * display.width(),
             OPPONENT_TRASH_SEPARATION_Y * display.height(),
+            OPPONENT_TRASH_MAX_WIDTH * display.width(),
             OPPONENT_TRASH_JUSTIFICATION
         ),
         display,
@@ -22659,8 +23488,8 @@ void game(
             OPPONENT_HAND_WIDTH * display.width(),
             OPPONENT_HAND_HEIGHT * display.height(),
             OPPONENT_HAND_SEPARATION_X * display.width(),
-            OPPONENT_HAND_MAX_WIDTH * display.width(),
             OPPONENT_HAND_SEPARATION_Y * display.height(),
+            OPPONENT_HAND_MAX_WIDTH * display.width(),
             OPPONENT_HAND_JUSTIFICATION
         ),
         display,
@@ -22675,8 +23504,8 @@ void game(
             OPPONENT_LIFE_WIDTH * display.width(),
             OPPONENT_LIFE_HEIGHT * display.height(),
             OPPONENT_LIFE_SEPARATION_X * display.width(),
-            OPPONENT_LIFE_MAX_WIDTH * display.width(),
             OPPONENT_LIFE_SEPARATION_Y * display.height(),
+            OPPONENT_LIFE_MAX_WIDTH * display.width(),
             OPPONENT_LIFE_JUSTIFICATION
         ),
         display,
@@ -22691,8 +23520,8 @@ void game(
             OPPONENT_ACTIVE_WIDTH * display.width(),
             OPPONENT_ACTIVE_HEIGHT * display.height(),
             OPPONENT_ACTIVE_SEPARATION_X * display.width(),
-            OPPONENT_ACTIVE_MAX_WIDTH * display.width(),
             OPPONENT_ACTIVE_SEPARATION_Y * display.height(),
+            OPPONENT_ACTIVE_MAX_WIDTH * display.width(),
             OPPONENT_ACTIVE_JUSTIFICATION
         ),
         display,
@@ -22707,8 +23536,8 @@ void game(
             OPPONENT_BENCH_WIDTH * display.width(),
             OPPONENT_BENCH_HEIGHT * display.height(),
             OPPONENT_BENCH_SEPARATION_X * display.width(),
-            OPPONENT_BENCH_MAX_WIDTH * display.width(),
             OPPONENT_BENCH_SEPARATION_Y * display.height(),
+            OPPONENT_BENCH_MAX_WIDTH * display.width(),
             OPPONENT_BENCH_JUSTIFICATION
         ),
         display,
@@ -22723,8 +23552,8 @@ void game(
             OPPONENT_EFFECTS_WIDTH * display.width(),
             OPPONENT_EFFECTS_HEIGHT * display.height(),
             OPPONENT_EFFECTS_SEPARATION_X * display.width(),
-            OPPONENT_EFFECTS_MAX_WIDTH * display.width(),
             OPPONENT_EFFECTS_SEPARATION_Y * display.height(),
+            OPPONENT_EFFECTS_MAX_WIDTH * display.width(),
             OPPONENT_EFFECTS_JUSTIFICATION
         ),
         display,
@@ -22737,11 +23566,14 @@ void game(
     //{
     // Button for the void.
     Button the_void_button(
-        renderer.render(
+        renderer.lined_render(
             THE_VOID_STRING,
             THE_VOID_WIDTH * display.width(),
             THE_VOID_HEIGHT * display.height(),
-            THE_VOID_SEPARATION * display.width()
+            THE_VOID_SEPARATION_X * display.width(),
+            THE_VOID_SEPARATION_Y * display.height(),
+            THE_VOID_MAX_WIDTH * display.width(),
+            THE_VOID_JUSTIFICATION
         ),
         display,
         THE_VOID_X,
@@ -22797,7 +23629,8 @@ void game(
                     && !next_button.get_rectangle().unclick()
                     && message == EMPTY_MESSAGE
                 ) {
-                    Events::update();
+                    display.update();
+                    while (Event().poll());
                 }
             }
             
@@ -22815,7 +23648,8 @@ void game(
                     && !next_button.get_rectangle().unclick()
                     && message == EMPTY_MESSAGE
                 ) {
-                    Events::update();
+                    display.update();
+                    while (Event().poll());
                 }
             }
         }
@@ -22908,8 +23742,8 @@ void game(
                             PLAYER_CONCEDE_WIDTH * display.width(),
                             PLAYER_CONCEDE_HEIGHT * display.height(),
                             PLAYER_CONCEDE_SEPARATION_X * display.width(),
-                            PLAYER_CONCEDE_MAX_WIDTH * display.width(),
                             PLAYER_CONCEDE_SEPARATION_Y * display.height(),
+                            PLAYER_CONCEDE_MAX_WIDTH * display.width(),
                             PLAYER_CONCEDE_JUSTIFICATION
                         ),
                         PLAYER_CONCEDE_X,
@@ -22923,7 +23757,8 @@ void game(
                         !Events::unpress(SUBMIT_KEY)
                         && !next_button.get_rectangle().unclick()
                     ) {
-                        Events::update();
+                        display.update();
+                        while (Event().poll());
                     }
                     
                     winner = OPPONENT;
@@ -23047,8 +23882,8 @@ void game(
                             OPPONENT_CONCEDE_WIDTH * display.width(),
                             OPPONENT_CONCEDE_HEIGHT * display.height(),
                             OPPONENT_CONCEDE_SEPARATION_X * display.width(),
-                            OPPONENT_CONCEDE_MAX_WIDTH * display.width(),
                             OPPONENT_CONCEDE_SEPARATION_Y * display.height(),
+                            OPPONENT_CONCEDE_MAX_WIDTH * display.width(),
                             OPPONENT_CONCEDE_JUSTIFICATION
                         ),
                         OPPONENT_CONCEDE_X,
@@ -23064,7 +23899,8 @@ void game(
                         && !next_button.get_rectangle().unclick()
                         && message != TERMINATOR_STRING
                     ) {
-                        Events::update();
+                        display.update();
+                        while (Event().poll());
                     }
                     
                     winner = PLAYER;
@@ -23075,16 +23911,18 @@ void game(
                 // A message was sent and was not dealt with.
                 // This can cause a player desync, so the error is logged.
                 else if (message != EMPTY_MESSAGE) {
-                    std::cerr
+                    Logger(Logger::ERROR)
                         << "\nUnhandled message:\n"
                         << message
-                        << std::endl
+                        << '\n'
+                        << Logger::FLUSH
                     ;
                 }
                 //}
                 
                 // The events are updated.
-                Events::update();
+                display.update();
+                while (Event().poll());
             }
         
             // A concede doesn't require a check.
@@ -23163,8 +24001,8 @@ void game(
                             PLAYER_CONCEDE_WIDTH * display.width(),
                             PLAYER_CONCEDE_HEIGHT * display.height(),
                             PLAYER_CONCEDE_SEPARATION_X * display.width(),
-                            PLAYER_CONCEDE_MAX_WIDTH * display.width(),
                             PLAYER_CONCEDE_SEPARATION_Y * display.height(),
+                            PLAYER_CONCEDE_MAX_WIDTH * display.width(),
                             PLAYER_CONCEDE_JUSTIFICATION
                         ),
                         PLAYER_CONCEDE_X,
@@ -23178,7 +24016,8 @@ void game(
                         !Events::unpress(SUBMIT_KEY)
                         && !next_button.get_rectangle().unclick()
                     ) {
-                        Events::update();
+                        display.update();
+                        while (Event().poll());
                     }
                     
                     winner = OPPONENT;
@@ -23309,8 +24148,8 @@ void game(
                             OPPONENT_CONCEDE_WIDTH * display.width(),
                             OPPONENT_CONCEDE_HEIGHT * display.height(),
                             OPPONENT_CONCEDE_SEPARATION_X * display.width(),
-                            OPPONENT_CONCEDE_MAX_WIDTH * display.width(),
                             OPPONENT_CONCEDE_SEPARATION_Y * display.height(),
+                            OPPONENT_CONCEDE_MAX_WIDTH * display.width(),
                             OPPONENT_CONCEDE_JUSTIFICATION
                         ),
                         OPPONENT_CONCEDE_X,
@@ -23326,7 +24165,8 @@ void game(
                         && !next_button.get_rectangle().unclick()
                         && message != TERMINATOR_STRING
                     ) {
-                        Events::update();
+                        display.update();
+                        while (Event().poll());
                     }
                     
                     winner = PLAYER;
@@ -23345,7 +24185,8 @@ void game(
                     
                     // The message is waited for.
                     while (message == EMPTY_MESSAGE) {
-                        Events::update();
+                        display.update();
+                        while (Event().poll());
                     }
                     
                     // The index of the card is taken.
@@ -23389,7 +24230,8 @@ void game(
                     
                     // The message is waited for.
                     while (message == EMPTY_MESSAGE) {
-                        Events::update();
+                        display.update();
+                        while (Event().poll());
                     }
                     
                     // The index of the fighter to switch is extracted.
@@ -23424,16 +24266,18 @@ void game(
                 // A message was sent and was not dealt with.
                 // This can cause a player desync, so the error is logged.
                 else if (message != EMPTY_MESSAGE) {
-                    std::cerr
+                    Logger(Logger::ERROR)
                         << "\nUnhandled message:\n"
                         << message
-                        << std::endl
+                        << '\n'
+                        << Logger::FLUSH
                     ;
                 }
                 //}
                 
                 // The events are updated.
-                Events::update();
+                display.update();
+                while (Event().poll());
             }
         
             // A concede doesn't require a check.
@@ -23498,17 +24342,47 @@ void game(
         && !next_button.get_rectangle().unclick()
         && message != TERMINATOR_STRING
     ) {
-        Events::update();
+        display.update();
+        while (Event().poll());
     }
     
     // The song is paused to terminate the thread.
     duel_song.pause();
     //}
+    
+    #ifdef DEMI_DUEL_DEBUG
+        #undef view_hand_size
+        #undef view_deck_size
+        #undef view_life_cards_size
+    #endif
 }
 //}
 
 // Deck Building Menus
 //{
+/**
+ * Converts a string deck code to array form.
+ */
+std::array<int, CARD_COUNT> from_deck_code(const std::string& code) noexcept {
+    std::array<int, CARD_COUNT> card_counts({});
+    std::stringstream stream;
+    stream.str(code);
+    
+    try {
+        for (int i = 0; i < CARD_COUNT; ++i) {
+            stream >> card_counts[i];
+        }
+    }
+    
+    // Empty deck returned on error.
+    catch (const std::exception& e) {
+        Logger(Logger::ERROR) << e.what() << Logger::FLUSH;
+        return std::array<int, CARD_COUNT>();
+    }
+    
+    return card_counts;
+}
+
 /**
  * Tells the user that the player that they connected
  *   with has an incompatible version of the program.
@@ -23526,8 +24400,8 @@ void incompatible(Display& display, const Renderer& renderer) noexcept {
             INCOMPATIBLE_WIDTH * display_width,
             INCOMPATIBLE_HEIGHT * display_height,
             INCOMPATIBLE_SEPARATION_X * display_width,
-            INCOMPATIBLE_MAX_WIDTH * display_width,
             INCOMPATIBLE_SEPARATION_Y * display_height,
+            INCOMPATIBLE_MAX_WIDTH * display_width,
             INCOMPATIBLE_JUSTIFICATION
         )
     );
@@ -23558,7 +24432,8 @@ void incompatible(Display& display, const Renderer& renderer) noexcept {
         !Events::unpress(QUIT_KEY)
         && !back_button.get_rectangle().unclick()
     ) {
-        Events::update();
+        display.update();
+        while (Event().poll());
     }
 }   
 
@@ -23836,7 +24711,8 @@ void add_fighter(
                             !Events::unpress(QUIT_KEY)
                             && !back_button.get_rectangle().unclick()
                         ) {
-                            Events::update();
+                            display.update();
+                            while (Event().poll());
                         }
                         
                         found = true;
@@ -23850,7 +24726,8 @@ void add_fighter(
             }
             
             // The events are updated.
-            Events::update();
+            display.update();
+            while (Event().poll());
         }
     }
 }
@@ -24131,7 +25008,8 @@ void add_supporter(
                             !Events::unpress(QUIT_KEY)
                             && !back_button.get_rectangle().unclick()
                         ) {
-                            Events::update();
+                            display.update();
+                            while (Event().poll());
                         }
                         
                         found = true;
@@ -24145,7 +25023,8 @@ void add_supporter(
             }
             
             // The events are updated.
-            Events::update();
+            display.update();
+            while (Event().poll());
         }
     }
 }
@@ -24433,7 +25312,8 @@ void add_energy(
                             !Events::unpress(QUIT_KEY)
                             && !back_button.get_rectangle().unclick()
                         ) {
-                            Events::update();
+                            display.update();
+                            while (Event().poll());
                         }
                         
                         found = true;
@@ -24447,8 +25327,96 @@ void add_energy(
             }
             
             // The events are updated.
-            Events::update();
+            display.update();
+            while (Event().poll());
         }
+    }
+}
+
+/**
+ * Automatically generates a name for the given decklist.
+ * The name is the abbreviated 3 most important fighters in
+ *  the deck folowed by a number for unique identification.
+ */
+std::string name_deck(
+    const std::array<int, CARD_COUNT>& card_counts,
+    const std::vector<DeckCode>& custom_deck_codes
+) noexcept {
+    std::string name;
+    int name_count = LIFE_SIZE;
+    
+    for (int i : FIGHTER_IMPORTANCES) {
+        if (name_count && card_counts[i]) {
+            name += FIGHTER_ABBREVIATIONS[i] + std::string("_");
+            --name_count;
+        }
+    }
+    
+    int base_length = name.size();
+    
+    for (int i = 1;; ++i, name.resize(base_length)) {
+        name += std::to_string(i);
+        bool unique = true;
+        
+        for (const DeckCode& deck : custom_deck_codes) {
+            if (deck.get_name() == name) {
+                unique = false;
+                break;
+            }
+        }
+        
+        if (unique) {
+            break;
+        }
+    }
+    
+    return name;
+}
+
+/**
+ * Automatically generates a description for the given decklist.
+ * The description is the deck's full contents.
+ */
+std::string describe_deck(const std::array<int, CARD_COUNT>& card_counts) noexcept {
+    std::string description;
+    
+    for (int i = 0; i < FIGHTER_COUNT; ++i) {
+        if (card_counts[i]) {
+            description += ALL_FIGHTERS[i]->get_name() + "  ";
+        }
+    }
+    
+    description += "\n\n";
+    
+    for (int i = 0; i < SUPPORTER_COUNT; ++i) {
+        if (card_counts[FIGHTER_COUNT + i]) {
+            description += ALL_SUPPORTERS[i]->get_name() + "  ";
+        }
+    }
+    
+    description += "\n\n";
+    
+    for (int i = 0; i < ENERGY_COUNT; ++i) {
+        if (card_counts[FIGHTER_COUNT + SUPPORTER_COUNT + i]) {
+            description +=
+                std::to_string(card_counts[FIGHTER_COUNT + SUPPORTER_COUNT + i])
+                + " " + ALL_ENERGY[i]->get_name() + "  "
+            ;
+        }
+    }
+    
+    return description;
+}
+
+/**
+ * Automatically updates customdecks.txt using the current set of custom decks.
+ */
+void update_custom_decks(const std::vector<DeckCode>& custom_deck_codes) noexcept {
+    std::ofstream file(CUSTOM_DECKS);
+    file << CUSTOM_DECKS_TOP << custom_deck_codes.size() << CUSTOM_DECKS_MID;
+    
+    for (const DeckCode& deck : custom_deck_codes) {
+        file << deck.get_source() << '\n';
     }
 }
 
@@ -24490,21 +25458,21 @@ void generate(
     // The custom decklists are loaded.
     for (int i = 0; i < count; ++i) {
         std::getline(file, string);
-        custom_deck_codes.push_back(DeckCode(DECK_DIRECTORY + string + DECK_EXTENSION));
+        custom_deck_codes.push_back(DeckCode(string));
     }
+    
+    file.close();
     
     // The built-in decklist array is replaced with
     //   a vector containing custom decks as well.
-    std::vector<const DeckCode*> temp(ALL_DECK_CODES, ALL_DECK_CODES + DECK_CODE_COUNT);
-    std::vector<const DeckCode*>& ALL_DECK_CODES = temp;
+    std::vector<const DeckCode*> all_deck_codes(ALL_DECK_CODES, ALL_DECK_CODES + DECK_CODE_COUNT);
     
-    for (DeckCode& d: custom_deck_codes) {
-        ALL_DECK_CODES.push_back(&d);
+    for (const DeckCode& d: custom_deck_codes) {
+        all_deck_codes.push_back(&d);
     }
     
     // The built-in deck code count is replaced with the count including the custom decks.
-    int temp2 = DECK_CODE_COUNT + count;
-    int DECK_CODE_COUNT = temp2;
+    int deck_code_count = DECK_CODE_COUNT + count;
     //}
     
     // The components of the display are extracted.
@@ -24596,7 +25564,7 @@ void generate(
             left_button.blit_to(display_sprite);
         }
         
-        if (page < (DECK_CODE_COUNT - 1) / PAGE_COUNT) {
+        if (page < (deck_code_count - 1) / PAGE_COUNT) {
             right_button.blit_to(display_sprite);
         }
         
@@ -24619,7 +25587,7 @@ void generate(
         for (
             int i = 0;
             i < PAGE_COUNT
-            && page * PAGE_COUNT + i < DECK_CODE_COUNT;
+            && page * PAGE_COUNT + i < deck_code_count;
             ++i
         ) {
             // The name button is stored in the vector.
@@ -24627,7 +25595,7 @@ void generate(
                 Button(
                     Sprite(
                         renderer.render(
-                            ALL_DECK_CODES[page * PAGE_COUNT + i]->get_name(),
+                            all_deck_codes[page * PAGE_COUNT + i]->get_name(),
                             PAGE_WIDTH * display_width,
                             PAGE_HEIGHT * display_height,
                             PAGE_SEPARATION * display_width
@@ -24679,7 +25647,7 @@ void generate(
                 (
                     Events::unpress(Events::RIGHT)
                     || right_button.get_rectangle().unclick()
-                ) && page < (DECK_CODE_COUNT - 1) / PAGE_COUNT
+                ) && page < (deck_code_count - 1) / PAGE_COUNT
             ) {
                 ++page;
                 break;
@@ -24695,14 +25663,14 @@ void generate(
                 // The names display the card's details.
                 for (
                     int i = 0;
-                    i < PAGE_COUNT && page * PAGE_COUNT + i < DECK_CODE_COUNT;
+                    i < PAGE_COUNT && page * PAGE_COUNT + i < deck_code_count;
                     ++i
                 ) {
                     // Generates the chosen deck.
                     if (generate_buttons[i].get_rectangle().unclick()) {
                         int index = page * PAGE_COUNT + i;
                         
-                        // The random deck was chosen.
+                        // A random deck was chosen.
                         if (!index) {
                             // RNG is initialised using the current time.
                             std::mt19937 generator(
@@ -24710,11 +25678,80 @@ void generate(
                             );
                             
                             // A random index of a valid deck is assigned.
-                            index = Random::get_int(generator, 1, DECK_CODE_COUNT - 2);
+                            index = Random::get_int(generator, 1, deck_code_count - 2);
+                            card_counts = all_deck_codes[index]->get_code();
+                            card_count = all_deck_codes[index]->get_size();
                         }
                         
-                        card_counts = ALL_DECK_CODES[index]->get_code();
-                        card_count = ALL_DECK_CODES[index]->get_size();
+                        // Create deck was chosen.
+                        else if (all_deck_codes[index] == &CREATE_DECK) {
+                            // The new deck is named and described automatically and stored in memory.
+                            custom_deck_codes.push_back(
+                                DeckCode(
+                                    name_deck(card_counts, custom_deck_codes),
+                                    describe_deck(card_counts),
+                                    card_counts
+                                )
+                            );
+                            
+                            all_deck_codes.resize(DECK_CODE_COUNT);
+                            
+                            for (const DeckCode& d: custom_deck_codes) {
+                                all_deck_codes.push_back(&d);
+                            }
+                            
+                            ++deck_code_count;
+                            
+                            // The new deck is stored on disk.
+                            custom_deck_codes.back().store();
+                            update_custom_decks(custom_deck_codes);
+                        }
+                        
+                        // Delete deck was chosen.
+                        else if (all_deck_codes[index] == &DELETE_DECK) {
+                            // The newest deck matching the current deck's contents is found.
+                            int index;
+                            
+                            for (index = custom_deck_codes.size() - 1; index >= 0; --index) {
+                                if (custom_deck_codes[index].get_code() == card_counts) {
+                                    break;
+                                }
+                            }
+                            
+                            
+                            // The deck is removed from disk and memory.
+                            if (index >= 0) {
+                                remove((DECK_DIRECTORY + custom_deck_codes[index].get_source() + DECK_EXTENSION).c_str());
+                                custom_deck_codes.erase(custom_deck_codes.cbegin() + index);
+                                update_custom_decks(custom_deck_codes);
+                                
+                                all_deck_codes.resize(DECK_CODE_COUNT);
+                                
+                                for (const DeckCode& d: custom_deck_codes) {
+                                    all_deck_codes.push_back(&d);
+                                }
+                                
+                                --deck_code_count;
+                            }
+                        }
+                        
+                        // Import deck was chosen.
+                        else if (all_deck_codes[index] == &IMPORT_DECK) {
+                            card_counts = from_deck_code(Events::get_clipboard());
+                            card_count = DeckCode("", "", card_counts).get_size();
+                        }
+                        
+                        // Export deck was chosen.
+                        else if (all_deck_codes[index] == &EXPORT_DECK) {
+                            Events::set_clipboard(to_deck_code(card_counts));
+                        }
+                        
+                        // A normal deck was chosen.
+                        else {
+                            card_counts = all_deck_codes[index]->get_code();
+                            card_count = all_deck_codes[index]->get_size();
+                        }
+                        
                         found = true;
                         break;
                     }
@@ -24728,8 +25765,8 @@ void generate(
                                 DESCRIPTION_WIDTH * display_width,
                                 DESCRIPTION_HEIGHT * display_height,
                                 DESCRIPTION_SEPARATION_X * display_width,
-                                DESCRIPTION_MAX_WIDTH * display_width,
                                 DESCRIPTION_SEPARATION_Y * display_height,
+                                DESCRIPTION_MAX_WIDTH * display_width,
                                 DESCRIPTION_JUSTIFICATION
                             ),
                             DESCRIPTION_X,
@@ -24743,7 +25780,8 @@ void generate(
                             !Events::unpress(QUIT_KEY)
                             && !back_button.get_rectangle().unclick()
                         ) {
-                            Events::update();
+                            display.update();
+                            while (Event().poll());
                         }
                         
                         found = true;
@@ -24757,7 +25795,8 @@ void generate(
             }
             
             // The events are updated.
-            Events::update();
+            display.update();
+            while (Event().poll());
         }
     }
 }
@@ -24851,8 +25890,8 @@ bool valid_deck(
             DECK_ERROR_WIDTH * display_width,
             DECK_ERROR_HEIGHT * display_height,
             DECK_ERROR_SEPARATION_X * display_width,
-            DECK_ERROR_MAX_WIDTH * display_width,
             DECK_ERROR_SEPARATION_Y * display_height,
+            DECK_ERROR_MAX_WIDTH * display_width,
             DECK_ERROR_JUSTIFICATION
         )
     );
@@ -24883,7 +25922,8 @@ bool valid_deck(
         !Events::unpress(QUIT_KEY)
         && !back_button.get_rectangle().unclick()
     ) {
-        Events::update();
+        display.update();
+        while (Event().poll());
     }
     
     return false;
@@ -25163,7 +26203,8 @@ void build_deck(
             }
             
             // The events are updated.
-            Events::update();
+            display.update();
+            while (Event().poll());
         }
     }
     
@@ -25193,7 +26234,7 @@ int auto_duel(void* port) noexcept {
         AUTO = true;
         
         // Choosing the clear deck makes Demi Duel: AUTO do nothing.
-        bool afk = AUTO_DECK == DECK_CODE_COUNT - 1;
+        bool afk = AUTO_DECK >= FUNCTIONAL_DECK_INDEX;
         
         // The server is connected to.
         Client client(AUTO_ADDRESS, *static_cast<int*>(port));
@@ -25347,15 +26388,21 @@ void set_server(
     int display_height = display_sprite.get_height();
     
     // The wait sprite is intialised.
+    std::string server_wait_string(SERVER_WAIT_STRING);
+    
+    for (const std::string& address : Server::get_default_addresses()) {
+        server_wait_string += "\n" + address;
+    }
+    
     Sprite wait_sprite(
         renderer.lined_render(
-            WAIT_STRING,
-            WAIT_WIDTH * display_width,
-            WAIT_HEIGHT * display_height,
-            WAIT_SEPARATION_X * display_width,
-            WAIT_MAX_WIDTH * display_width,
-            WAIT_SEPARATION_Y * display_height,
-            WAIT_JUSTIFICATION
+            server_wait_string,
+            SERVER_WAIT_WIDTH * display_width,
+            SERVER_WAIT_HEIGHT * display_height,
+            SERVER_WAIT_SEPARATION_X * display_width,
+            SERVER_WAIT_SEPARATION_Y / 10 * display_height,
+            SERVER_WAIT_MAX_WIDTH * display_width,
+            SERVER_WAIT_JUSTIFICATION
         )
     );
     
@@ -25414,7 +26461,8 @@ void set_server(
             }
             
             // The events are updated.
-            Events::update();
+            display.update();
+            while (Event().poll());
         }
     }
 }
@@ -25462,8 +26510,8 @@ void set_client(
                 NO_SERVER_WIDTH * display_width,
                 NO_SERVER_HEIGHT * display_height,
                 NO_SERVER_SEPARATION_X * display_width,
-                NO_SERVER_MAX_WIDTH * display_width,
                 NO_SERVER_SEPARATION_Y * display_height,
+                NO_SERVER_MAX_WIDTH * display_width,
                 NO_SERVER_JUSTIFICATION
             )
         );
@@ -25479,7 +26527,8 @@ void set_client(
             !Events::unpress(QUIT_KEY)
             && !back_button.get_rectangle().unclick()
         ) {
-            Events::update();
+            display.update();
+            while (Event().poll());
         }
     }
     
@@ -25520,6 +26569,7 @@ void set_port(
     // The default address is used.
     std::ifstream file(DEFAULT_PORT);
     file >> port;
+    file.close();
     
 	// A vector of number buttons for use on mobile devices.
 	std::vector<Button> number_buttons;
@@ -25590,6 +26640,10 @@ void set_port(
                 Events::unpress(SUBMIT_KEY)
                 || next_button.get_rectangle().unclick()
             ) {
+                std::ofstream file(DEFAULT_PORT);
+                file << port;
+                file.close();
+                
                 try {
                     // The server is hosted at the given port.
                     if (address == SERVER_STRING) {
@@ -25657,7 +26711,8 @@ void set_port(
                 }
             }
 
-            Events::update();
+            display.update();
+            while (Event().poll());
         }
     }
 }
@@ -25694,6 +26749,7 @@ void set_address(
     // The default address is used.
     std::ifstream file(DEFAULT_ADDRESS);
     file >> address;
+    file.close();
     
 	// A dot button for use on mobile devices.
 	Button dot_button(
@@ -25743,7 +26799,6 @@ void set_address(
 			number_buttons[i].blit_to(display);
 		}
 		
-        
         // The host address is rendered.
         display_sprite.blit(
             renderer.render(
@@ -25774,10 +26829,15 @@ void set_address(
             
             // If the user clicks the next button or presses
             //   the submit key, the port menu is moved to.
+            // The default address is overwritten.
             else if (
                 Events::unpress(SUBMIT_KEY)
                 || next_button.get_rectangle().unclick()
             ) {
+                std::ofstream file(DEFAULT_ADDRESS);
+                file << address;
+                file.close();
+                
                 set_port(
                     display,
                     renderer,
@@ -25836,7 +26896,8 @@ void set_address(
                 }
             }
 
-            Events::update();
+            display.update();
+            while (Event().poll());
         }
     }
 }
@@ -25973,8 +27034,41 @@ void connect(
             }
             
             // The events are updated.
-            Events::update();
+            display.update();
+            while (Event().poll());
         }
+    }
+}
+
+/**
+ * Makes the various non-asset files that need to be modified, if they don't exist already.
+ */
+void make_files() noexcept {
+    std::ifstream address(DEFAULT_ADDRESS);
+    bool exists = address.is_open();
+    address.close();
+    
+    if (!exists) {
+        std::ofstream address(DEFAULT_ADDRESS);
+        address << DEFAULT_ADDRESS_CONTENTS;
+    }
+    
+    std::ifstream port(DEFAULT_PORT);
+    exists = port.is_open();
+    port.close();
+    
+    if (!exists) {
+        std::ofstream port(DEFAULT_PORT);
+        port << DEFAULT_PORT_CONTENTS;
+    }
+    
+    std::ifstream decks(CUSTOM_DECKS);
+    exists = decks.is_open();
+    decks.close();
+    
+    if (!exists) {
+        std::ofstream decks(CUSTOM_DECKS);
+        decks << CUSTOM_DECKS_TOP << 0 << CUSTOM_DECKS_MID;
     }
 }
 
@@ -25983,19 +27077,23 @@ void connect(
  * Powered by the SDL and Net Utilities library.
  * A retake on LifeTCG with graphics.
  */
-int main(int argc, char** argv) noexcept {
+int main(int argc, char** argv) {
+    // Makes non-asset files, if they no longer exist.
+    make_files();
+    
     // The library is initialised for video, audio, and networking.
     System::initialise(System::VIDEO | System::AUDIO | System::NET);
     
     // The version of this program and the version of
     //   the SDL and Net Utilities library are displayed.
     std::string version_string = System::version(VERSION);
-    std::cout
-        << "\nDemi Duel by Chigozie Agomo.\nVersion: "
+    Logger()
+        << ".\nDemi Duel by Chigozie Agomo.\nVersion: "
         << version_string
         << "\n\nPowered by:\n"
         << System::info()
-        << std::endl
+        << '\n'
+        << Logger::FLUSH
     ;
     
     {
@@ -26093,8 +27191,8 @@ int main(int argc, char** argv) noexcept {
                 CREDITS_WIDTH * display_width,
                 CREDITS_HEIGHT * display_height,
                 CREDITS_SEPARATION_X * display_width,
-                CREDITS_MAX_WIDTH * display_width,
                 CREDITS_SEPARATION_Y * display_height,
+                CREDITS_MAX_WIDTH * display_width,
                 CREDITS_JUSTIFICATION
             )
         );
@@ -26136,6 +27234,9 @@ int main(int argc, char** argv) noexcept {
         // True when the program should end.
         bool end = false;
         
+        // Used to handles resizing on the main menu only.
+        Event event;
+        
         // Loop to display the main menu.
         while (!end) {
             display_sprite.fill();
@@ -26160,12 +27261,88 @@ int main(int argc, char** argv) noexcept {
                 else if (
                     play_button.get_rectangle().unclick()
                 ) {
+                    // The window can't be resized beyond the main menu.
+                    display.lock_size();
                     connect(display, renderer, menu_song, thread);
+                    display.unlock_size();
                     break;
                 }
                 
+                // Display update to prevent Android inactivity.
+                display.update();
+                
+                // True if the display was resized.
+                bool resize = false;
+                
                 // The events are updated.
-                Events::update();
+                while (event.poll()) {
+                    // Main menu resize.
+                    if (event.type() == Event::RESIZE) {
+                        display.resize(event.window_width(), event.window_height());
+                        display_width = display_sprite.get_width();
+                        display_height = display_sprite.get_height();
+                        
+                        // The title is re-rendered.
+                        title_sprite = Sprite(
+                            renderer.render(
+                                TITLE_STRING,
+                                TITLE_WIDTH * display_width,
+                                TITLE_HEIGHT * display_height,
+                                TITLE_SEPARATION * display_width
+                            )
+                        );
+                        
+                        // The copyright is re-rendered.
+                        credits_sprite = Sprite(
+                            renderer.lined_render(
+                                CREDITS_STRING,
+                                CREDITS_WIDTH * display_width,
+                                CREDITS_HEIGHT * display_height,
+                                CREDITS_SEPARATION_X * display_width,
+                                CREDITS_SEPARATION_Y * display_height,
+                                CREDITS_MAX_WIDTH * display_width,
+                                CREDITS_JUSTIFICATION
+                            )
+                        );
+                        
+                        // The quit button is re-initialised.
+                        quit_button = Button(
+                            Sprite(
+                                renderer.render(
+                                    QUIT_STRING,
+                                    QUIT_WIDTH * display_width,
+                                    QUIT_HEIGHT * display_height,
+                                    QUIT_SEPARATION * display_width
+                                )
+                            ),
+                            display_sprite,
+                            QUIT_X,
+                            QUIT_Y
+                        );
+                        
+                        // The play button is re-initialised.
+                        play_button = Button(
+                            Sprite(
+                                renderer.render(
+                                    PLAY_STRING,
+                                    PLAY_WIDTH * display_width,
+                                    PLAY_HEIGHT * display_height,
+                                    PLAY_SEPARATION * display_width
+                                )
+                            ),
+                            display_sprite,
+                            PLAY_X,
+                            PLAY_Y
+                        );
+                        
+                        resize = true;
+                    }
+                }
+                
+                // Re-render with new size.
+                if (resize) {
+                    break;
+                }
             }
         }
 
@@ -26181,6 +27358,19 @@ int main(int argc, char** argv) noexcept {
 //}
 
 /* CHANGELOG:
+     v3:
+       Use modern sdlandnet on the main menu to allow resizing/rotations.
+       Add event consumers to prevent inactivity on Android (to allow app minimisation).
+       Add functionality to create, delete, import, and export decks in-game.
+       The last address and port used are now stored on disk.
+       The server now sees possible addresses for the client to connect to.
+       Demi Duel: AUTO can now evaluate the new Life Cards.
+       Adjusted the board to help with inputs on mobile devices.
+       Fighters without an element now have "? Element" rather than "Null Element".
+       Driver, Mage, Apprentice, and Sensei's Chosen no longer have an element.
+       Nitro Boost and Super Nitro now switch the user out.
+       Whirlpool now searches the opponent's hand for a card to shuffle back into their deck (still abandons).
+       Slipstream was replaced with Cryogenic Missiles (Magic Missiles with 100 extra damage per shot).
      v2.7.3:
        Divebomb now increases the retreat cost by 50% instead of 1000.
        Gravity Flip now doubles the retreat cost instead of increasing it by 1000.
