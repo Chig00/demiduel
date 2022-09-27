@@ -3353,30 +3353,30 @@ constexpr double ALT_SONG_LENGTH = Timer::to_seconds(0, 2, 2);
 // Sources, positions, and dimensions of the numbers (for number entry).
 //{
 constexpr const char* NUMBER_SOURCES[NUMBERS] = {
-	"data/0.bmp",
-	"data/1.bmp",
-	"data/2.bmp",
-	"data/3.bmp",
-	"data/4.bmp",
-	"data/5.bmp",
-	"data/6.bmp",
-	"data/7.bmp",
-	"data/8.bmp",
-	"data/9.bmp"
+    "data/0.bmp",
+    "data/1.bmp",
+    "data/2.bmp",
+    "data/3.bmp",
+    "data/4.bmp",
+    "data/5.bmp",
+    "data/6.bmp",
+    "data/7.bmp",
+    "data/8.bmp",
+    "data/9.bmp"
 };
 constexpr double NUMBER_WIDTH = 0.05;
 constexpr double NUMBER_HEIGHT = 0.1;
 constexpr double NUMBER_X[] = {
-	0.2,
-	0.275,
-	0.35,
-	0.425,
-	0.5,
-	0.575,
-	0.65,
-	0.725,
-	0.8,
-	0.875
+    0.2,
+    0.275,
+    0.35,
+    0.425,
+    0.5,
+    0.575,
+    0.65,
+    0.725,
+    0.8,
+    0.875
 };
 constexpr double NUMBER_Y = 0.75;
 //}
@@ -26571,25 +26571,25 @@ void set_port(
     file >> port;
     file.close();
     
-	// A vector of number buttons for use on mobile devices.
-	std::vector<Button> number_buttons;
-	
+    // A vector of number buttons for use on mobile devices.
+    std::vector<Button> number_buttons;
+    
     // The number buttons are initialised.
-	for (int i = 0; i < NUMBERS; ++i) {
-		number_buttons.push_back(
-			Button(
-				Sprite(
-					NUMBER_SOURCES[i],
-					NUMBER_WIDTH * display.width(),
-					NUMBER_HEIGHT * display.height()
-				),
-				display,
-				NUMBER_X[i],
-				NUMBER_Y
-			)
-		);
-	}
-	
+    for (int i = 0; i < NUMBERS; ++i) {
+        number_buttons.push_back(
+            Button(
+                Sprite(
+                    NUMBER_SOURCES[i],
+                    NUMBER_WIDTH * display.width(),
+                    NUMBER_HEIGHT * display.height()
+                ),
+                display,
+                NUMBER_X[i],
+                NUMBER_Y
+            )
+        );
+    }
+    
     // True if the function should return.
     bool end = false;
     
@@ -26602,10 +26602,10 @@ void set_port(
         next_button.blit_to(display_sprite);
         
         // The number buttons are blitted to the display.
-		for (int i = 0; i < NUMBERS; ++i) {
-			number_buttons[i].blit_to(display);
-		}
-		
+        for (int i = 0; i < NUMBERS; ++i) {
+            number_buttons[i].blit_to(display);
+        }
+        
         // The host port is rendered.
         display_sprite.blit(
             renderer.render(
@@ -26626,10 +26626,10 @@ void set_port(
             // Pressing the quit key returns the user to the previous menu.
             // Clicking the back button has the same effect when the port is empty.
             if (
-				Events::unpress(QUIT_KEY)
-				|| !port.length()
-				&& back_button.get_rectangle().unclick()
-			) {
+                Events::unpress(QUIT_KEY)
+                || !port.length()
+                && back_button.get_rectangle().unclick()
+            ) {
                 end = true;
                 break;
             }
@@ -26680,11 +26680,11 @@ void set_port(
             //   the last character entered is removed.
             // Clicking the back button with a non-empty port does the same.
             else if (
-				(
-					Events::unpress(DELETE_KEY)
-					|| back_button.get_rectangle().unclick()
-				) && port.length()
-			) {
+                (
+                    Events::unpress(DELETE_KEY)
+                    || back_button.get_rectangle().unclick()
+                ) && port.length()
+            ) {
                 port.pop_back();
                 break;
             }
@@ -26697,9 +26697,9 @@ void set_port(
                 // The numbers are checked.
                 for (int i = 0; !found && i < NUMBERS; i++) {
                     if (
-						Events::unpress(Events::NUMBERS[i])
-						|| number_buttons[i].get_rectangle().unclick()
-					) {
+                        Events::unpress(Events::NUMBERS[i])
+                        || number_buttons[i].get_rectangle().unclick()
+                    ) {
                         port += '0' + i;
                         found = true;
                     }
@@ -26751,37 +26751,37 @@ void set_address(
     file >> address;
     file.close();
     
-	// A dot button for use on mobile devices.
-	Button dot_button(
-		Sprite(
-			DOT_SOURCE,
-			DOT_WIDTH * display.width(),
-			DOT_HEIGHT * display.height()
-		),
-		display,
-		DOT_X,
-		DOT_Y
-	);
-	
-	// A vector of number buttons for use on mobile devices.
-	std::vector<Button> number_buttons;
-	
+    // A dot button for use on mobile devices.
+    Button dot_button(
+        Sprite(
+            DOT_SOURCE,
+            DOT_WIDTH * display.width(),
+            DOT_HEIGHT * display.height()
+        ),
+        display,
+        DOT_X,
+        DOT_Y
+    );
+    
+    // A vector of number buttons for use on mobile devices.
+    std::vector<Button> number_buttons;
+    
     // The number buttons are initialised.
-	for (int i = 0; i < NUMBERS; ++i) {
-		number_buttons.push_back(
-			Button(
-				Sprite(
-					NUMBER_SOURCES[i],
-					NUMBER_WIDTH * display.width(),
-					NUMBER_HEIGHT * display.height()
-				),
-				display,
-				NUMBER_X[i],
-				NUMBER_Y
-			)
-		);
-	}
-	
+    for (int i = 0; i < NUMBERS; ++i) {
+        number_buttons.push_back(
+            Button(
+                Sprite(
+                    NUMBER_SOURCES[i],
+                    NUMBER_WIDTH * display.width(),
+                    NUMBER_HEIGHT * display.height()
+                ),
+                display,
+                NUMBER_X[i],
+                NUMBER_Y
+            )
+        );
+    }
+    
     // True if the function should return.
     bool end = false;
     
@@ -26792,13 +26792,13 @@ void set_address(
         display_sprite.blit(address_sprite, ADDRESS_X, ADDRESS_Y);
         back_button.blit_to(display_sprite);
         next_button.blit_to(display_sprite);
-		dot_button.blit_to(display);
-		
+        dot_button.blit_to(display);
+        
         // The numbers are blitted to the display.
-		for (int i = 0; i < NUMBERS; ++i) {
-			number_buttons[i].blit_to(display);
-		}
-		
+        for (int i = 0; i < NUMBERS; ++i) {
+            number_buttons[i].blit_to(display);
+        }
+        
         // The host address is rendered.
         display_sprite.blit(
             renderer.render(
@@ -26819,10 +26819,10 @@ void set_address(
             // Pressing the quit key returns the user to the previous menu.
             // Clicking the back button with an empty address does the same.
             if (
-				Events::unpress(QUIT_KEY)
-				|| !address.length()
-				&& back_button.get_rectangle().unclick()
-			) {
+                Events::unpress(QUIT_KEY)
+                || !address.length()
+                && back_button.get_rectangle().unclick()
+            ) {
                 end = true;
                 break;
             }
@@ -26855,11 +26855,11 @@ void set_address(
             //   the last character entered is removed.
             // Clicking the back button does the same (with a non-empty address).
             else if (
-				(
-					Events::unpress(DELETE_KEY)
-					|| back_button.get_rectangle().unclick()
-				) && address.length()
-			) {
+                (
+                    Events::unpress(DELETE_KEY)
+                    || back_button.get_rectangle().unclick()
+                ) && address.length()
+            ) {
                 address.pop_back();
                 break;
             }
@@ -26867,9 +26867,9 @@ void set_address(
             // A full stop is appended to the address, if
             //   the user pressed the full stop button.
             else if (
-				Events::unpress(Events::FULL_STOP)
-				|| dot_button.get_rectangle().unclick()
-			) {
+                Events::unpress(Events::FULL_STOP)
+                || dot_button.get_rectangle().unclick()
+            ) {
                 address += '.';
                 break;
             }
@@ -26882,9 +26882,9 @@ void set_address(
                 // The numbers are checked.
                 for (int i = 0; !found && i < NUMBERS; i++) {
                     if (
-						Events::unpress(Events::NUMBERS[i])
-						|| number_buttons[i].get_rectangle().unclick()
-					) {
+                        Events::unpress(Events::NUMBERS[i])
+                        || number_buttons[i].get_rectangle().unclick()
+                    ) {
                         address += '0' + i;
                         found = true;
                     }
