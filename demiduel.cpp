@@ -9,7 +9,7 @@
 // System Constants
 //{
 // The current version of the program.
-constexpr int VERSION[] = {3, 0, 0, 0};
+constexpr int VERSION[] = {3, 0, 1, 0};
 
 // The title of the game in string form.
 constexpr const char* TITLE_STRING = "Demi Duel";
@@ -5305,9 +5305,19 @@ const std::string MANIAC_EFFECTS(
 //{
 constexpr const char* PEACEMAKER_NAME = "Peacemaker";
 constexpr const char* PEACEMAKER_DESCRIPTION =
-    "Your opponent's fighters' actions cost plays during their next turn."
+    "Your opponent's fighters' actions cost plays during their next turn.\n"
+    "Shuffle this card into your deck instead of discarding it.\n"
+    "Draw a card."
 ;
-constexpr const char* PEACEMAKER_EFFECTS = PEACE_EFFECT; // peace
+const std::string PEACEMAKER_EFFECTS(
+    std::string(PEACE_EFFECT) // peace
+    + EFFECT_TERMINATOR
+    + RECYCLE_EFFECT          // recycle
+    + EFFECT_TERMINATOR
+    + DRAW_EFFECT             // draw
+    + EFFECT_SEPARATOR        //
+    + "1"                     // 1
+);
 //}
 
 // Matchmaker
@@ -8880,35 +8890,24 @@ class CardStore {
         /**
          * Constructs a deck consisting of the cards passed (in the deck code).
          */
-        CardStore(const std::string& deck_code) noexcept {
-            std::stringstream stream(deck_code);
-            
+        CardStore(const std::array<int, CARD_COUNT>& deck_code) noexcept {
             // The fighter cards are initialised.
             for (int i = 0; i < FIGHTER_COUNT; ++i) {
-                int count;
-                stream >> count;
-                
-                for (int j = 0; j < count; ++j) {
+                for (int j = 0; j < deck_code[i]; ++j) {
                     fighters.push_back(*ALL_FIGHTERS[i]);
                 }
             }
             
             // The supporter cards are intialised.
             for (int i = 0; i < SUPPORTER_COUNT; ++i) {
-                int count;
-                stream >> count;
-                
-                for (int j = 0; j < count; ++j) {
+                for (int j = 0; j < deck_code[FIGHTER_COUNT + i]; ++j) {
                     supporters.push_back(*ALL_SUPPORTERS[i]);
                 }
             }
             
             // The energy cards are initialised.
             for (int i = 0; i < ENERGY_COUNT; ++i) {
-                int count;
-                stream >> count;
-                
-                for (int j = 0; j < count; ++j) {
+                for (int j = 0; j < deck_code[FIGHTER_COUNT + SUPPORTER_COUNT + i]; ++j) {
                     energy.push_back(*ALL_ENERGY[i]);
                 }
             }
@@ -10115,7 +10114,7 @@ class Player: public Affectable {
          *   an empty store of life cards, and an empty board of fighters.
          */
         Player(
-            const std::string& deck_code,
+            const std::array<int, CARD_COUNT>& deck_code,
             Display& display,
             const Renderer& renderer,
             const Messenger& messenger,
@@ -11732,7 +11731,7 @@ class Player: public Affectable {
                             for (int i = 0; i < searches; ++i) {
                                 int index;
                                 
-                                if (trash.size<Energy>() == 1) {
+                                if (trash.size<Energy>() == searches - i) {
                                     index = trash.size() - 1;
                                 }
                                 
@@ -11885,8 +11884,8 @@ class Player: public Affectable {
                         for (int i = 0; i < searches; ++i) {
                             int index;
                             
-                            // There is only one option.
-                            if (deck.size<Energy>() == 1) {
+                            // There is no choice.
+                            if (deck.size<Energy>() == searches - i) {
                                 index = deck.size() - 1;
                             }
                             
@@ -15716,10 +15715,19 @@ class Player: public Affectable {
                                 damage = 0;
                             }
                             
+                            // Stores the highest amount of splash damage dealt.
+                            int max_damage = 0;
+                            
                             for (int i = 1; i < fighters.size(); ++i) {
-                                fighters[i].damage(damage);
+                                int d = fighters[i].damage(damage);
+                                
+                                if (max_damage < d) {
+                                    max_damage = d;
+                                }
                             }
                             
+                            // Damage updated to the highest amount actually dealt for the announcement.
+                            damage = max_damage;
                             announce(SPLASH_SELF_ANNOUNCEMENT);
                         }
                     }
@@ -15734,10 +15742,19 @@ class Player: public Affectable {
                                 damage = 0;
                             }
                             
+                            // Stores the highest amount of splash damage dealt.
+                            int max_damage = 0;
+                            
                             for (int i = 1; i < opponent->fighters.size(); ++i) {
-                                opponent->fighters[i].damage(damage);
+                                int d = opponent->fighters[i].damage(damage);
+                                
+                                if (max_damage < d) {
+                                    max_damage = d;
+                                }
                             }
                             
+                            // Damage updated to the highest amount actually dealt for the announcement.
+                            damage = max_damage;
                             announce(SPLASH_ANNOUNCEMENT);
                         }
                     }
@@ -22676,21 +22693,114 @@ const DeckCode* const ALL_DECK_CODES[DECK_CODE_COUNT] = {
 
 // Main Functions
 //{
-// Main Game Functions
-//{ 
+// Encoding
+//{
+// Encoding Constants
+//{
+constexpr char ENCODING_BASE = 0x21; // !
+constexpr int ENCODING_WIDTH = 0x40; // to '
+//}
+
+/**
+ * Converts a deck code integer to a compressed deck code string.
+ */
+std::string encode(long long code) noexcept {
+    std::string encoding;
+    
+    while (true) {
+        encoding += ENCODING_BASE + code % ENCODING_WIDTH;
+        code /= ENCODING_WIDTH;
+        
+        if (!code) {
+            break;
+        }
+    }
+    
+    return encoding;
+}
+
 /**
  * Converts a deck code from an array to a string.
  */
 std::string to_deck_code(const std::array<int, CARD_COUNT>& card_counts) noexcept {
-    std::stringstream stream;
+    long long fighter_code = 0;
+    long long supporter_code = 0;
+    long long energy_code = 0;
     
-    for (int i = 0; i < CARD_COUNT; i++) {
-        stream << card_counts[i] << ' ';
+    for (int i = 0; i < FIGHTER_COUNT; ++i) {
+        fighter_code *= MAX_FIGHTER_COPIES + 1;
+        fighter_code += card_counts[i];
     }
     
-    return stream.str();
+    for (int i = FIGHTER_COUNT; i < FIGHTER_COUNT + SUPPORTER_COUNT; ++i) {
+        supporter_code *= MAX_SUPPORTER_COPIES + 1;
+        supporter_code += card_counts[i];
+    }
+    
+    for (int i = FIGHTER_COUNT + SUPPORTER_COUNT; i < CARD_COUNT; ++i) {
+        energy_code *= MAX_ENERGY_COPIES + 1;
+        energy_code += card_counts[i];
+    }
+    
+    return encode(fighter_code) + " " + encode(supporter_code) + " " + encode(energy_code);
 }
 
+/**
+ * Converts a compressed deck code string to a deck code integer.
+ */
+long long decode(const std::string& encoding) noexcept {
+    long long code = 0;
+    
+    for (int i = encoding.size() - 1; i >= 0; --i) {
+        code *= ENCODING_WIDTH;
+        code += encoding[i] - ENCODING_BASE;
+    }
+    
+    return code;
+}
+
+/**
+ * Converts a string deck code to array form.
+ */
+std::array<int, CARD_COUNT> from_deck_code(const std::string& code) noexcept {
+    std::array<int, CARD_COUNT> card_counts({});
+    std::stringstream stream;
+    stream.str(code);
+    std::string encoding;
+    long long fighter_code;
+    long long supporter_code;
+    long long energy_code;
+    
+    // Decodes from string to integers.
+    stream >> encoding;
+    fighter_code = decode(encoding);
+    stream >> encoding;
+    supporter_code = decode(encoding);
+    stream >> encoding;
+    energy_code = decode(encoding);
+    
+    // Converts from integers to integer array.
+    for (int i = FIGHTER_COUNT - 1; i >= 0; --i) {
+        card_counts[i] = fighter_code % (MAX_FIGHTER_COPIES + 1);
+        fighter_code /= (MAX_FIGHTER_COPIES + 1);
+    }
+    
+    for (int i = FIGHTER_COUNT + SUPPORTER_COUNT - 1; i >= FIGHTER_COUNT; --i) {
+        card_counts[i] = supporter_code % (MAX_SUPPORTER_COPIES + 1);
+        supporter_code /= (MAX_SUPPORTER_COPIES + 1);
+    }
+    
+    for (int i = CARD_COUNT - 1; i >= FIGHTER_COUNT + SUPPORTER_COUNT; --i) {
+        card_counts[i] = energy_code % (MAX_ENERGY_COPIES + 1);
+        energy_code /= (MAX_ENERGY_COPIES + 1);
+    }
+    
+    return card_counts;
+}
+//}
+
+// Main Game Functions
+//{
 /**
  * Allows the player to draw extra cards after a successful mulligan.
  * Returns the number of extra cards drawn in string form.
@@ -23227,7 +23337,7 @@ void game(
     for (int i = 0; i < PLAYERS; ++i) {
         players.push_back(
             Player(
-                deck_codes[i],
+                from_deck_code(deck_codes[i]),
                 display,
                 renderer,
                 messenger,
@@ -23610,6 +23720,21 @@ void game(
     
     // The main game loop.
     while (winner < 0) {
+        // Defeat is checked for at the start of the turn.
+        winner = defeat_check(
+            display,
+            renderer,
+            messenger,
+            messenger_package,
+            messenger_thread,
+            back_button,
+            next_button,
+            players,
+            the_void,
+            generator,
+            turn
+        );
+        
         // If the player can draw at the start of their turn, they do so.
         if (players[turn].can_draw()) {
             int draws = TURN_DRAW;
@@ -23663,7 +23788,7 @@ void game(
             players[turn].draw_life(TURN_DRAW);
         }
         
-        // Defeat is checked for at the start of the battle.
+        // Defeat is checked for after the start-of-turn draw phase.
         winner = defeat_check(
             display,
             renderer,
@@ -24360,29 +24485,6 @@ void game(
 
 // Deck Building Menus
 //{
-/**
- * Converts a string deck code to array form.
- */
-std::array<int, CARD_COUNT> from_deck_code(const std::string& code) noexcept {
-    std::array<int, CARD_COUNT> card_counts({});
-    std::stringstream stream;
-    stream.str(code);
-    
-    try {
-        for (int i = 0; i < CARD_COUNT; ++i) {
-            stream >> card_counts[i];
-        }
-    }
-    
-    // Empty deck returned on error.
-    catch (const std::exception& e) {
-        Logger(Logger::ERROR) << e.what() << Logger::FLUSH;
-        return std::array<int, CARD_COUNT>();
-    }
-    
-    return card_counts;
-}
-
 /**
  * Tells the user that the player that they connected
  *   with has an incompatible version of the program.
@@ -27358,6 +27460,12 @@ int main(int argc, char** argv) {
 //}
 
 /* CHANGELOG:
+     v3.0.1:
+       Peacemaker now also shuffles itself into the deck and draws a card.
+       Life cards are now drawn before the start-of-turn draw, if a fighter is defeated between turns.
+       Bench splash now shows the maximum amount of damage dealt.
+       Deck codes have been shortened significantly.
+       Cards that search for multiple cards will do so without prompting if the number to draw equals the contents.
      v3:
        Use modern sdlandnet on the main menu to allow resizing/rotations.
        Add event consumers to prevent inactivity on Android (to allow app minimisation).
