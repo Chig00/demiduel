@@ -9,7 +9,7 @@
 // System Constants
 //{
 // The current version of the program.
-constexpr int VERSION[] = {3, 0, 1, 0};
+constexpr int VERSION[] = {3, 0, 2, 0};
 
 // The title of the game in string form.
 constexpr const char* TITLE_STRING = "Demi Duel";
@@ -4187,14 +4187,14 @@ constexpr bool CLOUD_SURFER_ABILITY_PASSIVE = true;
 constexpr int CLOUD_SURFER_ABILITY_USES = PASSIVE_USES;
 constexpr const char* CLOUD_SURFER_ATTACK_NAME = "Hurricane";
 constexpr const char* CLOUD_SURFER_ATTACK_DESCRIPTION =
-    "Deal 400 damage to all of your opponent's fighters."
+    "Deal 300 damage to all of your opponent's fighters."
 ;
 const std::string CLOUD_SURFER_ATTACK_EFFECTS(
     std::string(SPLASH_EFFECT) // splash
     + EFFECT_SEPARATOR         //
-    + "400"                    // 400
+    + "300"                    // 300
 );
-constexpr int CLOUD_SURFER_ATTACK_DAMAGE = 400;
+constexpr int CLOUD_SURFER_ATTACK_DAMAGE = 300;
 constexpr int CLOUD_SURFER_ATTACK_COST = 2000;
 //}
 //}
@@ -27460,6 +27460,8 @@ int main(int argc, char** argv) {
 //}
 
 /* CHANGELOG:
+     v3.0.2:
+       Hurricane's damage was decreased from 400 to 300.
      v3.0.1:
        Peacemaker now also shuffles itself into the deck and draws a card.
        Life cards are now drawn before the start-of-turn draw, if a fighter is defeated between turns.
