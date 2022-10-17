@@ -9,7 +9,7 @@
 // System Constants
 //{
 // The current version of the program.
-constexpr int VERSION[] = {3, 0, 2, 0};
+constexpr int VERSION[] = {3, 1, 0, 0};
 
 // The title of the game in string form.
 constexpr const char* TITLE_STRING = "Demi Duel";
@@ -111,18 +111,19 @@ constexpr const char* DEFAULT_PORT_CONTENTS = "1234\n";
 //{
 // Count Constants
 //{
-constexpr int DECK_SIZE = 30;
-constexpr int CARD_TYPES = 3;
-constexpr int BENCH_INDEX = 1;
-constexpr int HAND_SIZE = 7;
-constexpr int LIFE_SIZE = 3;
-constexpr int TURN_DRAW = 1;
-constexpr int MAX_FIGHTER_COPIES = 1;
-constexpr int MAX_SUPPORTER_COPIES = 1;
-constexpr int MAX_ENERGY_COPIES = 2;
-constexpr int BASE_CARD_LIMIT = 1;
-constexpr int CARD_LIMIT_INCREMENT = 1;
-constexpr int MAX_PLAYS = 5;
+constexpr int DECK_SIZE = 30;           // Number of cards in a valid deck.
+constexpr int CARD_TYPES = 3;           // Fighter, Supporter, and Energy.
+constexpr int BENCH_INDEX = 1;          // First index of benched fighters.
+constexpr int HAND_SIZE = 7;            // Number of cards in starting hand.
+constexpr int LIFE_SIZE = 3;            // Number of life cards.
+constexpr int TURN_DRAW = 1;            // Number of cards drawn at the start of the turn.
+constexpr int MAX_FIGHTER_COPIES = 1;   // Max number of identical fighter cards.
+constexpr int MAX_SUPPORTER_COPIES = 1; // Max number of identical supporter cards.
+constexpr int MAX_ENERGY_COPIES = 2;    // Max number of identical energy cards.
+constexpr int BASE_CARD_LIMIT = 1;      // The number of plays on turn one.
+constexpr int CARD_LIMIT_INCREMENT = 1; // The number of extra plays each turn.
+constexpr int MAX_PLAYS = 5;            // The maximum number of plays at the turn's start.
+constexpr int ANTI_STALL = 14;          // The last turn where anti-stall does not apply.
 
 // Ensures that the game can begin after the bonus draws.
 constexpr int MAX_BONUS = DECK_SIZE - HAND_SIZE - LIFE_SIZE - 1;
@@ -659,7 +660,7 @@ constexpr const char* END_DISCARD_REPRESENTATION = "End Discard";
 
 // The constants for the fatigue explanation.
 //{
-#define FATIGUE_CONDITION (deck.size() <= effect_count(END_DRAW_EFFECT))
+#define FATIGUE_CONDITION (deck.size() <= effect_count(END_DRAW_EFFECT) + anti_stall_count())
 constexpr const char* FATIGUE_REPRESENTATION = "Fatigued";
 constexpr const char* FATIGUE_VALUE = "";
 constexpr const char* FATIGUE_EXPLANATION =
@@ -733,13 +734,27 @@ constexpr const char* PEACE_EXPLANATION =
 //{
 #define VOID_CORE_CONDITION (fighter_effect_count(VOID_CORE_EFFECT))
 constexpr const char* VOID_CORE_REPRESENTATION = "Void Core";
-#define VOID_CORE_VALUE std::to_string(value = void_core_count())
+#define VOID_CORE_VALUE std::to_string(void_core_count())
 #define VOID_CORE_EXPLANATION (                                  \
     "This player shuffles "                                      \
     + effect_value                                               \
     + " random card"                                             \
     + (effect_value == "1" ? "" : "s")                           \
     + " from the void into their deck at the end of their turn." \
+)
+//}
+
+// The constants for the anti-stall clause explanation.
+//{
+#define ANTI_STALL_CONDITION (value = anti_stall_count())
+constexpr const char* ANTI_STALL_REPRESENTATION = "Anti-Stall";
+#define ANTI_STALL_VALUE std::to_string(value)
+#define ANTI_STALL_EXPLANATION (                                                 \
+    "This player draws "                                                         \
+    + effect_value                                                               \
+    + " extra card"                                                              \
+    + (effect_value == "1" ? "" : "s")                                           \
+    + " from their deck at the start of their next turn (to speed up the game)." \
 )
 //}
 //}
@@ -834,7 +849,7 @@ constexpr const char* EFFECT_REPRESENTATIONS[EXPLANATION_COUNT] = {
 //}
 
 // The total number of player-specific explainable effects.
-constexpr int PLAYER_EXPLANATION_COUNT = 22;
+constexpr int PLAYER_EXPLANATION_COUNT = 23;
 
 // All of the player-specific explainable effect conditions.
 //{
@@ -860,7 +875,8 @@ constexpr int PLAYER_EXPLANATION_COUNT = 22;
     : X == 18 ? static_cast<bool>(GATEKEEPER_END_DISCARD_CONDITION)   \
     : X == 19 ? static_cast<bool>(MILLER_END_DISCARD_CONDITION)       \
     : X == 20 ? static_cast<bool>(PEACE_CONDITION)                    \
-    : static_cast<bool>(VOID_CORE_CONDITION)                          \
+    : X == 21 ? static_cast<bool>(VOID_CORE_CONDITION)                \
+    : static_cast<bool>(ANTI_STALL_CONDITION)                         \
 )
 //}
 
@@ -887,7 +903,8 @@ constexpr const char* PLAYER_EFFECT_REPRESENTATIONS[PLAYER_EXPLANATION_COUNT] = 
     END_DISCARD_REPRESENTATION,
     END_DISCARD_REPRESENTATION,
     PEACE_REPRESENTATION,
-    VOID_CORE_REPRESENTATION
+    VOID_CORE_REPRESENTATION,
+    ANTI_STALL_REPRESENTATION
 };
 
 // All of the player-specific explainable effect values.
@@ -914,7 +931,8 @@ constexpr const char* PLAYER_EFFECT_REPRESENTATIONS[PLAYER_EXPLANATION_COUNT] = 
     : X == 18 ? GATEKEEPER_END_DISCARD_VALUE   \
     : X == 19 ? MILLER_END_DISCARD_VALUE       \
     : X == 20 ? PEACE_VALUE                    \
-    : VOID_CORE_VALUE                          \
+    : X == 21 ? VOID_CORE_VALUE                \
+    : ANTI_STALL_VALUE                         \
 )
 //}
 
@@ -942,7 +960,8 @@ constexpr const char* PLAYER_EFFECT_REPRESENTATIONS[PLAYER_EXPLANATION_COUNT] = 
     : X == 18 ? END_DISCARD_EXPLANATION         \
     : X == 19 ? END_DISCARD_EXPLANATION         \
     : X == 20 ? PEACE_EXPLANATION               \
-    : VOID_CORE_EXPLANATION                     \
+    : X == 21 ? VOID_CORE_EXPLANATION           \
+    : ANTI_STALL_EXPLANATION                    \
 )
 //}
 //}
@@ -3784,20 +3803,20 @@ constexpr bool PYROMANCER_ABILITY_PASSIVE = false;
 constexpr int PYROMANCER_ABILITY_USES = 1;
 constexpr const char* PYROMANCER_ATTACK_NAME = "Heat Wave";
 constexpr const char* PYROMANCER_ATTACK_DESCRIPTION =
-    "Deal 500 damage to all other fighters."
+    "Deal 450 damage to all other fighters."
 ;
 const std::string PYROMANCER_ATTACK_EFFECTS(
     std::string(SPLASH_EFFECT) // splash
     + EFFECT_SEPARATOR         //
-    + "500"                    // 500
+    + "450"                    // 450
     + EFFECT_TERMINATOR
     + SPLASH_EFFECT            // splash
     + EFFECT_SEPARATOR         //
     + SELF_EFFECT              // self
     + EFFECT_SEPARATOR         //
-    + "500"                    // 500
+    + "450"                    // 450
 );
-constexpr int PYROMANCER_ATTACK_DAMAGE = 500;
+constexpr int PYROMANCER_ATTACK_DAMAGE = 450;
 constexpr int PYROMANCER_ATTACK_COST = 2000;
 //}
 
@@ -11399,7 +11418,7 @@ class Player: public Affectable {
                     }
                 }
             
-                // The supporter card will draw cards at the turn's end.
+                // The supporter card will draw cards at the opponent's turn's end.
                 else if (effects[i][0] == END_DRAW_EFFECT) {
                     affect(
                         effects[i][0]
@@ -12251,11 +12270,20 @@ class Player: public Affectable {
                             healing = std::stoi(effects[i][2]);
                         }
                         
+                        // Stores the maximum amount of healing.
+                        int max_healing = 0;
+                        
                         // All of the friendly fighters are healed.
                         for (int i = 0; i < fighters.size(); ++i) {
-                            fighters[i].heal(healing);
+                            int h = fighters[i].heal(healing);
+                            
+                            if (max_healing < h) {
+                                max_healing = h;
+                            }
                         }
                         
+                        // Healing updated to the highest amount actually healed for the announcement.
+                        healing = max_healing;
                         announce(HEAL_SPLASH_ANNOUNCEMENT);
                     }
                     
@@ -16775,6 +16803,7 @@ class Player: public Affectable {
             end_draw();
             battlecry();
             void_core();
+            anti_stall();
         }
         
         /**
@@ -17834,7 +17863,7 @@ class Player: public Affectable {
                 
                 // Only non-zero healing is considered.
                 if (healing) {
-                    heal(healing);
+                    healing = heal(healing);
                     announce(HEAL_AURA_ANNOUNCEMENT);
                 }
             }
@@ -17842,11 +17871,22 @@ class Player: public Affectable {
         
         /**
          * Heals all of the player's fighters the given amount.
+         * Returns the highest amount of healing that any single fighter received.
          */
-        void heal(int healing) noexcept {
+        int heal(int healing) noexcept {
+            // Stores the maximum amount of healing.
+            int max_healing = 0;
+            
+            // All of the friendly fighters are healed.
             for (int i = 0; i < fighters.size(); ++i) {
-                fighters[i].heal(healing);
+                int h = fighters[i].heal(healing);
+                
+                if (max_healing < h) {
+                    max_healing = h;
+                }
             }
+            
+            return max_healing;
         }
         
         /**
@@ -18204,6 +18244,52 @@ class Player: public Affectable {
             
             // The number of shuffles is returned.
             return count;
+        }
+        
+        /**
+         * Applies the anti-stall clause to the player at the start of their turn (after investment returns).
+         */
+        void anti_stall() noexcept {
+            if (turn != opposing) {
+                int draws = anti_stall_count();
+                
+                if (draws) {
+                    // The number of card draws cannot exceed
+                    //   the number of cards in the deck.
+                    if (draws > deck.size()) {
+                        draws = deck.size();
+                    }
+                    
+                    // The opponent only sees the number of draws.
+                    if (opposing) {
+                        draw(draws);
+                        announce(DRAW_ANNOUNCEMENT);
+                    }
+                    
+                    // The player sees what was drawn.
+                    else {
+                        for (int j = 0; j < draws; ++j) {
+                            draw(1);
+                            announce(LAST_DRAWN_ANNOUNCEMENT);
+                        }
+                            
+                        announce(DRAW_ANNOUNCEMENT);
+                    }
+                }
+            }
+        }
+        
+        /**
+         * Calculates the anti-stall clause draw.
+         */
+        int anti_stall_count() const noexcept {
+            int draws =
+                std::floor((turn_count - ANTI_STALL + PLAYERS - 1) / static_cast<double>(PLAYERS))
+                // Gives the correct effect display for the player that went first on
+                //  their turns, without affecting the number of cards actually drawn.
+                + (turn_count % PLAYERS || turn != opposing ? 0 : 1)
+            ;
+            return draws > 0 ? draws : 0;
         }
         //}
         
@@ -27460,6 +27546,11 @@ int main(int argc, char** argv) {
 //}
 
 /* CHANGELOG:
+     v3.1:
+       The number of cards drawn at the start of the turn will
+        start scaling in increments of 1 starting on turn 9.
+       Heat Wave's damage was decreased from 500 to 450.
+       Heal splash now shows the maximum amount of health restored.
      v3.0.2:
        Hurricane's damage was decreased from 400 to 300.
      v3.0.1:
