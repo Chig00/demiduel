@@ -9,7 +9,7 @@
 // System Constants
 //{
 // The current version of the program.
-constexpr int VERSION[] = {3, 1, 0, 0};
+constexpr int VERSION[] = {3, 1, 1, 0};
 
 // The title of the game in string form.
 constexpr const char* TITLE_STRING = "Demi Duel";
@@ -3565,11 +3565,9 @@ constexpr bool PIRATE_ABILITY_PASSIVE = false;
 constexpr int PIRATE_ABILITY_USES = 1;
 constexpr const char* PIRATE_ATTACK_NAME = "Plank Walk";
 constexpr const char* PIRATE_ATTACK_DESCRIPTION =
-    "Choose one of your opponent's fighters to damage based on its element.\n"
-    "Water: 300 damage.\n"
-    "Air: 400 damage.\n"
-    "Earth: 500 damage.\n"
-    "Fire: 600 damage."
+    "Deal 300 damage to one of your opponent's fighters.\n"
+    "Deal 100 extra damage to air, 200 extra damage to earth, "
+    "and 300 extra damage to fire element fighters."
 ;
 const std::string PIRATE_ATTACK_EFFECTS(
     std::string(SNIPE_EFFECT) // snipe
@@ -5570,14 +5568,21 @@ constexpr int OMEGA_ENERGY_VALUE = 10000;
 constexpr const char* BOND_ENERGY_NAME = "Bond Energy";
 constexpr const char* BOND_ENERGY_DESCRIPTION =
     "Provides 750 energy for fighters of all elements.\n"
-    "When the fighter, that this energy card is attached to, ranks up, "
-    "draw the old rank instead of discarding it."
+    "When the fighter, that this energy card is attached to, "
+    "ranks up, draw the old rank instead of discarding it.\n"
+    "When this energy card is played, draw an energy card."
 ;
 constexpr const char* BOND_ENERGY_ELEMENT = NO_ELEMENT;
 const std::string BOND_ENERGY_EFFECTS(
     std::string(UNIVERSAL_EFFECT) // all
     + EFFECT_TERMINATOR
     + BOND_EFFECT                 // bond
+    + EFFECT_TERMINATOR
+    + DRAW_EFFECT                 // draw
+    + EFFECT_SEPARATOR            //
+    + ENERGY_TYPE                 // Energy
+    + EFFECT_SEPARATOR            //
+    + "1"                         // 1
 );
 constexpr int BOND_ENERGY_VALUE = 750;
 //}
@@ -8985,13 +8990,6 @@ class CardStore {
         }
     
         /**
-         * Returns the number of cards stored.
-         */
-        int size() const noexcept {
-            return fighters.size() + supporters.size() + energy.size();
-        }
-        
-        /**
          * Returns true if this is a valid starting hand.
          */
         bool valid() const noexcept {
@@ -10020,9 +10018,13 @@ class CardStore {
         /**
          * Returns the size of the corresponding substore.
          */
-        template<typename Type>
+        template<typename Type = Card>
         int size() const noexcept {
-            if (std::is_same<Type, Fighter>::value) {
+            if (std::is_same<Type, Card>::value) {
+                return fighters.size() + supporters.size() + energy.size();
+            }
+            
+            else if (std::is_same<Type, Fighter>::value) {
                 return fighters.size();
             }
             
@@ -10179,16 +10181,17 @@ class Player: public Affectable {
         }
         
         /**
-         * Randomly draws cards from the deck to the hand.
-         * Draws all of the cards in the deck by default.
+         * Randomly draws cards of the given type from the deck to the hand.
+         * Draws all of the cards of the type in the deck by default.
          */
+        template<typename Type = Card>
         void draw(int count = -1) noexcept {
             if (count < 0) {
-                count = deck.size();
+                count = deck.size<Type>();
             }
             
-            for (int i = 0; deck.size() && i < count; ++i) {
-                last_drawn = deck.draw(generator);
+            for (int i = 0; deck.size<Type>() && i < count; ++i) {
+                last_drawn = deck.draw<Type>(generator);
                 hand.store(*last_drawn);
             }
         }
@@ -12954,28 +12957,55 @@ class Player: public Affectable {
             for (int i = 0; i < effects.size(); ++i) {
                 // The energy card allows the player to draw.
                 if (effects[i][0] == DRAW_EFFECT) {
-                    int draws = std::stoi(effects[i][1]);
-                    
-                    // The number of card draws cannot exceed
-                    //   the number of cards in the deck.
-                    if (draws > deck.size()) {
-                        draws = deck.size();
-                    }
-                    
-                    // The opponent only sees the number of draws.
-                    if (opposing) {
-                        draw(draws);
-                        announce(DRAW_ANNOUNCEMENT);
-                    }
-                    
-                    // The player sees what was drawn.
-                    else {
-                        for (int j = 0; j < draws; ++j) {
-                            draw(1);
-                            announce(LAST_DRAWN_ANNOUNCEMENT);
+                    // Draws energy cards.
+                    if (effects[i][1] == ENERGY_TYPE) {
+                        int draws = std::stoi(effects[i][2]);
+                        
+                        if (draws > deck.size<Energy>()) {
+                            draws = deck.size<Energy>();
                         }
                         
-                        announce(DRAW_ANNOUNCEMENT);
+                        // The opponent only sees the number of draws.
+                        if (opposing) {
+                            draw<Energy>(draws);
+                            announce(DRAW_ANNOUNCEMENT);
+                        }
+                        
+                        // The player sees what was drawn.
+                        else {
+                            for (int j = 0; j < draws; ++j) {
+                                draw<Energy>(1);
+                                announce(LAST_DRAWN_ANNOUNCEMENT);
+                            }
+                            
+                            announce(DRAW_ANNOUNCEMENT);
+                        }
+                    }
+                    
+                    else {
+                        int draws = std::stoi(effects[i][1]);
+                        
+                        // The number of card draws cannot exceed
+                        //   the number of cards in the deck.
+                        if (draws > deck.size()) {
+                            draws = deck.size();
+                        }
+                        
+                        // The opponent only sees the number of draws.
+                        if (opposing) {
+                            draw(draws);
+                            announce(DRAW_ANNOUNCEMENT);
+                        }
+                        
+                        // The player sees what was drawn.
+                        else {
+                            for (int j = 0; j < draws; ++j) {
+                                draw(1);
+                                announce(LAST_DRAWN_ANNOUNCEMENT);
+                            }
+                            
+                            announce(DRAW_ANNOUNCEMENT);
+                        }
                     }
                 }
                 
@@ -27546,6 +27576,9 @@ int main(int argc, char** argv) {
 //}
 
 /* CHANGELOG:
+     v3.1.1:
+       Bond Energy now also draws an energy card from the deck.
+       Plank Walk is now correctly worded to show that ? element fighters take 300 damage.
      v3.1:
        The number of cards drawn at the start of the turn will
         start scaling in increments of 1 starting on turn 9.
