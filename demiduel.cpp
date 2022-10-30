@@ -9,7 +9,7 @@
 // System Constants
 //{
 // The current version of the program.
-constexpr int VERSION[] = {3, 1, 1, 0};
+constexpr int VERSION[] = {3, 1, 1, 1};
 
 // The title of the game in string form.
 constexpr const char* TITLE_STRING = "Demi Duel";
@@ -137,7 +137,7 @@ constexpr const char* FIRE_ELEMENT = "Fire";
 constexpr const char* AIR_ELEMENT = "Air";
 constexpr const char* WATER_ELEMENT = "Water";
 constexpr const char* EARTH_ELEMENT = "Earth";
-constexpr const char* NO_ELEMENT = "?";
+constexpr const char* NO_ELEMENT = "";
 //}
 
 // Card Types
@@ -6286,7 +6286,7 @@ class Energy: public Card {
          */
         std::string to_string() const noexcept {
             return
-                element + " Element " + type + " Card\n\n"
+                element + (element == NO_ELEMENT ? "" : " Element ") + type + " Card\n\n"
                 + name + "\n\n" + description
             ;
         }
@@ -6536,7 +6536,7 @@ class Fighter: public Card {
          */
         std::string to_string() const noexcept {
             return
-                element + " Element " + type + " Card\n\n"
+                element + (element == NO_ELEMENT ? "" : " Element ") + type + " Card\n\n"
                 + name
                 + (
                     old_rank == NO_OLD_RANK ? ""
@@ -27576,6 +27576,8 @@ int main(int argc, char** argv) {
 //}
 
 /* CHANGELOG:
+     v3.1.1.1:
+       Fighters and energy without an element now have their element omitted rather than displaying ? Element.
      v3.1.1:
        Bond Energy now also draws an energy card from the deck.
        Plank Walk is now correctly worded to show that ? element fighters take 300 damage.
