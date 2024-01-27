@@ -9,7 +9,7 @@
 // System Constants
 //{
 // The current version of the program.
-constexpr int VERSION[] = {3, 1, 1, 1};
+constexpr int VERSION[] = {3, 1, 1, 2};
 
 // The title of the game in string form.
 constexpr const char* TITLE_STRING = "Demi Duel";
@@ -5937,6 +5937,11 @@ class Evaluation {
 class Affectable {
     public:
         /**
+         * Virtual destructor for subclasses.
+         */
+        virtual ~Affectable() noexcept {}
+        
+        /**
          * Returns a constant reference to the object's effects.
          */
         const std::vector<std::vector<std::string>>& get_effects() const noexcept {
@@ -6159,6 +6164,11 @@ class Affectable {
  */
 class Card: public Affectable {
     public:
+        /**
+         * Virtual destructor for subclasses.
+         */
+        virtual ~Card() noexcept override {}
+        
         /**
          * Returns the card's name.
          */
@@ -21241,7 +21251,7 @@ const DeckCode AGGRO_DECK(
     "Aggro",
     "This is an aggressive deck that uses Hot Rodder and "
     "Pyrotechnician to deal high amounts of damage every turn!\n\n"
-    "Hydromancer helps to force out key targets and lock them in the active position!\n\n"
+    "Hydromancer helps to finish off key targets on the bench and deny strong plays!\n\n"
     "Various supporter cards in the deck can be used to make quick "
     "work of the opponent's important or unranked fighters.",
     {
@@ -21573,7 +21583,7 @@ const DeckCode CONTROL_DECK(
     "Control",
     "This is a defensive deck that focuses on keeping its "
     "fighters healthy to eventually overcome the opponent.\n\n"
-    "Cleric heals all of the friendly fighters at the end of your turn!\n\n"
+    "Cleric heals all of your fighters at the end of your turn!\n\n"
     "Astronaut can allow fighters to retreat freely to "
     "distribute splash healing as efficiently as possible!\n\n"
     "Excavator can return energy cards to hand and shuffle them "
@@ -21686,11 +21696,11 @@ const DeckCode MILL_DECK(
     "Mill",
     "This is a mill deck that focuses on emptying the opponent's "
     "deck, in order to make them draw life cards.\n\n"
-    "Lost Soul is a tutor card that is used to draw Mage and Pyromancer.\n\n"
-    "Pyromancer can discard random cards from your opponent's deck.\n\n"
+    "Lost Soul is a tutor that is used to draw your other fighters.\n\n"
+    "Pyromancer can discard cards from both players' decks.\n\n"
     "Glutton shuffles discarded energy cards back into the deck, "
     "so you don't draw life cards while your opponent does!\n\n"
-    "Miller and Arsonist also help to mill the opponent.\n\n"
+    "Miller and Arsonist also help to mill and disrupt the opponent.\n\n"
     "Boxer can protect Pyromancer from being forced into the active position.",
     {
         // Fighter Cards
@@ -27576,6 +27586,10 @@ int main(int argc, char** argv) {
 //}
 
 /* CHANGELOG:
+     v3.1.1.2:
+       Fix built-in deck descriptions.
+       Use virtual destructors for classes intended to be subclassed.
+       Use sdlandnet v4.2.0.1 for the virtual destructor fix.
      v3.1.1.1:
        Fighters and energy without an element now have their element omitted rather than displaying ? Element.
      v3.1.1:
